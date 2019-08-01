@@ -353,6 +353,8 @@ Item {
     signal printfrontbillSignal()
     signal printbackbillSignal()
     signal savebillSignal()
+    signal savebillbackSignal()
+    signal openpictureSignal()
     signal printstatementsignal(int month, int year, int currency)
 
     signal registerNickSignal(string nickname, string address)
@@ -820,6 +822,8 @@ Item {
         onPrintfrontbillSignalintern: printfrontbillSignal()
         onPrintbackbillSignalintern: printbackbillSignal()
         onSavebillSignalintern: savebillSignal()
+        onSavebillbackSignalintern: savebillbackSignal()
+        onOpenpictureSignalintern: openpictureSignal()
     }
 
     Backupwallet

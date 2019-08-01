@@ -314,6 +314,13 @@
         <file>res/assets/bills/bill2back.png</file>
         <file>res/assets/bills/bill1front.png</file>
         <file>res/assets/bills/bill1back.png</file>
+        <file>res/assets/bills/bill100backown.png</file>
+        <file>res/assets/bills/bill50backown.png</file>
+        <file>res/assets/bills/bill20backown.png</file>
+        <file>res/assets/bills/bill10backown.png</file>
+        <file>res/assets/bills/bill5backown.png</file>
+        <file>res/assets/bills/bill2backown.png</file>
+        <file>res/assets/bills/bill1backown.png</file>
         <file>res/assets/bills/bitcashbill1000front.png</file>
         <file>res/assets/bills/bitcashbill1000back.png</file>
         <file>res/assets/bills/bitcashbill500front.png</file>

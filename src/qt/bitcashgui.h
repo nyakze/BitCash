@@ -116,6 +116,7 @@ private:
     int currentbilldenomination;
     int currentbillcurrency;
     std::string currentlinkforbill;
+    QImage currentfaceforbill;
 
     QMenuBar *appMenuBar;
     QToolBar *appToolBar;
@@ -248,6 +249,8 @@ public Q_SLOTS:
     void undoPaymentsRemovalClicked();
     void createnewpaperwallet();
     void savebillSignalClicked();
+    void savebillbackSignalClicked();
+    void openpictureClicked();
     void DeletePaymentsClicked(const QString &strlink);
     void DeleteOrdersClicked(const QString &strlink);
     void PrintPaperWalletClicked();

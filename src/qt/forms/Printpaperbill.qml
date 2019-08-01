@@ -12,6 +12,8 @@ Item {
     signal printfrontbillSignalintern()
     signal printbackbillSignalintern()
     signal savebillSignalintern()
+    signal savebillbackSignalintern()
+    signal openpictureSignalintern()
 
     Rectangle{
         id: screen
@@ -34,7 +36,7 @@ Item {
     border.color: "#ffffff"
     border.width: 1
     width: 690
-    height: 214
+    height: 333
 
     Button {
         id: closebtn
@@ -72,6 +74,19 @@ Item {
         font.pixelSize: 18
         font.family: "Montserrat SemiBold"
         font.weight: Font.DemiBold
+    }
+
+    Text {
+        id: infotext
+        color: "#202124"
+        anchors.left: sendicon.right
+        anchors.leftMargin: -19
+        text: qsTr("You can print your own face/logo on the bill!")
+        anchors.top: parent.top
+        anchors.topMargin: 272
+        font.pixelSize: 14
+        font.family: "Montserrat"
+        font.weight: Font.Normal
     }
 
     Timer {
@@ -138,6 +153,45 @@ Item {
         leftPadding: 20
         font.pixelSize: 14
         onClicked: savebillSignalintern()
+    }
+
+    Mybutton {
+        id: openPictureBtn
+        x: 210
+        y: 146
+        height: 44
+        text: qsTr("Open a picture of your own face/logo...")
+        anchors.topMargin: 159
+        font.pixelSize: 14
+        focusPolicy: Qt.StrongFocus
+        anchors.leftMargin: 30
+        anchors.left: parent.left
+        font.weight: Font.DemiBold
+        font.family: "Montserrat SemiBold"
+        font.capitalization: Font.MixedCase
+        leftPadding: 20
+        rightPadding: 20
+        anchors.top: sendcap.bottom
+        onClicked: openpictureSignalintern()
+    }
+
+    Mybutton {
+        id: savebackBtn
+        y: 146
+        height: 44
+        text: qsTr("Save as picture...")
+        anchors.topMargin: 0
+        font.pixelSize: 14
+        focusPolicy: Qt.StrongFocus
+        anchors.leftMargin: 22
+        anchors.left: printbackBtn.right
+        font.family: "Montserrat SemiBold"
+        font.weight: Font.DemiBold
+        leftPadding: 20
+        font.capitalization: Font.MixedCase
+        rightPadding: 20
+        anchors.top: printbackBtn.top
+        onClicked: savebillbackSignalintern()
     }
     }
 }
