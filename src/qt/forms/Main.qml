@@ -111,6 +111,7 @@ Item {
     function deactivateallwindows()
     {
         paperbillselect.visible = false
+        paperbillselectbitcash.visible = false
         backupwallet.visible = false
         trading.visible = false
         paperwallet.visible = false
@@ -141,7 +142,17 @@ Item {
         paperbillselect.visible = true
     }
 
+    function openbillselectwindow2(msg) {
+        deactivateallwindows()
+        paperbillselectbitcash.visible = true
+    }
+
     function startprintingpaperbill(){
+        deactivateallwindows()
+        printpaperbill.visible = true
+    }
+
+    function startprintingpaperbillbitcash(){
         deactivateallwindows()
         printpaperbill.visible = true
     }
@@ -329,6 +340,7 @@ Item {
     signal sendconfirmedBtninSignal(string destination, string description, double amount, bool senddollar)
     signal sendconfirmedBtnreSignal(string destination, string description, double amount, bool senddollar)
     signal generateBillSignal(int denomination)
+    signal generateBillBitCashSignal(int denomination)
     signal sendlinkBtnSignal(string description, double amount, bool senddollar)
     signal claimlinkBtnSignal(string link)
     signal datefiltersignal(int index)
@@ -340,6 +352,7 @@ Item {
     signal createOrderBtnSignal(double amounttosend, double targetPrice, bool senddollar, bool whenpricegoesabove)
     signal printfrontbillSignal()
     signal printbackbillSignal()
+    signal savebillSignal()
     signal printstatementsignal(int month, int year, int currency)
 
     signal registerNickSignal(string nickname, string address)
@@ -406,6 +419,7 @@ Item {
             Send{
                 id: send
                 onSendBtnSignalIntern: sendBtnSignal(destination,label,description,amount,substractfee)
+                onPrintBtnSignalIntern: openbillselectwindow2()
                 onSendBtnDoSignalIntern: sendBtnDoSignal(destination,label,description,amount,substractfee)
                 onPrintBtnDoSignalIntern: openbillselectwindow()
                 onSendBtntwSignalIntern: sendBtntwSignal(destination,description,amount, senddollar)
@@ -794,11 +808,18 @@ Item {
         onGenerateBillSignalintern: generateBillSignal(denomination)
     }
 
+    PaperbillselectBitCash
+    {
+        id: paperbillselectbitcash
+        onGenerateBillBitCashSignalintern: generateBillBitCashSignal(denomination)
+    }
+
     Printpaperbill
     {
         id: printpaperbill
         onPrintfrontbillSignalintern: printfrontbillSignal()
         onPrintbackbillSignalintern: printbackbillSignal()
+        onSavebillSignalintern: savebillSignal()
     }
 
     Backupwallet

@@ -11,6 +11,7 @@ Item {
 
     signal printfrontbillSignalintern()
     signal printbackbillSignalintern()
+    signal savebillSignalintern()
 
     Rectangle{
         id: screen
@@ -117,6 +118,26 @@ Item {
         font.pixelSize: 14
         anchors.left: parent.left
         onClicked: printbackbillSignalintern()
+    }
+
+    Mybutton {
+        id: savefrontBtn
+        x: 2
+        y: 82
+        height: 44
+        text: qsTr("Save as picture...")
+        focusPolicy: Qt.StrongFocus
+        anchors.topMargin: 30
+        anchors.top: sendcap.bottom
+        anchors.left: printfrontBtn.right
+        font.capitalization: Font.MixedCase
+        font.weight: Font.DemiBold
+        font.family: "Montserrat SemiBold"
+        anchors.leftMargin: 20
+        rightPadding: 20
+        leftPadding: 20
+        font.pixelSize: 14
+        onClicked: savebillSignalintern()
     }
     }
 }

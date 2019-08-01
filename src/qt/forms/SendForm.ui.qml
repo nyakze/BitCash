@@ -24,6 +24,7 @@ Item {
     property alias amountEdit: amountEdit
     property alias subtractfeeCheck: subtractfeeCheck
     property alias sendBtn: sendBtn
+    property alias printBtn: printBtn
     property alias availableBalanceBtn: availableBalanceBtn
     property alias maxbalance: maxbalance
     property alias pasteaddress: pasteaddress
@@ -654,6 +655,31 @@ Item {
                     iconname: "../res/assets/Miscellaneous/button-send.png"
                     font.capitalization: Font.MixedCase
                     font.family: "Montserrat SemiBold"
+                }
+
+                Mybutton {
+                    id: printBtn
+                    height: 44
+                    text: qsTr("Print paper bills")
+                    visible: false
+                    spacing: 0
+                    font.weight: Font.DemiBold
+                    font.pixelSize: 14
+                    leftPadding: 44
+                    rightPadding: 20
+                    anchors.left: sendBtn.right
+                    anchors.leftMargin: 20
+                    anchors.top: sendBtn.top
+                    anchors.topMargin: 0
+                    iconname: "../res/assets/Miscellaneous/print-icon.png"
+                    font.capitalization: Font.MixedCase
+                    font.family: "Montserrat SemiBold"
+                    btncolor: "white"
+                    txtcolor: "#3e45ac"
+                    btncolordown: "#eaeaea"
+                    txtcolordown: "#494ea7"
+                    btnbordercolor: "#3e45ac"
+                    borderwidth: 1
                 }
 
                 Button {

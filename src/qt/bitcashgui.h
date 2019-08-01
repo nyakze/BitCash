@@ -114,6 +114,7 @@ private:
     QProgressBar *progressBar;
     QProgressDialog *progressDialog;
     int currentbilldenomination;
+    int currentbillcurrency;
     std::string currentlinkforbill;
 
     QMenuBar *appMenuBar;
@@ -233,6 +234,7 @@ public Q_SLOTS:
     void sendtoTwitterClicked(QString twitteruser, QString coinlink);
     void sendtoInstaClicked(QString instauser, QString coinlink);
     void generateBillClicked(int denomination);
+    void generateBillBitCashClicked(int denomination);
     void printfrontbillClicked();
     void printbackbillClicked();
     void sendtoTwitchClicked(QString twitchuser, QString coinlink);
@@ -245,6 +247,7 @@ public Q_SLOTS:
     void StartMiningBtnClicked(); 
     void undoPaymentsRemovalClicked();
     void createnewpaperwallet();
+    void savebillSignalClicked();
     void DeletePaymentsClicked(const QString &strlink);
     void DeleteOrdersClicked(const QString &strlink);
     void PrintPaperWalletClicked();

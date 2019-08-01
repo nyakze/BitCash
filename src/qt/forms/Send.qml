@@ -8,6 +8,7 @@ SendForm {
     signal sendBtnSignalIntern(string destination, string label, string description, double amount, bool substractfee)
     signal sendBtnDoSignalIntern(string destination, string label, string description, double amount, bool substractfee)
     signal printBtnDoSignalIntern()
+    signal printBtnSignalIntern()
     signal sendBtntwSignalIntern(string destination, string description, double amount, bool senddollar)
     signal sendBtninSignalIntern(string destination, string description, double amount, bool senddollar)
     signal sendBtnreSignalIntern(string destination, string description, double amount, bool senddollar)
@@ -416,7 +417,10 @@ SendForm {
     }
     sendBtn.onClicked: {
         sendBtnSignalIntern(paytoEdit.text, labelEdit.text, descriptionEdit.text, amountEdit.text, subtractfeeCheck.checked)
-    }    
+    }
+    printBtn.onClicked: {
+        printBtnSignalIntern()
+    }
     sendBtnan.onClicked: {
         sendlinkBtnSignalIntern(descriptionEditan.text, amountEditan.text, senddollarCheckan.checked)
     }

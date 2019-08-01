@@ -58,6 +58,7 @@
 #include <QDateTime>
 #include <QDesktopWidget>
 #include <QDragEnterEvent>
+#include <QFileDialog>
 #include <QListWidget>
 #include <QMenuBar>
 #include <QMessageBox>
@@ -508,6 +509,90 @@ void BitcashGUI::printStatementsBtnClicked(int month, int year, int currency)
 
 }
 
+void BitcashGUI::savebillSignalClicked()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                           "bill.png",
+                           tr("Images (*.png *.jpg)"));
+
+    QImage myImage;
+    bool c;
+    if (currentbillcurrency == 1) {
+        c = myImage.load(QString(":/res/assets/bills/bill%1front.png").arg(QString::number(currentbilldenomination)));
+    }else {
+        c = myImage.load(QString(":/res/assets/bills/bitcashbill%1front.png").arg(QString::number(currentbilldenomination)));
+    }
+
+    if (!c) QMessageBox::critical(this, tr("Error"), tr("Could not load bill image!"));
+
+    QPainter painter;
+    
+#ifdef USE_QRCODE
+    QString uri = QString::fromStdString(currentlinkforbill);
+    if(!uri.isEmpty())
+    {
+        // limit URI length
+        if (uri.length() > MAX_URI_LENGTH)
+        {
+            QMessageBox::critical(this, tr("Error"), tr("Resulting URI too long, try to reduce the text for label / message."));
+        } else {
+            QRcode *code = QRcode_encodeString(uri.toUtf8().constData(), 0, QR_ECLEVEL_L, QR_MODE_8, 1);
+            if (!code)
+            {
+                QMessageBox::critical(this, tr("Error"), tr("Error encoding URI into QR Code."));
+                return;
+            }
+            QImage qrImage = QImage(code->width, code->width, QImage::Format_RGB32);
+            qrImage.fill(0xd5e4e9);
+            unsigned char *p = code->data;
+            for (int y = 0; y < code->width; y++)
+            {
+                for (int x = 0; x < code->width; x++)
+                {
+                    qrImage.setPixel(x, y, ((*p & 1) ? 0x0 : 0xd5e4e9));
+                    p++;
+                }
+            }
+
+            int widthqr = code->width * 3;
+            QRcode_free(code);
+
+            int widthofimage = widthqr * 6.14 / 0.55;
+            int heightofimage = widthofimage * myImage.height() / myImage.width();
+
+            int leftqr = 0.944 * widthofimage / 6.14;
+            int topqr = 0.85 * widthofimage / 6.14;
+
+            QImage image(widthofimage, heightofimage, QImage::Format_RGB32);
+
+            painter.begin(&image);
+
+            if (myImage.width() != 0){
+                double scale = (widthofimage) / double(myImage.width());
+                painter.save();
+                painter.scale(scale, scale);
+                painter.drawImage(0, 0, myImage);
+                painter.restore();
+            }
+
+            if (qrImage.width() != 0){
+                double scale = (widthqr) / double(qrImage.width());
+                painter.save();
+                painter.scale(scale, scale);
+                painter.drawImage((leftqr) / scale, (topqr) / scale, qrImage);
+                painter.restore();
+            }
+
+            painter.end();
+            bool b = image.save(fileName); 
+            if (!b) QMessageBox::critical(this, tr("Error"), tr("Could not save image!"));
+
+        }
+    }
+#endif
+
+}
+
 void BitcashGUI::printfrontbillClicked()
 {
     QPrinter printer;
@@ -526,7 +611,12 @@ void BitcashGUI::printfrontbillClicked()
 //    printer.setFullPage(true);
     qreal margin = (printer.paperRect(QPrinter::DevicePixel).width() - width) / 2 - printer.pageRect(QPrinter::DevicePixel).left();
 
-    myImage.load(QString(":/res/assets/bills/bill%1front.png").arg(QString::number(currentbilldenomination)));
+    if (currentbillcurrency == 1) {
+        myImage.load(QString(":/res/assets/bills/bill%1front.png").arg(QString::number(currentbilldenomination)));
+    }else {
+        myImage.load(QString(":/res/assets/bills/bitcashbill%1front.png").arg(QString::number(currentbilldenomination)));
+    }
+
 
     if (myImage.width() != 0){
         double scale = (width) / double(myImage.width());
@@ -602,7 +692,11 @@ void BitcashGUI::printbackbillClicked()
     qreal margintop = printer.pageRect(QPrinter::DevicePixel).top();
 //    printer.setFullPage(true);
     qreal margin = (printer.paperRect(QPrinter::DevicePixel).width() - width) / 2 - printer.pageRect(QPrinter::DevicePixel).left();
-    myImage.load(QString(":/res/assets/bills/bill%1back.png").arg(QString::number(currentbilldenomination)));
+    if (currentbillcurrency == 1) {
+        myImage.load(QString(":/res/assets/bills/bill%1back.png").arg(QString::number(currentbilldenomination)));
+    }else {
+        myImage.load(QString(":/res/assets/bills/bitcashbill%1back.png").arg(QString::number(currentbilldenomination)));
+    }
 
     if (myImage.width() != 0){
         double scale = (width) / double(myImage.width());
@@ -652,7 +746,54 @@ void BitcashGUI::generateBillClicked(int denomination)
 
             currentlinkforbill = strlink;
             currentbilldenomination = denomination;
+            currentbillcurrency = curr;
             QMetaObject::invokeMethod(qmlrootitem, "startprintingpaperbill", Q_RETURN_ARG(QVariant, returnedValue));
+       }
+  
+    }
+}
+
+void BitcashGUI::generateBillBitCashClicked(int denomination)
+{
+    if (!UserKnowsPassword()) return;
+    WalletModel * const walletModel = getCurrentWalletModel();
+    if (!walletModel) return;
+
+    if (denomination == 10 || denomination == 20 || denomination == 50 || denomination == 100 || denomination == 200 || denomination == 500 || denomination == 1000)
+    {
+        CAmount nAmount = denomination * COIN;
+        std::string referenceline = "Paper bill"; 
+        std::string strlink, strerr;
+   
+        int curr = 0;
+
+        if (!walletModel->wallet().SendAsLink(nAmount, referenceline, strlink, strerr, curr, curr))
+        {
+            QMessageBox::critical(this, tr("Could not create link."),QString::fromStdString(strerr));   
+        } else {
+            QVariant returnedValue;
+            const QString& s = QString::fromStdString(strlink);
+            QDateTime currentDate = QDateTime::currentDateTime();
+            uint64_t timestamp=currentDate.toMSecsSinceEpoch();
+            int unit = walletModel->getOptionsModel()->getDisplayUnit();
+            QVariant amountstr=BitcashUnits::format(unit, nAmount, false, BitcashUnits::separatorNever);       
+                                                
+            SetLink(strlink, referenceline, amountstr.toString().toStdString(), 0, timestamp, curr);
+
+            QDateTime qtimestamp;
+            qtimestamp.setMSecsSinceEpoch(timestamp);
+            QVariant datestr=GUIUtil::dateTimeStr(qtimestamp);
+            QVariant currencystr = "BITC";
+
+            QMetaObject::invokeMethod(qmlrootitem, "addbitcashexpresslink", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, s), Q_ARG(QVariant, QString::fromStdString(referenceline)), Q_ARG(QVariant, amountstr), Q_ARG(QVariant, datestr), Q_ARG(QVariant, currencystr));
+
+            QClipboard *p_Clipboard = QApplication::clipboard();
+            p_Clipboard->setText(s);
+
+            currentlinkforbill = strlink;
+            currentbilldenomination = denomination;
+            currentbillcurrency = curr;
+            QMetaObject::invokeMethod(qmlrootitem, "startprintingpaperbillbitcash", Q_RETURN_ARG(QVariant, returnedValue));
        }
   
     }
@@ -2710,8 +2851,12 @@ BitcashGUI::BitcashGUI(interfaces::Node& node, const PlatformStyle *_platformSty
                       this, SLOT(sendtoTwitchClicked(QString, QString)));
     QObject::connect(qmlrootitem, SIGNAL(generateBillSignal(int)),
                       this, SLOT(generateBillClicked(int)));
+    QObject::connect(qmlrootitem, SIGNAL(generateBillBitCashSignal(int)),
+                      this, SLOT(generateBillBitCashClicked(int)));
     QObject::connect(qmlrootitem, SIGNAL(printfrontbillSignal()),
                       this, SLOT(printfrontbillClicked()));
+    QObject::connect(qmlrootitem, SIGNAL(savebillSignal()),
+                      this, SLOT(savebillSignalClicked()));
     QObject::connect(qmlrootitem, SIGNAL(printbackbillSignal()),
                       this, SLOT(printbackbillClicked()));
     QObject::connect(qmlrootitem, SIGNAL(printstatementsignal(int, int, int)),

@@ -314,6 +314,20 @@
         <file>res/assets/bills/bill2back.png</file>
         <file>res/assets/bills/bill1front.png</file>
         <file>res/assets/bills/bill1back.png</file>
+        <file>res/assets/bills/bitcashbill1000front.png</file>
+        <file>res/assets/bills/bitcashbill1000back.png</file>
+        <file>res/assets/bills/bitcashbill500front.png</file>
+        <file>res/assets/bills/bitcashbill500back.png</file>
+        <file>res/assets/bills/bitcashbill200front.png</file>
+        <file>res/assets/bills/bitcashbill200back.png</file>
+        <file>res/assets/bills/bitcashbill100front.png</file>
+        <file>res/assets/bills/bitcashbill100back.png</file>
+        <file>res/assets/bills/bitcashbill50front.png</file>
+        <file>res/assets/bills/bitcashbill50back.png</file>
+        <file>res/assets/bills/bitcashbill20front.png</file>
+        <file>res/assets/bills/bitcashbill20back.png</file>
+        <file>res/assets/bills/bitcashbill10front.png</file>
+        <file>res/assets/bills/bitcashbill10back.png</file>
         <file>forms/PrinteStatements.qml</file>
         <file>res/assets/Miscellaneous/arrowup.png</file>
         <file>res/assets/Miscellaneous/arrowdown.png</file>
@@ -321,5 +335,6 @@
         <file>res/assets/Miscellaneous/converttodollar.png</file>
         <file>res/assets/Miscellaneous/converttobitcashblack.png</file>
         <file>res/assets/Miscellaneous/converttodollarblack.png</file>
+        <file>forms/PaperbillselectBitCash.qml</file>
     </qresource>
 </RCC>

@@ -425,41 +425,68 @@
 <context>
     <name>BitcashGUI</name>
     <message>
-        <location filename="../bitcashgui.cpp" line="+336"/>
+        <location filename="../bitcashgui.cpp" line="+337"/>
         <source>Print eStatement</source>
         <translation>Kontoauszug drucken</translation>
     </message>
     <message>
-        <location line="+180"/>
-        <location line="+77"/>
-        <location line="+141"/>
+        <location line="+264"/>
+        <location line="+82"/>
+        <location line="+192"/>
         <source>Print Document</source>
         <translation>Dokument drucken</translation>
     </message>
     <message>
-        <location line="-187"/>
+        <location line="-349"/>
+        <location line="+11"/>
         <location line="+5"/>
-        <location line="+3165"/>
+        <location line="+46"/>
+        <location line="+49"/>
+        <location line="+5"/>
+        <location line="+3220"/>
         <source>Error</source>
         <translation>Fehler</translation>
     </message>
     <message>
-        <location line="-3170"/>
+        <location line="-3348"/>
+        <source>Save File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Images (*.png *.jpg)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Could not load bill image!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <location line="+100"/>
         <source>Resulting URI too long, try to reduce the text for label / message.</source>
         <translation>Resultierende URI ist zu lang, bitte den Text für Bezeichnung/Nachricht kürzen.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-95"/>
+        <location line="+100"/>
         <source>Error encoding URI into QR Code.</source>
         <translation>Beim Enkodieren der URI in den QR-Code ist ein Fehler aufgetreten.</translation>
     </message>
     <message>
-        <location line="+80"/>
+        <location line="-54"/>
+        <source>Could not save image!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+138"/>
+        <location line="+46"/>
         <source>Could not create link.</source>
         <translation>Konnte Link nicht erzeugen.</translation>
     </message>
     <message>
-        <location line="+464"/>
+        <location line="+465"/>
         <source>Could not start miner</source>
         <translation>Konnte Miner nicht starten</translation>
     </message>
@@ -708,7 +735,7 @@ Wollen Sie die Zahlung ausführen?</translation>
         <translation>Knoten</translation>
     </message>
     <message>
-        <location line="+287"/>
+        <location line="+291"/>
         <source>&amp;Overview</source>
         <translation>&amp;Übersicht</translation>
     </message>
@@ -1782,7 +1809,7 @@ Wollen Sie die Zahlung ausführen?</translation>
 <context>
     <name>Main</name>
     <message>
-        <location filename="../forms/Main.qml" line="+188"/>
+        <location filename="../forms/Main.qml" line="+199"/>
         <source>Send the below link directly to the Twitter user so that he/she can claim the coins.
 
  You can even paste the link in public tweets or comments. No need to worry, no other user can gain access to these coins except for the intended Twitter user.
@@ -1836,7 +1863,7 @@ Wenn Sie diese Transaktion ausversehen ausgeführt haben, können Sie die Coins 
         <translation>Sie haben die Coins erfolgreich den den Twitchnutzer gesendet</translation>
     </message>
     <message>
-        <location line="+282"/>
+        <location line="+285"/>
         <source>Overview</source>
         <translation>Überblick</translation>
     </message>
@@ -1917,12 +1944,17 @@ Wenn Sie diese Transaktion ausversehen ausgeführt haben, können Sie die Coins 
         <translation>Mining starten</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+14"/>
         <source>Stop mining</source>
         <translation>Mining stoppen</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+22"/>
+        <source>Information before you start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
         <source>Hashs per second</source>
         <translation>Hashs pro Sekunde</translation>
     </message>
@@ -1945,6 +1977,29 @@ Wenn Sie diese Transaktion ausversehen ausgeführt haben, können Sie die Coins 
         <location line="+17"/>
         <source>Mining pool</source>
         <translation>Miningpool</translation>
+    </message>
+    <message>
+        <location line="+52"/>
+        <source>Welcome to Bitcash mining!  The one click solution for mining!  
+
+Before we begin, please take note of a few requirements for mining:
+
+Nvidia video card
+980 model or later (minimum 3gb vram)
+
+Now select your pool, click start mining and begin receiving bitcash rewards directly to your wallet!  
+
+That&apos;s it!  Leave you wallet open while mining and enjoy!  
+
+The algo your mining is X16R, and you miner is Trex miner which has been integrated into the bitcash wallet.
+
+Any questions please visit us on discord https://discord.gg/t2MdnWQ</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Close</source>
+        <translation type="unfinished">Schließen</translation>
     </message>
 </context>
 <context>
@@ -3271,7 +3326,7 @@ Wenn Sie diese Transaktion ausversehen ausgeführt haben, können Sie die Coins 
 <context>
     <name>Printpaperbill</name>
     <message>
-        <location filename="../forms/Printpaperbill.qml" line="+68"/>
+        <location filename="../forms/Printpaperbill.qml" line="+69"/>
         <source>Print paper BitCash Dollar bills</source>
         <translation>BitCash Dollar Papiergeldscheine drucken</translation>
     </message>
@@ -3284,6 +3339,11 @@ Wenn Sie diese Transaktion ausversehen ausgeführt haben, können Sie die Coins 
         <location line="+16"/>
         <source>Print back side</source>
         <translation>Rückseite drucken</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Save as picture...</source>
+        <translation>Als Bild speichern...</translation>
     </message>
 </context>
 <context>
@@ -4225,7 +4285,7 @@ Wenn Sie diese Transaktion ausversehen ausgeführt haben, können Sie die Coins 
 <context>
     <name>Send</name>
     <message>
-        <location filename="../forms/Send.qml" line="+69"/>
+        <location filename="../forms/Send.qml" line="+70"/>
         <source>You have successfully generated a link which you can send to anyone. The link has been copied to the clipboard.</source>
         <translation>Sie haben erfolgreich einen Link erzeugt, den Sie an jeden senden können. Der Link wurde in die Zwischenablage kopiert.</translation>
     </message>
@@ -4730,7 +4790,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of &quot;100 satos
 <context>
     <name>SendConfirmationDialog2</name>
     <message>
-        <location filename="../bitcashgui.cpp" line="-2502"/>
+        <location filename="../bitcashgui.cpp" line="-2506"/>
         <location line="+5"/>
         <source>Yes</source>
         <translation>Ja</translation>
@@ -4739,7 +4799,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of &quot;100 satos
 <context>
     <name>SendForm.ui</name>
     <message>
-        <location filename="../forms/SendForm.ui.qml" line="+137"/>
+        <location filename="../forms/SendForm.ui.qml" line="+138"/>
         <source>Send BitCash to anyone with an existing BitCash address or nickname. If the recipient doesn&apos;t have BitCash, then use the </source>
         <translation>Senden Sie BitCash an eine existierende BitCash Adresse. Wenn der Empfänger kein BitCash hat, dann können Sie </translation>
     </message>
@@ -4756,7 +4816,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of &quot;100 satos
     <message>
         <location line="+83"/>
         <location line="+391"/>
-        <location line="+290"/>
+        <location line="+315"/>
         <location line="+326"/>
         <location line="+304"/>
         <location line="+303"/>
@@ -4766,7 +4826,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of &quot;100 satos
         <translation>Senden</translation>
     </message>
     <message>
-        <location line="-2129"/>
+        <location line="-2154"/>
         <source>Direct</source>
         <translation>Direkt</translation>
     </message>
@@ -4797,7 +4857,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of &quot;100 satos
     </message>
     <message>
         <location line="+46"/>
-        <location line="+290"/>
+        <location line="+315"/>
         <location line="+312"/>
         <location line="+304"/>
         <location line="+303"/>
@@ -4805,14 +4865,14 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of &quot;100 satos
         <translation>Empfänger</translation>
     </message>
     <message>
-        <location line="-1179"/>
-        <location line="+290"/>
+        <location line="-1204"/>
+        <location line="+315"/>
         <source>Paste the BitCash address or nickname of the recipient</source>
         <translation>BitCash Adresse oder Nickname des Empfängers</translation>
     </message>
     <message>
-        <location line="-271"/>
-        <location line="+290"/>
+        <location line="-296"/>
+        <location line="+315"/>
         <location line="+342"/>
         <location line="+304"/>
         <location line="+303"/>
@@ -4820,8 +4880,8 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of &quot;100 satos
         <translation>Bezeichnung für Adressbuch:</translation>
     </message>
     <message>
-        <location line="-1217"/>
-        <location line="+290"/>
+        <location line="-1242"/>
+        <location line="+315"/>
         <location line="+342"/>
         <location line="+304"/>
         <location line="+303"/>
@@ -4830,8 +4890,8 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of &quot;100 satos
         <translation>Für was bezahlen Sie?</translation>
     </message>
     <message>
-        <location line="-1494"/>
-        <location line="+290"/>
+        <location line="-1519"/>
+        <location line="+315"/>
         <location line="+342"/>
         <location line="+304"/>
         <location line="+303"/>
@@ -4840,8 +4900,8 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of &quot;100 satos
         <translation>Verwendungszweck</translation>
     </message>
     <message>
-        <location line="-1448"/>
-        <location line="+290"/>
+        <location line="-1473"/>
+        <location line="+315"/>
         <location line="+341"/>
         <location line="+304"/>
         <location line="+303"/>
@@ -4850,8 +4910,8 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of &quot;100 satos
         <translation>Betrag</translation>
     </message>
     <message>
-        <location line="-1487"/>
-        <location line="+290"/>
+        <location line="-1512"/>
+        <location line="+315"/>
         <source>Subtract transaction fee from amount</source>
         <translation>Ziehe Transaktionsgebühren vom Betrag ab</translation>
     </message>
@@ -4901,12 +4961,12 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of &quot;100 satos
         <translation>Sie werden noch</translation>
     </message>
     <message>
-        <location line="-1439"/>
+        <location line="-1465"/>
         <source></source>
         <translation></translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+49"/>
         <location line="+313"/>
         <location line="+291"/>
         <location line="+304"/>
@@ -4926,7 +4986,8 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of &quot;100 satos
         <translation>übrig haben auf Ihrem Konto</translation>
     </message>
     <message>
-        <location line="-1249"/>
+        <location line="-1564"/>
+        <location line="+315"/>
         <source>Print paper bills</source>
         <translation>Papiergeldscheine drucken</translation>
     </message>
