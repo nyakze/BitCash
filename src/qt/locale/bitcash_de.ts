@@ -430,57 +430,93 @@
         <translation>Kontoauszug drucken</translation>
     </message>
     <message>
-        <location line="+264"/>
-        <location line="+82"/>
-        <location line="+192"/>
+        <location line="+405"/>
+        <location line="+104"/>
+        <location line="+223"/>
         <source>Print Document</source>
         <translation>Dokument drucken</translation>
     </message>
     <message>
-        <location line="-349"/>
+        <location line="-549"/>
+        <location line="+28"/>
+        <location line="+13"/>
+        <location line="+5"/>
+        <location line="+57"/>
+        <location line="+25"/>
         <location line="+11"/>
         <location line="+5"/>
-        <location line="+46"/>
-        <location line="+49"/>
+        <location line="+65"/>
+        <location line="+53"/>
         <location line="+5"/>
-        <location line="+3220"/>
+        <location line="+3273"/>
         <source>Error</source>
         <translation>Fehler</translation>
     </message>
     <message>
-        <location line="-3348"/>
-        <source>Save File</source>
+        <location line="-3545"/>
+        <source>Open Image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Image Files (*.png *.jpg *.bmp)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Could not load the image!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
+        <source>Image loaded</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Image successfully loaded!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <location line="+105"/>
+        <source>Save File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-103"/>
+        <location line="+105"/>
         <source>Images (*.png *.jpg)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="-87"/>
+        <location line="+100"/>
         <source>Could not load bill image!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
-        <location line="+100"/>
+        <location line="-87"/>
+        <location line="+98"/>
+        <location line="+123"/>
         <source>Resulting URI too long, try to reduce the text for label / message.</source>
         <translation>Resultierende URI ist zu lang, bitte den Text für Bezeichnung/Nachricht kürzen.</translation>
     </message>
     <message>
-        <location line="-95"/>
-        <location line="+100"/>
+        <location line="-216"/>
+        <location line="+98"/>
+        <location line="+123"/>
         <source>Error encoding URI into QR Code.</source>
         <translation>Beim Enkodieren der URI in den QR-Code ist ein Fehler aufgetreten.</translation>
     </message>
     <message>
-        <location line="-54"/>
+        <location line="-164"/>
+        <location line="+106"/>
         <source>Could not save image!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+138"/>
+        <location line="+191"/>
         <location line="+46"/>
         <source>Could not create link.</source>
         <translation>Konnte Link nicht erzeugen.</translation>
@@ -735,7 +771,7 @@ Wollen Sie die Zahlung ausführen?</translation>
         <translation>Knoten</translation>
     </message>
     <message>
-        <location line="+291"/>
+        <location line="+295"/>
         <source>&amp;Overview</source>
         <translation>&amp;Übersicht</translation>
     </message>
@@ -1863,7 +1899,7 @@ Wenn Sie diese Transaktion ausversehen ausgeführt haben, können Sie die Coins 
         <translation>Sie haben die Coins erfolgreich den den Twitchnutzer gesendet</translation>
     </message>
     <message>
-        <location line="+285"/>
+        <location line="+287"/>
         <source>Overview</source>
         <translation>Überblick</translation>
     </message>
@@ -3326,9 +3362,14 @@ Any questions please visit us on discord https://discord.gg/t2MdnWQ</source>
 <context>
     <name>Printpaperbill</name>
     <message>
-        <location filename="../forms/Printpaperbill.qml" line="+69"/>
+        <location filename="../forms/Printpaperbill.qml" line="+71"/>
         <source>Print paper BitCash Dollar bills</source>
         <translation>BitCash Dollar Papiergeldscheine drucken</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>You can print your own face/logo on the bill!</source>
+        <translation>Sie können Ihr eigenes Gesicht/Logo mit aufdrucken!</translation>
     </message>
     <message>
         <location line="+24"/>
@@ -3342,8 +3383,14 @@ Any questions please visit us on discord https://discord.gg/t2MdnWQ</source>
     </message>
     <message>
         <location line="+19"/>
+        <location line="+39"/>
         <source>Save as picture...</source>
         <translation>Als Bild speichern...</translation>
+    </message>
+    <message>
+        <location line="-19"/>
+        <source>Open a picture of your own face/logo...</source>
+        <translation>Ein Bild mit Ihrem Gesicht/Logo öffnen...</translation>
     </message>
 </context>
 <context>
@@ -4790,7 +4837,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of &quot;100 satos
 <context>
     <name>SendConfirmationDialog2</name>
     <message>
-        <location filename="../bitcashgui.cpp" line="-2506"/>
+        <location filename="../bitcashgui.cpp" line="-2510"/>
         <location line="+5"/>
         <source>Yes</source>
         <translation>Ja</translation>
