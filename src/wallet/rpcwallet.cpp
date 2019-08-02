@@ -1717,47 +1717,14 @@ static UniValue sendaslinkwithprivkey(const JSONRPCRequest& request)
 
     if (request.fHelp || request.params.size() < 2 || request.params.size() > 9)
         throw std::runtime_error(
-            "sendaslinkwithprivkey \"privkey\" amount ( \"referenceline\" \"comment\" \"comment_to\" subtractfeefromamount replaceable conf_target \"estimate_mode\")\n"
+            "sendaslinkwithprivkey \"privkey\" withviewkey amount ( \"referenceline\" \"comment\" \"comment_to\" subtractfeefromamount replaceable conf_target \"estimate_mode\")\n"
             "\nSend an amount via link. Create a link which can be used to claim the coins. Sends the coins from the address associated to the private key.\n"
             + HelpRequiringPassphrase(pwallet) +
             "\nArguments:\n"
             "1. \"privkey\"            (string, required) The private key (see dumpprivkey)\n"
-            "2. \"amount\"             (numeric or string, required) The amount in " + CURRENCY_UNIT + " to send. eg 0.1\n"
-            "3. \"referenceline\"      (string, optional) A reference line used to store what the transaction is for. \n"
-            "                             This is part of the transaction.\n"
-            "4. \"comment\"            (string, optional) A comment used to store what the transaction is for. \n"
-            "                             This is not part of the transaction, just kept in your wallet.\n"
-            "5. \"comment_to\"         (string, optional) A comment to store the name of the person or organization \n"
-            "                             to which you're sending the transaction. This is not part of the \n"
-            "                             transaction, just kept in your wallet.\n"
-            "6. subtractfeefromamount  (boolean, optional, default=false) The fee will be deducted from the amount being sent.\n"
-            "                             The recipient will receive less bitcashs than you enter in the amount field.\n"
-            "7. replaceable            (boolean, optional) Allow this transaction to be replaced by a transaction with higher fees via BIP 125\n"
-            "8. conf_target            (numeric, optional) Confirmation target (in blocks)\n"
-            "9.\"estimate_mode\"      (string, optional, default=UNSET) The fee estimate mode, must be one of:\n"
-            "       \"UNSET\"\n"
-            "       \"ECONOMICAL\"\n"
-            "       \"CONSERVATIVE\"\n"
-            "\nResult:\n"
-            "\"txid\"                  (string) The transaction id.\n"
-            "\nExamples:\n"
-            + HelpExampleCli("sendaslinkwithprivkey", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" 0.1")
-            + HelpExampleCli("sendaslinkwithprivkey", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" 0.1 \"donation\" \"seans outpost\"")
-            + HelpExampleCli("sendaslinkwithprivkey", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" 0.1 \"\" \"\" true")
-            + HelpExampleRpc("sendaslinkwithprivkey", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" 0.1, \"donation\", \"seans outpost\"")
-        );
-    } else
-    {
+            "2. \"withviewkey\"        (boolean, required) True if the from address belonging to the private key is an address with a view key\n"
 
-    if (request.fHelp || request.params.size() < 2 || request.params.size() > 10)
-        throw std::runtime_error(
-            "sendaslinkwithprivkeyfromcurrency \"privkey\" amount ( currency \"referenceline\" \"comment\" \"comment_to\" subtractfeefromamount replaceable conf_target \"estimate_mode\")\n"
-            "\nSend an amount via link. Create a link which can be used to claim the coins. Sends the coins from the address associated to the private key.\n"
-            + HelpRequiringPassphrase(pwallet) +
-            "\nArguments:\n"
-            "1. \"privkey\"            (string, required) The private key (see dumpprivkey)\n"
-            "2. \"amount\"             (numeric or string, required) The amount in " + CURRENCY_UNIT + " to send. eg 0.1\n"
-            "3. currency               (numeric, optional, default=0) The currency account from which to send 0=BitCash 1=US Dollar\n"
+            "3. \"amount\"             (numeric or string, required) The amount in " + CURRENCY_UNIT + " to send. eg 0.1\n"
             "4. \"referenceline\"      (string, optional) A reference line used to store what the transaction is for. \n"
             "                             This is part of the transaction.\n"
             "5. \"comment\"            (string, optional) A comment used to store what the transaction is for. \n"
@@ -1776,10 +1743,47 @@ static UniValue sendaslinkwithprivkey(const JSONRPCRequest& request)
             "\nResult:\n"
             "\"txid\"                  (string) The transaction id.\n"
             "\nExamples:\n"
-            + HelpExampleCli("sendaslinkwithprivkeyfromcurrency", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" 0.1")
-            + HelpExampleCli("sendaslinkwithprivkeyfromcurrency", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" 0.1 0 \"donation\" \"seans outpost\"")
-            + HelpExampleCli("sendaslinkwithprivkeyfromcurrency", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" 0.1 0 \"\" \"\" true")
-            + HelpExampleRpc("sendaslinkwithprivkeyfromcurrency", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" 0.1, 0, \"donation\", \"seans outpost\"")
+            + HelpExampleCli("sendaslinkwithprivkey", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" true 0.1")
+            + HelpExampleCli("sendaslinkwithprivkey", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" true 0.1 \"donation\" \"seans outpost\"")
+            + HelpExampleCli("sendaslinkwithprivkey", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" true 0.1 \"\" \"\" true")
+            + HelpExampleRpc("sendaslinkwithprivkey", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" true 0.1, \"donation\", \"seans outpost\"")
+        );
+    } else
+    {
+
+    if (request.fHelp || request.params.size() < 2 || request.params.size() > 11)
+        throw std::runtime_error(
+            "sendaslinkwithprivkeyfromcurrency \"privkey\" withviewkey amount ( currency \"referenceline\" \"comment\" \"comment_to\" subtractfeefromamount replaceable conf_target \"estimate_mode\")\n"
+            "\nSend an amount via link. Create a link which can be used to claim the coins. Sends the coins from the address associated to the private key.\n"
+            + HelpRequiringPassphrase(pwallet) +
+            "\nArguments:\n"
+            "1. \"privkey\"            (string, required) The private key (see dumpprivkey)\n"
+            "2. \"withviewkey\"        (boolean, required) True if the from address belonging to the private key is an address with a view key\n"
+
+            "3. \"amount\"             (numeric or string, required) The amount in " + CURRENCY_UNIT + " to send. eg 0.1\n"
+            "4. currency               (numeric, optional, default=0) The currency account from which to send 0=BitCash 1=US Dollar\n"
+            "5. \"referenceline\"      (string, optional) A reference line used to store what the transaction is for. \n"
+            "                             This is part of the transaction.\n"
+            "6. \"comment\"            (string, optional) A comment used to store what the transaction is for. \n"
+            "                             This is not part of the transaction, just kept in your wallet.\n"
+            "7. \"comment_to\"         (string, optional) A comment to store the name of the person or organization \n"
+            "                             to which you're sending the transaction. This is not part of the \n"
+            "                             transaction, just kept in your wallet.\n"
+            "8. subtractfeefromamount  (boolean, optional, default=false) The fee will be deducted from the amount being sent.\n"
+            "                             The recipient will receive less bitcashs than you enter in the amount field.\n"
+            "9. replaceable            (boolean, optional) Allow this transaction to be replaced by a transaction with higher fees via BIP 125\n"
+            "10. conf_target            (numeric, optional) Confirmation target (in blocks)\n"
+            "11.\"estimate_mode\"      (string, optional, default=UNSET) The fee estimate mode, must be one of:\n"
+            "       \"UNSET\"\n"
+            "       \"ECONOMICAL\"\n"
+            "       \"CONSERVATIVE\"\n"
+            "\nResult:\n"
+            "\"txid\"                  (string) The transaction id.\n"
+            "\nExamples:\n"
+            + HelpExampleCli("sendaslinkwithprivkeyfromcurrency", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" true 0.1")
+            + HelpExampleCli("sendaslinkwithprivkeyfromcurrency", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" true 0.1 0 \"donation\" \"seans outpost\"")
+            + HelpExampleCli("sendaslinkwithprivkeyfromcurrency", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" true 0.1 0 \"\" \"\" true")
+            + HelpExampleRpc("sendaslinkwithprivkeyfromcurrency", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\" true 0.1, 0, \"donation\", \"seans outpost\"")
         );
 
     }
@@ -1804,8 +1808,13 @@ static UniValue sendaslinkwithprivkey(const JSONRPCRequest& request)
     CKey key = DecodeSecret(strSecret);
     if (!key.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key encoding");
 
+    bool withviewkey = false;
+    if (!request.params[1].isNull()) {
+        withviewkey = request.params[1].get_bool();
+    }
+
     // Amount
-    CAmount nAmount = AmountFromValue(request.params[1]);
+    CAmount nAmount = AmountFromValue(request.params[2]);
     if (nAmount <= 1)
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount for send");
 
@@ -1815,8 +1824,8 @@ static UniValue sendaslinkwithprivkey(const JSONRPCRequest& request)
     if (request.strMethod == "sendaslinkwithprivkeyfromcurrency")
     {
         addindex = 1;
-        if (!request.params[2].isNull()) {
-            const UniValue& mode = request.params[2];    
+        if (!request.params[3].isNull()) {
+            const UniValue& mode = request.params[3];    
             if (!mode.isNull())
                 currency = mode.get_int();    
         }
@@ -1824,33 +1833,33 @@ static UniValue sendaslinkwithprivkey(const JSONRPCRequest& request)
     SetCurrencyForDestination(dest, currency);
 
     std::string referenceline = "";
-    if (!request.params[2 + addindex].isNull() && !request.params[2 + addindex].get_str().empty())
-        referenceline = request.params[2 + addindex].get_str();
+    if (!request.params[4 + addindex].isNull() && !request.params[4 + addindex].get_str().empty())
+        referenceline = request.params[4 + addindex].get_str();
 
     // Wallet comments
     mapValue_t mapValue;
-    if (!request.params[3 + addindex].isNull() && !request.params[3 + addindex].get_str().empty())
-        mapValue["comment"] = request.params[3 + addindex].get_str();
+    if (!request.params[5 + addindex].isNull() && !request.params[5 + addindex].get_str().empty())
+        mapValue["comment"] = request.params[5 + addindex].get_str();
   
-    if (!request.params[4 + addindex].isNull() && !request.params[4 + addindex].get_str().empty())
-        mapValue["to"] = request.params[4 + addindex].get_str();
+    if (!request.params[6 + addindex].isNull() && !request.params[6 + addindex].get_str().empty())
+        mapValue["to"] = request.params[6 + addindex].get_str();
 
     bool fSubtractFeeFromAmount = false;
-    if (!request.params[5 + addindex].isNull()) {
-        fSubtractFeeFromAmount = request.params[5 + addindex].get_bool();
+    if (!request.params[7 + addindex].isNull()) {
+        fSubtractFeeFromAmount = request.params[7 + addindex].get_bool();
     }
 
     CCoinControl coin_control;
-    if (!request.params[6 + addindex].isNull()) {
-        coin_control.m_signal_bip125_rbf = request.params[6 + addindex].get_bool();
-    }
-
-    if (!request.params[7 + addindex].isNull()) {
-        coin_control.m_confirm_target = ParseConfirmTarget(request.params[7 + addindex]);
-    }
-
     if (!request.params[8 + addindex].isNull()) {
-        if (!FeeModeFromString(request.params[8 + addindex].get_str(), coin_control.m_fee_mode)) {
+        coin_control.m_signal_bip125_rbf = request.params[8 + addindex].get_bool();
+    }
+
+    if (!request.params[9 + addindex].isNull()) {
+        coin_control.m_confirm_target = ParseConfirmTarget(request.params[9 + addindex]);
+    }
+
+    if (!request.params[10 + addindex].isNull()) {
+        if (!FeeModeFromString(request.params[10 + addindex].get_str(), coin_control.m_fee_mode)) {
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid estimate_mode parameter");
         }
     }
@@ -1858,7 +1867,13 @@ static UniValue sendaslinkwithprivkey(const JSONRPCRequest& request)
     EnsureWalletIsUnlocked(pwallet);
 
     CPubKey pubkeyfrom = key.GetPubKey();
-    CTxDestination destfrom=GetDestinationForKey(pubkeyfrom, OutputType::LEGACY);
+    CTxDestination destfrom; 
+    if (withviewkey) {
+        destfrom = GetDestinationForKey(pubkeyfrom, OutputType::WITHVIEWKEY, key.GetViewKeyForPrivateKey().GetPubKey());
+    } else {
+        destfrom = GetDestinationForKey(pubkeyfrom, OutputType::LEGACY);
+    }
+
     assert(key.VerifyPubKey(pubkeyfrom));
 
     CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, coin_control, std::move(mapValue), {} /* fromAccount */, referenceline, true, destfrom, true, key, currency, false);
@@ -2407,7 +2422,7 @@ static UniValue sendtoaddresswithprivkey(const JSONRPCRequest& request)
     if (request.strMethod == "sendtoaddresswithprivkey")
     {
 
-    if (request.fHelp || request.params.size() < 2 || request.params.size() > 10)
+    if (request.fHelp || request.params.size() < 2 || request.params.size() > 11)
         throw std::runtime_error(
             "sendtoaddresswithprivkey \"privkey\" \"withviewkey\" \"address\" amount ( \"referenceline\" \"comment\" \"comment_to\" subtractfeefromamount replaceable conf_target \"estimate_mode\")\n"
             "\nSend an amount to a given address from the address associated to the private key. This command can also spend funds from a watch only address (watch addresses only work with the master private key).\n"
@@ -2443,7 +2458,7 @@ static UniValue sendtoaddresswithprivkey(const JSONRPCRequest& request)
     } else
     {
 
-    if (request.fHelp || request.params.size() < 3 || request.params.size() > 11)
+    if (request.fHelp || request.params.size() < 3 || request.params.size() > 12)
         throw std::runtime_error(
             "sendtoaddresswithprivkeyfromcurrency currency \"privkey\" \"withviewkey\" \"address\" amount ( \"referenceline\" \"comment\" \"comment_to\" subtractfeefromamount replaceable conf_target \"estimate_mode\")\n"
             "\nSend an amount to a given address from the address associated to the private key. This command can also spend funds from a watch only address (watch addresses only work with the master private key).\n"
@@ -7679,8 +7694,8 @@ static const CRPCCommand commands[] =
     { "wallet",             "sendaslinkfromcurrency",           &sendaslink,                    {"amount","currency", "comment","comment_to","subtractfeefromamount","replaceable","conf_target","estimate_mode"} },
     { "wallet",             "sendaslinkfromaddress",            &sendaslinkfromaddress,                    {"fromaddress", "amount",  "comment","comment_to","subtractfeefromamount","replaceable","conf_target","estimate_mode"} },
     { "wallet",             "sendaslinkfromcurrencyaddress",    &sendaslinkfromaddress,                    {"fromaddress", "amount", "currency", "comment","comment_to","subtractfeefromamount","replaceable","conf_target","estimate_mode"} },
-    { "wallet",             "sendaslinkwithprivkey",            &sendaslinkwithprivkey,                    {"privkey", "amount",  "comment","comment_to","subtractfeefromamount","replaceable","conf_target","estimate_mode"} },
-    { "wallet",             "sendaslinkwithprivkeyfromcurrency",&sendaslinkwithprivkey,                    {"privkey", "amount", "currency", "comment","comment_to","subtractfeefromamount","replaceable","conf_target","estimate_mode"} },
+    { "wallet",             "sendaslinkwithprivkey",            &sendaslinkwithprivkey,                    {"privkey", "withviewkey", "amount",  "comment","comment_to","subtractfeefromamount","replaceable","conf_target","estimate_mode"} },
+    { "wallet",             "sendaslinkwithprivkeyfromcurrency",&sendaslinkwithprivkey,                    {"privkey", "withviewkey", "amount", "currency", "comment","comment_to","subtractfeefromamount","replaceable","conf_target","estimate_mode"} },
     { "wallet",             "sendtoaddress",                    &sendtoaddress,                
  {"address","amount","comment","comment_to","subtractfeefromamount","replaceable","conf_target","estimate_mode"} },
     { "wallet",             "sendtoaddressandsignlater",        &sendtoaddressandsignlater,                
