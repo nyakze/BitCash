@@ -2292,7 +2292,7 @@ isminetype CWallet::IsMineForOneDestination(const CTxOut& txout, CTxDestination&
                 CKey privkey;
                 privkey.Set(vec.begin(),vec.end(),true);
                 CPubKey destinationPubKey=CalculateOnetimeDestPubKey(pubkey, privkey, false, txout.masterkeyisremoved);
-                if (onetimedestpubkey==destinationPubKey) {                
+                if (onetimedestpubkey==destinationPubKey) {      
                     if (havekey)
                         return ISMINE_SPENDABLE;
                     else
@@ -2332,6 +2332,7 @@ isminetype CWallet::IsMine(const CTxOut& txout, int nr)
             bool found = false;
             for (const std::pair<CTxDestination, CAddressBookData>& item : mapAddressBook) {
                 if (GetNonPrivateForDestination(item.first)) continue;
+
 
                 CPubKey pubkey = GetSecondPubKeyForDestination(item.first);
                 CPubKey viewpubkey = GetViewPubKeyForDestination(item.first);
@@ -2404,28 +2405,28 @@ isminetype CWallet::IsMine(const CTxOut& txout, int nr)
                             found = true;
                         }
                     }
-                }
-                if (!found) {
-                    //If we have the master private key we can decode the transactions for the Watch-Only addresses
-                    CPubKey recipientpubkey;
-                    std::string referenceline;
-                    if (GetRealAddressAndRefline(txout,recipientpubkey,referenceline,"",false))
-                    {
-                        CTxDestination dest=GetDestinationForKey(recipientpubkey, OutputType::LEGACY);
-                        CTxOut txout2=txout;
-                        txout2.scriptPubKey=GetScriptForRawPubKey(recipientpubkey);
-                        res=IsMineBasic(txout2,88);
-                        if (res & ISMINE_WATCH_ONLY) {
-                            std::string strLabel=mapAddressBook[dest].name;
-                            CTxDestination dest2=GetDestinationForKey(onetimedestpubkey, OutputType::LEGACY);
-                            if (!HaveWatchOnly(txout.scriptPubKey)) {
-                                AddWatchOnly(txout.scriptPubKey, 0 /* nCreateTime */);
-                            }
-                            if (IsValidDestination(dest2)) {
-                                SetAddressBook(dest2, strLabel, "receive");
-                            }
-                            res=IsMineBasic(txout,89);
+                }                
+            }
+            if (!found) {
+                //If we have the master private key we can decode the transactions for the Watch-Only addresses
+                CPubKey recipientpubkey;
+                std::string referenceline;
+                if (GetRealAddressAndRefline(txout,recipientpubkey,referenceline,"",false))
+                {
+                    CTxDestination dest=GetDestinationForKey(recipientpubkey, OutputType::LEGACY);
+                    CTxOut txout2=txout;
+                    txout2.scriptPubKey=GetScriptForRawPubKey(recipientpubkey);
+                    res = IsMineBasic(txout2,88);
+                    if (res & ISMINE_WATCH_ONLY) {
+                        std::string strLabel=mapAddressBook[dest].name;
+                        CTxDestination dest2=GetDestinationForKey(onetimedestpubkey, OutputType::LEGACY);
+                        if (!HaveWatchOnly(txout.scriptPubKey)) {
+                            AddWatchOnly(txout.scriptPubKey, 0 /* nCreateTime */);
                         }
+                        if (IsValidDestination(dest2)) {
+                            SetAddressBook(dest2, strLabel, "receive");
+                        }
+                        res=IsMineBasic(txout,89);
                     }
                 }
             }
@@ -4411,7 +4412,7 @@ bool CWallet::FillTxOutForTransaction(CTxOut& out, CPubKey recipientpubkey, std:
     out.recipientid2 = recipientpubkey[20];
     out.hasrecipientid = true;
     out.masterkeyisremoved = masterkeyisremoved;
-                 
+
     if (withviewkey) {   
         EncryptPrivateKey((unsigned char*)&out.randomPrivatKey, viewpubkey, vchSecret);
     } else
@@ -4758,10 +4759,22 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
                 if (nChange > 0)
                 {
                     // Fill a vout to ourself
-                    CTxOut newTxOut(nChange, scriptChange, 0);                    
-                    if (!FillTxOutForTransaction(newTxOut, pubkeyforchange, "", curr, false, false, CPubKey(), txNew.nVersion >= 6)){
-                        strFailReason = _("Can not get private key");
-                        return false;
+                    CTxOut newTxOut(nChange, scriptChange, 0);   
+                    if (onlyfromoneaddress) {
+                        //needs to send to address with viewkey (webwallet, mobile wallets)...
+                        if (!FillTxOutForTransaction(newTxOut, pubkeyforchange, "", curr, false,
+                                                    GetHasViewKeyForDestination(fromaddress), 
+                                                    GetViewPubKeyForDestination(fromaddress), 
+                                                    txNew.nVersion >= 6)){
+                            strFailReason = _("Can not get private key");
+                            return false;
+                        }
+
+                    } else {
+                        if (!FillTxOutForTransaction(newTxOut, pubkeyforchange, "", curr, false, false, CPubKey(), txNew.nVersion >= 6)){
+                            strFailReason = _("Can not get private key");
+                            return false;
+                        }
                     }
                   
                     // Never create dust outputs; if we would, just

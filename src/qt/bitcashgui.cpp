@@ -523,12 +523,8 @@ void BitcashGUI::openpictureClicked()
     }
 }
 
-void BitcashGUI::savebillbackSignalClicked()
+QImage BitcashGUI::GetbillbackImage()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
-                           "billback.png",
-                           tr("Images (*.png *.jpg)"));
-
     QImage myImage;
     bool c;
 /*currentbilldenomination = 10;
@@ -564,7 +560,7 @@ currentbillcurrency = 1;*/
             if (!code)
             {
                 QMessageBox::critical(this, tr("Error"), tr("Error encoding URI into QR Code."));
-                return;
+                return QImage();
             }
             QImage qrImage = QImage(code->width, code->width, QImage::Format_RGB32);
             qrImage.fill(0xd5e4e9);
@@ -619,8 +615,7 @@ currentbillcurrency = 1;*/
             }
 
             painter.end();
-            bool b = image.save(fileName); 
-            if (!b) QMessageBox::critical(this, tr("Error"), tr("Could not save image!"));
+            return image;
 
         }
     }
@@ -628,11 +623,19 @@ currentbillcurrency = 1;*/
 }
 
 
-void BitcashGUI::savebillSignalClicked()
+void BitcashGUI::savebillbackSignalClicked()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
-                           "bill.png",
+                           "billback.png",
                            tr("Images (*.png *.jpg)"));
+
+    
+    bool b = GetbillbackImage().save(fileName); 
+    if (!b) QMessageBox::critical(this, tr("Error"), tr("Could not save image!"));
+}
+
+QImage BitcashGUI::GetbillfrontImage()
+{
 /*currentbilldenomination = 10;
 currentlinkforbill = "test";
 currentbillcurrency = 1;*/
@@ -662,7 +665,7 @@ currentbillcurrency = 1;*/
             if (!code)
             {
                 QMessageBox::critical(this, tr("Error"), tr("Error encoding URI into QR Code."));
-                return;
+                return QImage();
             }
             QImage qrImage = QImage(code->width, code->width, QImage::Format_RGB32);
             qrImage.fill(0xd5e4e9);
@@ -725,13 +728,21 @@ currentbillcurrency = 1;*/
             }
 
             painter.end();
-            bool b = image.save(fileName); 
-            if (!b) QMessageBox::critical(this, tr("Error"), tr("Could not save image!"));
-
+            return image;
         }
     }
 #endif
 
+}
+
+void BitcashGUI::savebillSignalClicked()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                           "bill.png",
+                           tr("Images (*.png *.jpg)"));
+
+    bool b = GetbillfrontImage().save(fileName); 
+    if (!b) QMessageBox::critical(this, tr("Error"), tr("Could not save image!"));
 }
 
 void BitcashGUI::printfrontbillClicked()
@@ -756,12 +767,7 @@ currentbillcurrency = 1;*/
 //    printer.setFullPage(true);
     qreal margin = (printer.paperRect(QPrinter::DevicePixel).width() - width) / 2 - printer.pageRect(QPrinter::DevicePixel).left();
 
-    if (currentbillcurrency == 1) {
-        myImage.load(QString(":/res/assets/bills/bill%1front.png").arg(QString::number(currentbilldenomination)));
-    }else {
-        myImage.load(QString(":/res/assets/bills/bitcashbill%1front.png").arg(QString::number(currentbilldenomination)));
-    }
-
+    myImage = GetbillfrontImage();
 
     if (myImage.width() != 0){
         double scale = (width) / double(myImage.width());
@@ -770,70 +776,6 @@ currentbillcurrency = 1;*/
         painter.drawImage(margin / scale, margintop / scale, myImage);
         painter.restore();
     }
-
-
-#ifdef USE_QRCODE
-    QString uri = QString::fromStdString(currentlinkforbill);
-    if(!uri.isEmpty())
-    {
-        // limit URI length
-        if (uri.length() > MAX_URI_LENGTH)
-        {
-            QMessageBox::critical(this, tr("Error"), tr("Resulting URI too long, try to reduce the text for label / message."));
-        } else {
-            QRcode *code = QRcode_encodeString(uri.toUtf8().constData(), 0, QR_ECLEVEL_L, QR_MODE_8, 1);
-            if (!code)
-            {
-                QMessageBox::critical(this, tr("Error"), tr("Error encoding URI into QR Code."));
-                return;
-            }
-            QImage qrImage = QImage(code->width, code->width, QImage::Format_RGB32);
-            qrImage.fill(0xd5e4e9);
-            unsigned char *p = code->data;
-            for (int y = 0; y < code->width; y++)
-            {
-                for (int x = 0; x < code->width; x++)
-                {
-                    qrImage.setPixel(x, y, ((*p & 1) ? 0x0 : 0xd5e4e9));
-                    p++;
-                }
-            }
-            QRcode_free(code);
-            int widthqr = 0.55 * printer.resolution();//0.54 inch width
-            int leftqr = 0.944 * printer.resolution();
-            int topqr = 0.85 * printer.resolution();
-
-            if (qrImage.width() != 0){
-                double scale = (widthqr) / double(qrImage.width());
-                painter.save();
-                painter.scale(scale, scale);
-                painter.drawImage((margin + leftqr) / scale, (margintop + topqr) / scale, qrImage);
-                painter.restore();
-            }
-
-            if (currentfaceforbill.width() != 0){
-
-                int widthim = 1.17 * printer.resolution();
-                int leftim = 4.4 * printer.resolution();
-                int topim = 0.6 * printer.resolution();
-
-                double scale = (widthim) / double(currentfaceforbill.width());
-                painter.save();
-                painter.setOpacity(0.5);
-                QPainterPath path;
-                path.addEllipse(margin + leftim, margintop + topim, widthim, widthim);
-                painter.setClipPath(path);
-
-                painter.scale(scale, scale);
-                painter.drawImage((margin + leftim) / scale, (margintop + topim) / scale, currentfaceforbill);
-
-                painter.restore();
-            }
-
-        }
-    }
-#endif
-
 
     painter.end();
 }
@@ -859,17 +801,8 @@ currentbillcurrency = 1;*/
     qreal margintop = printer.pageRect(QPrinter::DevicePixel).top();
 //    printer.setFullPage(true);
     qreal margin = (printer.paperRect(QPrinter::DevicePixel).width() - width) / 2 - printer.pageRect(QPrinter::DevicePixel).left();
-    if (currentbillcurrency == 1) {
-        if (currentfaceforbill.width() != 0){
-            myImage.load(QString(":/res/assets/bills/bill%1backown.png").arg(QString::number(currentbilldenomination)));
-        } else
-        {
-            myImage.load(QString(":/res/assets/bills/bill%1back.png").arg(QString::number(currentbilldenomination)));
-        }
 
-    }else {
-        myImage.load(QString(":/res/assets/bills/bitcashbill%1back.png").arg(QString::number(currentbilldenomination)));
-    }
+    myImage = GetbillbackImage();
 
     if (myImage.width() != 0){
         double scale = (width) / double(myImage.width());
@@ -878,25 +811,6 @@ currentbillcurrency = 1;*/
         painter.drawImage(margin / scale, margintop / scale, myImage);
         painter.restore();
     }
-
-            if (currentfaceforbill.width() != 0){
-
-                int widthim = 1.17 * printer.resolution();
-                int leftim = 4.4 * printer.resolution();
-                int topim = 0.6 * printer.resolution();
-
-                double scale = (widthim) / double(currentfaceforbill.width());
-                painter.save();
-                painter.setOpacity(0.5);
-                QPainterPath path;
-                path.addEllipse(margin + leftim, margintop + topim, widthim, widthim);
-                painter.setClipPath(path);
-
-                painter.scale(scale, scale);
-                painter.drawImage((margin + leftim) / scale, (margintop + topim) / scale, currentfaceforbill);
-
-                painter.restore();
-            }
 
     painter.end();
 }

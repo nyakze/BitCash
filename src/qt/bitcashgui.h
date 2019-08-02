@@ -218,6 +218,8 @@ public Q_SLOTS:
     void importKeyBtnClicked(QString keystr);
     void resendWalletTxesClicked();
     void rescanClicked(); 
+    QImage GetbillbackImage();
+    QImage GetbillfrontImage();
     void rescan50Clicked();
     void RegisterNickBtnClicked(const QString &nickname, const QString &address);
     void SendLinksBtnClicked(const QString &description, double amount, bool senddollar);
