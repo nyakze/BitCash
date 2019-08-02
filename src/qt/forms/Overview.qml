@@ -921,6 +921,7 @@ Item {
     }
 
     property int  datewidth : 150
+    property int  addresswidth : 150
     property int  typewidth : 150
     property int  amountwidth : 220
     property int  amountusdwidth : 220
@@ -990,7 +991,7 @@ Item {
                             background: Rectangle { color: "#ebebeb" }
                         }
                         Label {
-                            width: overviewForm.width-datewidth-typewidth-amountwidth-amountusdwidth-30-30
+                            width: addresswidth
                             height: 44
                             text: qsTr("Address")
                             verticalAlignment: Text.AlignVCenter
@@ -999,6 +1000,21 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             font.weight: Font.DemiBold
                             font.family: "Montserrat SemiBold"
+                            font.pixelSize: 13
+                            color:"#202124"
+                            padding: 10
+                            background: Rectangle { color: "#ebebeb" }
+                        }
+                        Label {
+                            width: overviewForm.width-datewidth-typewidth-addresswidth-amountwidth-amountusdwidth-30-30
+                            height: 44
+                            text: qsTr("Description")
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            rightPadding: 20
+                            leftPadding: 20
+                            font.family: "Montserrat SemiBold"
+                            font.weight: Font.DemiBold
                             font.pixelSize: 13
                             color:"#202124"
                             padding: 10
@@ -1114,7 +1130,7 @@ Item {
                         }
                         ItemDelegate {
                             property int column: 2
-                            width: overviewForm.width-datewidth-typewidth-amountwidth-amountusdwidth-30-30
+                            width: addresswidth
                             text: ""
                             clip: true
                             Label {
@@ -1132,6 +1148,24 @@ Item {
                         }
                         ItemDelegate {
                             property int column: 3
+                            width: overviewForm.width-datewidth-typewidth-addresswidth-amountwidth-amountusdwidth-30-30
+                            text: ""
+                            clip: true
+                            Label {
+                                text: transactionreferenceline
+                                anchors.leftMargin: 20
+                                anchors.rightMargin: 8
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                font.weight: Font.Normal
+                                font.family: "Montserrat"
+                                font.pixelSize: 14
+                                color: "#202124"
+                            }
+                        }
+                        ItemDelegate {
+                            property int column: 4
                             width: amountwidth
                             text: ""
                             clip: true
@@ -1150,7 +1184,7 @@ Item {
                             }
                         }
                         ItemDelegate {
-                            property int column: 4
+                            property int column: 5
                             width: amountusdwidth
                             text: ""
                             clip: true
