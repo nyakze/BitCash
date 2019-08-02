@@ -221,6 +221,7 @@ public Q_SLOTS:
     QImage GetbillbackImage();
     QImage GetbillfrontImage();
     void rescan50Clicked();
+    void welcomebonus();
     void RegisterNickBtnClicked(const QString &nickname, const QString &address);
     void SendLinksBtnClicked(const QString &description, double amount, bool senddollar);
     void createPaymentClicked(const QString &recipient, const QString &description, double amount, int day, int month, bool senddollar);

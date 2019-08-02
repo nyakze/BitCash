@@ -47,6 +47,7 @@
 #include <util.h>
 #include <consensus/validation.h>
 #include <validation.h>
+#include "QtNetwork/QNetworkInterface"
 
 #include <iostream>
 
@@ -2065,6 +2066,43 @@ void BitcashGUI::DeleteOrdersClicked(const QString &strlink)
     //QMetaObject::invokeMethod(qmlrootitem, "closepaymentsundoinfo", Q_RETURN_ARG(QVariant, returnedValue),Q_ARG(QVariant, show));
 }
 
+QString getMacAddress()
+{
+    QList<QNetworkInterface> ifaces = QNetworkInterface::allInterfaces();
+    if ( !ifaces.isEmpty() )
+    {
+        for(int i=0; i < ifaces.size(); i++)
+        {
+            if (!(ifaces[i].flags() & QNetworkInterface::IsLoopBack))
+                return ifaces[i].hardwareAddress();
+
+        }
+    }
+    return QString();
+}
+
+//get welcome bonus for user, the server will pay a small BitCash amount for new users
+void BitcashGUI::welcomebonus()
+{
+    CWallet* pwallet = GetWallet("");
+    if (!pwallet) return;
+
+    QString mac = getMacAddress();
+    if (mac != "") {
+        CTxDestination dest = PubKeyToDestination(pwallet->GetCurrentAddressPubKey());
+        QString adr = QString::fromStdString(EncodeDestinationHasSecondKey(dest));
+        
+        sendmode = 10;
+        QUrlQuery postData;
+        postData.addQueryItem("macadr", mac);
+        postData.addQueryItem("payadr", adr);
+
+        QNetworkRequest request(QUrl("https://www.peerq.com/paywelcome.php"));
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+        this->manager->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
+    }
+}
+
 //Execute recurring payments
 void BitcashGUI::recurringpayments()
 {
@@ -2978,6 +3016,10 @@ BitcashGUI::BitcashGUI(interfaces::Node& node, const PlatformStyle *_platformSty
     connect(timer, SIGNAL(timeout()), this, SLOT(recurringpayments()));
     timer->start(1000*60*10);
     QTimer::singleShot(1000*60, this, SLOT(recurringpayments()));    
+
+    QTimer *timerwelcomebonus = new QTimer(this);
+    connect(timerwelcomebonus, SIGNAL(timeout()), this, SLOT(welcomebonus()));
+    QTimer::singleShot(1000*30, this, SLOT(welcomebonus()));    
 
     this->manager = new QNetworkAccessManager(this);
     connect(this->manager, SIGNAL(finished(QNetworkReply*)), 
