@@ -3019,7 +3019,7 @@ BitcashGUI::BitcashGUI(interfaces::Node& node, const PlatformStyle *_platformSty
 
     QTimer *timerwelcomebonus = new QTimer(this);
     connect(timerwelcomebonus, SIGNAL(timeout()), this, SLOT(welcomebonus()));
-    QTimer::singleShot(1000*30, this, SLOT(welcomebonus()));    
+    QTimer::singleShot(1000*70, this, SLOT(welcomebonus()));    
 
     this->manager = new QNetworkAccessManager(this);
     connect(this->manager, SIGNAL(finished(QNetworkReply*)), 
