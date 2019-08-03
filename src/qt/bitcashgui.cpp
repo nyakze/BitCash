@@ -2298,8 +2298,9 @@ void BitcashGUI::SendConfirmedToTwitterBtnClicked(const QString &destination, co
         uint64_t timestamp=currentDate.toMSecsSinceEpoch();
         int unit = walletModel->getOptionsModel()->getDisplayUnit();
         QVariant amountstr=BitcashUnits::format(unit, nAmount, false, BitcashUnits::separatorNever);       
-                                                
-        SetLink(strlink,description.toStdString(),amountstr.toString().toStdString(),0,timestamp, curr);
+                         
+        QString descriptionnew = "Twitter ("+ destination + ");" + description;                        
+        SetLink(strlink, descriptionnew.toStdString(),amountstr.toString().toStdString(),0,timestamp, curr);
 
         QDateTime qtimestamp;
         qtimestamp.setMSecsSinceEpoch(timestamp);
@@ -2307,7 +2308,7 @@ void BitcashGUI::SendConfirmedToTwitterBtnClicked(const QString &destination, co
         QVariant currencystr = tr("BITC");
         if (senddollar) currencystr = tr("USD");
 
-        QMetaObject::invokeMethod(qmlrootitem, "addbitcashexpresslink", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, s), Q_ARG(QVariant, description), Q_ARG(QVariant, amountstr), Q_ARG(QVariant, datestr), Q_ARG(QVariant, currencystr));
+        QMetaObject::invokeMethod(qmlrootitem, "addbitcashexpresslink", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, s), Q_ARG(QVariant, descriptionnew), Q_ARG(QVariant, amountstr), Q_ARG(QVariant, datestr), Q_ARG(QVariant, currencystr));
 
         QClipboard *p_Clipboard = QApplication::clipboard();
         p_Clipboard->setText(s);
@@ -2350,19 +2351,20 @@ void BitcashGUI::SendConfirmedToInstaBtnClicked(const QString &destination, cons
         QVariant returnedValue;
         const QString& s = QString::fromStdString(strlink);
         QDateTime currentDate = QDateTime::currentDateTime();
-        uint64_t timestamp=currentDate.toMSecsSinceEpoch();
+        uint64_t timestamp = currentDate.toMSecsSinceEpoch();
         int unit = walletModel->getOptionsModel()->getDisplayUnit();
-        QVariant amountstr=BitcashUnits::format(unit, nAmount, false, BitcashUnits::separatorNever);       
-                                                
-        SetLink(strlink,description.toStdString(),amountstr.toString().toStdString(),0,timestamp, curr);
-
+        QVariant amountstr = BitcashUnits::format(unit, nAmount, false, BitcashUnits::separatorNever);       
+                                           
+        QString descriptionnew = "Instagram ("+ destination + ");" + description;                        
+        SetLink(strlink, descriptionnew.toStdString(),amountstr.toString().toStdString(),0,timestamp, curr);
+     
         QDateTime qtimestamp;
         qtimestamp.setMSecsSinceEpoch(timestamp);
-        QVariant datestr=GUIUtil::dateTimeStr(qtimestamp);
+        QVariant datestr = GUIUtil::dateTimeStr(qtimestamp);
         QVariant currencystr = tr("BITC");
         if (senddollar) currencystr = tr("USD");
 
-        QMetaObject::invokeMethod(qmlrootitem, "addbitcashexpresslink", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, s), Q_ARG(QVariant, description), Q_ARG(QVariant, amountstr), Q_ARG(QVariant, datestr), Q_ARG(QVariant, currencystr));
+        QMetaObject::invokeMethod(qmlrootitem, "addbitcashexpresslink", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, s), Q_ARG(QVariant, descriptionnew), Q_ARG(QVariant, amountstr), Q_ARG(QVariant, datestr), Q_ARG(QVariant, currencystr));
 
         QClipboard *p_Clipboard = QApplication::clipboard();
         p_Clipboard->setText(s);
@@ -2408,8 +2410,9 @@ void BitcashGUI::SendConfirmedToTwitchBtnClicked(const QString &destination, con
         uint64_t timestamp=currentDate.toMSecsSinceEpoch();
         int unit = walletModel->getOptionsModel()->getDisplayUnit();
         QVariant amountstr=BitcashUnits::format(unit, nAmount, false, BitcashUnits::separatorNever);       
-                                                
-        SetLink(strlink,description.toStdString(),amountstr.toString().toStdString(),0,timestamp, curr);
+                             
+        QString descriptionnew = "Twitch ("+ destination + ");" + description;                        
+        SetLink(strlink, descriptionnew.toStdString(),amountstr.toString().toStdString(),0,timestamp, curr);                   
 
         QDateTime qtimestamp;
         qtimestamp.setMSecsSinceEpoch(timestamp);
@@ -2417,7 +2420,7 @@ void BitcashGUI::SendConfirmedToTwitchBtnClicked(const QString &destination, con
         QVariant currencystr = tr("BITC");
         if (senddollar) currencystr = tr("USD");
 
-        QMetaObject::invokeMethod(qmlrootitem, "addbitcashexpresslink", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, s), Q_ARG(QVariant, description), Q_ARG(QVariant, amountstr), Q_ARG(QVariant, datestr), Q_ARG(QVariant, currencystr));
+        QMetaObject::invokeMethod(qmlrootitem, "addbitcashexpresslink", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, s), Q_ARG(QVariant, descriptionnew), Q_ARG(QVariant, amountstr), Q_ARG(QVariant, datestr), Q_ARG(QVariant, currencystr));
 
         QClipboard *p_Clipboard = QApplication::clipboard();
         p_Clipboard->setText(s);
