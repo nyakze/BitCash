@@ -335,6 +335,13 @@
         <file>res/assets/bills/bitcashbill20back.png</file>
         <file>res/assets/bills/bitcashbill10front.png</file>
         <file>res/assets/bills/bitcashbill10back.png</file>
+        <file>res/assets/bills/bitcashbill1000backown.png</file>
+        <file>res/assets/bills/bitcashbill500backown.png</file>
+        <file>res/assets/bills/bitcashbill200backown.png</file>
+        <file>res/assets/bills/bitcashbill100backown.png</file>
+        <file>res/assets/bills/bitcashbill50backown.png</file>
+        <file>res/assets/bills/bitcashbill20backown.png</file>
+        <file>res/assets/bills/bitcashbill10backown.png</file>
         <file>forms/PrinteStatements.qml</file>
         <file>res/assets/Miscellaneous/arrowup.png</file>
         <file>res/assets/Miscellaneous/arrowdown.png</file>

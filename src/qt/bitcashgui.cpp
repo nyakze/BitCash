@@ -539,7 +539,12 @@ currentbillcurrency = 1;*/
             c = myImage.load(QString(":/res/assets/bills/bill%1back.png").arg(QString::number(currentbilldenomination)));
         }
     }else {
-        c = myImage.load(QString(":/res/assets/bills/bitcashbill%1back.png").arg(QString::number(currentbilldenomination)));
+        if (currentfaceforbill.width() != 0){
+            c = myImage.load(QString(":/res/assets/bills/bitcashbill%1backown.png").arg(QString::number(currentbilldenomination)));
+        } else
+        {
+            c = myImage.load(QString(":/res/assets/bills/bitcashbill%1back.png").arg(QString::number(currentbilldenomination)));
+        }
     }
 
     if (!c) QMessageBox::critical(this, tr("Error"), tr("Could not load bill image!"));

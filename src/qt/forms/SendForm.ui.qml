@@ -661,7 +661,7 @@ Item {
                     id: printBtn
                     height: 44
                     text: qsTr("Print paper bills")
-                    visible: false
+                    visible: true
                     spacing: 0
                     font.weight: Font.DemiBold
                     font.pixelSize: 14
