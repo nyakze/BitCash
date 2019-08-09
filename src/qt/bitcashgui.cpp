@@ -212,6 +212,20 @@ struct TTransaction {
     bool displayaddress;
 };
 
+void BitcashGUI::printTwitterBillClicked(QString strlink, int denomination, int curr)
+{
+    currentlinkforbill = strlink.toStdString();
+    currentbilldenomination = denomination;
+    currentbillcurrency = curr;
+
+    QVariant returnedValue;
+    if (currentbillcurrency == 1) {
+        QMetaObject::invokeMethod(qmlrootitem, "startprintingpaperbill", Q_RETURN_ARG(QVariant, returnedValue));
+    } else {
+        QMetaObject::invokeMethod(qmlrootitem, "startprintingpaperbillbitcash", Q_RETURN_ARG(QVariant, returnedValue));
+    }
+}
+
 void BitcashGUI::printStatementsBtnClicked(int month, int year, int currency)
 {
     std::list<TTransaction> transactions;
@@ -3019,6 +3033,8 @@ BitcashGUI::BitcashGUI(interfaces::Node& node, const PlatformStyle *_platformSty
                       this, SLOT(printbackbillClicked()));
     QObject::connect(qmlrootitem, SIGNAL(printstatementsignal(int, int, int)),
                       this, SLOT(printStatementsBtnClicked(int, int, int)));
+    QObject::connect(qmlrootitem, SIGNAL(printTwitterBillSignal(QString, int, int)),
+                      this, SLOT(printTwitterBillClicked(QString, int, int)));
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(recurringpayments()));

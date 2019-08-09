@@ -187,19 +187,38 @@ Item {
     property string senderstr
     property string recieverstr
     property string coinsstr
+    property string currency
+    property int currencyvalue
+    property double coinsstrdouble
+    property int coinsstrint
+
     function twitterlinkokay(msg)
     {     
         senderstr = receive.receivingnicknameEdit.text
         if (senderstr === "") senderstr = receive.receivingaddressEdit.text
         recieverstr = send.paytoEdittw.text
         coinsstr = send.amountEdittw.text
+        currency = "BITC";
+        currencyvalue = 0;
+        if (send.senddollarChecktw.checked) {
+            currency = "BITCD";
+            currencyvalue = 1;
+        }
+        coinsstrdouble = parseFloat(coinsstr)
+        coinsstrint = coinsstrdouble
 
         twittersuccess.twitteredit.text = "https://wallet.choosebitcash.com/twitterlogin.php?sender="+senderstr+"&receiver="+recieverstr+"&coins="+coinsstr
-        twittersuccess.text2.text = "Hey @"+recieverstr+", I just sent you "+coinsstr+" BITC to your Twitter account as a tip. Click here to claim it: "+twittersuccess.twitteredit.text
+        twittersuccess.text2.text = "Hey @"+recieverstr+", I just sent you "+coinsstr+" " + currency + " to your Twitter account as a tip. Click here to claim it: "+twittersuccess.twitteredit.text
         twittersuccess.text1.text = qsTr("Send the below link directly to the Twitter user so that he/she can claim the coins.\n\n You can even paste the link in public tweets or comments. No need to worry, no other user can gain access to these coins except for the intended Twitter user.\n\nIf you submitted this transaction by accident, you can claim the coins back with your link.")
         twittersuccess.sendcap.text = qsTr("Successfully sent the coins to the Twitter user")
         twittersuccess.sendicon.source = "../res/assets/Miscellaneous/twittericon.png"
         twittersuccess.visible = true
+        if (send.senddollarChecktw.checked) {
+            twittersuccess.printBtn.visible = (coinsstrdouble === 1 || coinsstrdouble === 2 || coinsstrdouble === 5 || coinsstrdouble === 10 || coinsstrdouble === 20 || coinsstrdouble === 50 || coinsstrdouble === 100);
+        } else
+        {
+            twittersuccess.printBtn.visible = (coinsstrdouble === 10 || coinsstrdouble === 20 || coinsstrdouble === 50 || coinsstrdouble === 100 || coinsstrdouble === 200 || coinsstrdouble === 500 || coinsstrdouble === 1000);
+        }
         send.clearsendentriesinterntw()
     }
 
@@ -209,6 +228,14 @@ Item {
         if (senderstr === "") senderstr = receive.receivingaddressEdit.text
         recieverstr = send.paytoEditin.text
         coinsstr = send.amountEditin.text
+        currency = "BITC";
+        currencyvalue = 0;
+        if (send.senddollarCheckin.checked) {
+            currency = "BITCD";
+            currencyvalue = 1;
+        }
+        coinsstrdouble = parseFloat(coinsstr)
+        coinsstrint = coinsstrdouble
 
         twittersuccess.twitteredit.text = "https://wallet.choosebitcash.com/instalogin.php?sender="+senderstr+"&receiver="+recieverstr+"&coins="+coinsstr
         twittersuccess.text2.text = "Hey @"+recieverstr+", I just sent you "+coinsstr+" BITC to your Instagram account as a tip. Click here to claim it: "+twittersuccess.twitteredit.text
@@ -216,6 +243,12 @@ Item {
         twittersuccess.sendcap.text = qsTr("Successfully sent the coins to the Instagram user")
         twittersuccess.sendicon.source = "../res/assets/Miscellaneous/instaicon.png"
         twittersuccess.visible = true
+        if (send.senddollarCheckin.checked) {
+            twittersuccess.printBtn.visible = (coinsstrdouble === 1 || coinsstrdouble === 2 || coinsstrdouble === 5 || coinsstrdouble === 10 || coinsstrdouble === 20 || coinsstrdouble === 50 || coinsstrdouble === 100);
+        } else
+        {
+            twittersuccess.printBtn.visible = (coinsstrdouble === 10 || coinsstrdouble === 20 || coinsstrdouble === 50 || coinsstrdouble === 100 || coinsstrdouble === 200 || coinsstrdouble === 500 || coinsstrdouble === 1000);
+        }
         send.clearsendentriesinternin()
     }
 
@@ -225,6 +258,14 @@ Item {
         if (senderstr === "") senderstr = receive.receivingaddressEdit.text
         recieverstr = send.paytoEditre.text
         coinsstr = send.amountEditre.text
+        currency = "BITC";
+        currencyvalue = 0;
+        if (send.senddollarCheckre.checked) {
+            currency = "BITCD";
+            currencyvalue = 1;
+        }
+        coinsstrdouble = parseFloat(coinsstr)
+        coinsstrint = coinsstrdouble
 
         twittersuccess.twitteredit.text = "https://wallet.choosebitcash.com/twitchlogin.php?sender="+senderstr+"&receiver="+recieverstr+"&coins="+coinsstr
         twittersuccess.text2.text = "Hey @"+recieverstr+", I just sent you "+coinsstr+" BITC to your Twitch account as a tip. Click here to claim it: "+twittersuccess.twitteredit.text
@@ -232,6 +273,12 @@ Item {
         twittersuccess.sendcap.text = qsTr("Successfully sent the coins to the Twitch user")
         twittersuccess.sendicon.source = "../res/assets/Miscellaneous/twitchicon.png"
         twittersuccess.visible = true
+        if (send.senddollarCheckre.checked) {
+            twittersuccess.printBtn.visible = (coinsstrdouble === 1 || coinsstrdouble === 2 || coinsstrdouble === 5 || coinsstrdouble === 10 || coinsstrdouble === 20 || coinsstrdouble === 50 || coinsstrdouble === 100);
+        } else
+        {
+            twittersuccess.printBtn.visible = (coinsstrdouble === 10 || coinsstrdouble === 20 || coinsstrdouble === 50 || coinsstrdouble === 100 || coinsstrdouble === 200 || coinsstrdouble === 500 || coinsstrdouble === 1000);
+        }
         send.clearsendentriesinternre()
     }
 
@@ -329,6 +376,7 @@ Item {
         transactions.setactualmonthandyearintern(month, year)
     }
 
+    signal printTwitterBillSignal(string link, int denomination, int currency)
     signal filtereditchangedsignal(string text)
     signal showtxdetails(int index)
     signal sendBtnSignal(string destination, string label, string description, double amount, bool substractfee)    
@@ -816,16 +864,6 @@ Item {
         onGenerateBillBitCashSignalintern: generateBillBitCashSignal(denomination)
     }
 
-    Printpaperbill
-    {
-        id: printpaperbill
-        onPrintfrontbillSignalintern: printfrontbillSignal()
-        onPrintbackbillSignalintern: printbackbillSignal()
-        onSavebillSignalintern: savebillSignal()
-        onSavebillbackSignalintern: savebillbackSignal()
-        onOpenpictureSignalintern: openpictureSignal()
-    }
-
     Backupwallet
     {
         id: backupwallet
@@ -844,6 +882,16 @@ Item {
     TwitterSuccess
     {
         id: twittersuccess
+        onPrintTwitterBillSignalIntern: printTwitterBillSignal(twittersuccess.twitteredit.text, coinsstrint, currencyvalue)
     }
 
+    Printpaperbill
+    {
+        id: printpaperbill
+        onPrintfrontbillSignalintern: printfrontbillSignal()
+        onPrintbackbillSignalintern: printbackbillSignal()
+        onSavebillSignalintern: savebillSignal()
+        onSavebillbackSignalintern: savebillbackSignal()
+        onOpenpictureSignalintern: openpictureSignal()
+    }
 }

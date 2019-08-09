@@ -15,7 +15,9 @@ Item {
     property alias sendicon: sendicon
     property alias sendcap: sendcap
     property int sendmode
+    property alias printBtn: printBtn
 
+    signal printTwitterBillSignalIntern()
 
     function displayerrormessageintern(msg) {
         errorlabel.text=msg
@@ -270,6 +272,7 @@ Rectangle{
             font.weight: Font.DemiBold
             font.pixelSize: 14
             leftPadding: 44
+            rightPadding: 20
             anchors.left: parent.left
             anchors.leftMargin: 36
             anchors.top: text2.bottom
@@ -278,6 +281,25 @@ Rectangle{
             font.capitalization: Font.MixedCase
             font.family: "Montserrat SemiBold"
             onClicked: item1.visible = false
+        }
+
+        Mybutton {
+            id: printBtn
+            x: 0
+            y: 474
+            height: 44
+            text: qsTr("Print paper bills")
+            anchors.top: text2.bottom
+            font.pixelSize: 14
+            font.family: "Montserrat SemiBold"
+            font.capitalization: Font.MixedCase
+            anchors.left: closeBtn2.right
+            anchors.topMargin: 15
+            font.weight: Font.DemiBold
+            leftPadding: 20
+            rightPadding: 20
+            anchors.leftMargin: 20
+            onClicked: printTwitterBillSignalIntern()
         }
 
 
