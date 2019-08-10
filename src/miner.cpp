@@ -509,6 +509,7 @@ void BlockAssembler::onlyUnconfirmed(CTxMemPool::setEntries& testSet)
 
 
 std::set<std::string> exchanges;
+std::set<std::string> exchangesall;
 
 const int numexchangeinfos = 5;
 std::string exchangeinfos[numexchangeinfos] = {
@@ -527,6 +528,26 @@ std::string pricewebsites[numwebsites] = {
   {"https://price.choosebitcash.com/priceinfo/getpriceinfo.php"},
   {"https://price2.choosebitcash.com/priceinfo/getpriceinfo.php"}
 };
+
+//These are the new info points, which return all available price information at once
+const int numallexchangeinfos = 5;
+std::string allexchangeinfos[numallexchangeinfos] = {
+  {"https://wallet.choosebitcash.com/priceallsources.txt"},
+  {"https://webwallet.choosebitcash.com/priceinfo/priceallsources.txt"},
+  {"https://cadkas.com/priceinfo/priceallsources.txt"},
+  {"https://price.choosebitcash.com/priceinfo/priceallsources.txt"},
+  {"https://price2.choosebitcash.com/priceinfo/priceallsources.txt"}
+};
+
+const int numallwebsites = 5;
+std::string allpricewebsites[numallwebsites] = {
+  {"https://wallet.choosebitcash.com/getallpriceinfo.php"},
+  {"https://webwallet.choosebitcash.com/priceinfo/getallpriceinfo.php"},
+  {"https://cadkas.com/priceinfo/getallpriceinfo.php"},
+  {"https://price.choosebitcash.com/priceinfo/getallpriceinfo.php"},
+  {"https://price2.choosebitcash.com/priceinfo/getallpriceinfo.php"}
+};
+
 
 
 CAmount pricecache = COIN;
@@ -563,6 +584,37 @@ void GetExchangesListFromWebserver()
         }
     }
 //std::cout << "count " << exchanges.size() << std::endl;
+
+//
+// also update the list which price sources which will return all available price information at once
+//
+    //we already know these exchanges
+    for (int i = 0; i < numallwebsites; i++) {
+        exchangesall.insert(allpricewebsites[i]);
+    }
+
+//std::cout << "count " << exchangesall.size() << std::endl;
+
+    //download a list of possible other exchanges
+    for (int i = 0; i < numallexchangeinfos; i++) {
+        std::string server = allexchangeinfos[i];
+        try {
+	    std::string priceinfo = getdocumentwithcurl(server);
+
+//std::cout << "c.priceinfo " << c.priceinfo << std::endl;
+
+	    std::istringstream stream(priceinfo);
+	    std::string line;
+	    while(std::getline(stream, line)) { 
+                exchangesall.insert(boost::algorithm::trim_copy(line));
+	    }
+
+        }
+        catch (std::exception& e)
+        {
+        }
+    }
+//std::cout << "count " << exchangesall.size() << std::endl;
 }
 
 CAmount GetPriceInformationFromWebserver(std::string server, std::string &price, std::string &signature, CAmount &secondprice)
@@ -698,8 +750,8 @@ std::string CheckPriceServer(int i)
     return outstr;   
 }
 
-
-CAmount GetPriceInformation(std::string &price, std::string &signature, std::string &price2, std::string &signature2, std::string &price3, std::string &signature3)
+//old model, request one price information from each server
+CAmount GetPriceInformationFromDifferentServers(std::string &price, std::string &signature, std::string &price2, std::string &signature2, std::string &price3, std::string &signature3)
 {   
     CAmount res = 0;
     int size = exchanges.size();
@@ -763,17 +815,106 @@ CAmount GetPriceInformation(std::string &price, std::string &signature, std::str
     return res;   
 }
 
+bool GetAllPriceInformationFromWebserver(std::string server, std::string &price, std::string &signature, std::string &price2, std::string &signature2, std::string &price3, std::string &signature3)
+{
+    try
+    {
+        std::string priceinfo = getdocumentwithcurl(server);
+
+        RSJresource  json (priceinfo);
+
+        std::string tempprice;
+        std::string tempsignature;
+        unsigned int pricecount = 0;
+        for (unsigned int i = 0; i < json.as_array().size(); i++)
+        {
+            tempprice = json[i]["priceinfo2"].as<std::string>("");
+            tempsignature = json[i]["signature2"].as<std::string>("");
+
+            bool isokay = true;
+            if (IsHex(tempprice)) { 
+                std::vector<unsigned char> txData(ParseHex(tempprice));
+                CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
+                try {
+                    CPriceInfo nPriceInfo;
+                    ssData >> nPriceInfo;
+                    if (nPriceInfo.prices[0] > 0) {
+                        isokay = true;
+                    } else isokay = false;
+                } catch (const std::exception&) {
+                    // Fall through.
+                    isokay = false;
+                }    
+            } else isokay = false;
+
+            if (isokay) {
+                if (pricecount == 0) {
+                    price = tempprice;
+                    signature = tempsignature;
+                } else
+                if (pricecount == 1) {
+                    price2 = tempprice;
+                    signature2 = tempsignature;
+                } else
+                if (pricecount == 2) {
+                    price3 = tempprice;
+                    signature3 = tempsignature;
+                }
+                pricecount ++;
+                if (pricecount == 3) {
+                    return true;
+                }
+            }
+        }
+    }
+    catch (std::exception& e)
+    {
+        return false;
+    }
+
+    return false;
+}
+
+
+//only one https:// request will return all available price information
+bool GetPriceInformation(std::string &price, std::string &signature, std::string &price2, std::string &signature2, std::string &price3, std::string &signature3)
+{   
+    bool res = false;
+    int size = exchangesall.size();
+    int count = 0;
+    int i1 = 0;
+    int i2 = 0;
+
+    while (res == false && count < size*4) {
+        int i = rand() % size;
+        i1 = i;
+        //get the i. element of exchanges
+    	std::set<std::string>::iterator it = exchangesall.begin();
+	    std::advance(it, i);
+        std::string ex = *it;
+
+        res = GetAllPriceInformationFromWebserver(ex, price, signature, price2, signature2, price3, signature3);
+
+        count++;
+    }
+
+    return res;   
+}
+
 bool AddPriceInformation(CBlock *pblock)
 {
-    std::string price="";
-    std::string signature="";
-    std::string price2="";
-    std::string signature2="";
-    std::string price3="";
-    std::string signature3="";
+    std::string price = "";
+    std::string signature = "";
+    std::string price2 = "";
+    std::string signature2 = "";
+    std::string price3 = "";
+    std::string signature3 = "";
 
-    if (GetPriceInformation(price, signature, price2, signature2, price3, signature3) <= 0) {
-        return 0;
+    if (!GetPriceInformation(price, signature, price2, signature2, price3, signature3)) {
+        //fall back to old modell
+        if (GetPriceInformationFromDifferentServers(price, signature, price2, signature2, price3, signature3) <= 0) {
+            return 0;
+        }
     }
 
     if (IsHex(price)) { 
@@ -819,15 +960,18 @@ bool AddPriceInformation(CBlock *pblock)
 
 bool AddPriceInformation(CBlockHeader *pblock)
 {
-    std::string price="";
-    std::string signature="";
-    std::string price2="";
-    std::string signature2="";
-    std::string price3="";
-    std::string signature3="";
+    std::string price = "";
+    std::string signature = "";
+    std::string price2 = "";
+    std::string signature2 = "";
+    std::string price3 = "";
+    std::string signature3 = "";
 
-    if (GetPriceInformation(price, signature, price2, signature2, price3, signature3) <= 0) {
-        return 0;
+    if (!GetPriceInformation(price, signature, price2, signature2, price3, signature3)) {
+        //fall back to old modell
+        if (GetPriceInformationFromDifferentServers(price, signature, price2, signature2, price3, signature3) <= 0) {
+            return 0;
+        }
     }
 
     if (IsHex(price)) { 
