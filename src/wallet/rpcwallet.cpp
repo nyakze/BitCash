@@ -7595,6 +7595,7 @@ extern UniValue dumpprivkey(const JSONRPCRequest& request); // in rpcdump.cpp
 extern UniValue dumpviewkey(const JSONRPCRequest& request); // in rpcdump.cpp
 extern UniValue importprivkey(const JSONRPCRequest& request);
 extern UniValue importviewkey(const JSONRPCRequest& request);
+extern UniValue importhexviewkey(const JSONRPCRequest& request);
 extern UniValue getaddressforprivkey(const JSONRPCRequest& request);
 extern UniValue getviewkeyforprivkey(const JSONRPCRequest& request);
 extern UniValue getaddressforpubkey(const JSONRPCRequest& request);
@@ -7663,6 +7664,7 @@ static const CRPCCommand commands[] =
     { "wallet",             "importmulti",                      &importmulti,                   {"requests","options"} },
     { "wallet",             "importprivkey",                    &importprivkey,                 {"privkey","label","rescan", "importchildkeys", "settomainkey", "address_type"} },
     { "wallet",             "importprivkeysfromfile",           &importprivkeysfromfile,        {"filename","label","rescan"} },
+    { "wallet",             "importhexviewkey",                 &importhexviewkey,              {"viewkey"} },
     { "wallet",             "importviewkey",                    &importviewkey,                 {"viewkey"} },
     { "wallet",             "importwallet",                     &importwallet,                  {"filename"} },
     { "wallet",             "importaddress",                    &importaddress,                 {"address","label","rescan","p2sh"} },

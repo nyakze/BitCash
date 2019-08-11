@@ -313,6 +313,57 @@ UniValue importviewkey(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
+UniValue importhexviewkey(const JSONRPCRequest& request)
+{
+    CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
+    if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
+        return NullUniValue;
+    }
+
+    if (request.fHelp || request.params.size() < 1 || request.params.size() > 1)
+        throw std::runtime_error(
+            "importhexviewkey \"viewkey\"\n"
+            "\nAdds a hex encoded view key to your wallet.\n"
+            "\nArguments:\n"
+            "1. \"viewkey\"          (string, required) The hex encoded view key\n"
+            "\nExamples:\n"
+            "\nImport the view key\n"
+            + HelpExampleCli("importhexviewkey", "\"mykey\"") +
+            "\nAs a JSON-RPC call\n"
+            + HelpExampleRpc("importhexviewkey", "\"mykey\"")
+        );
+
+
+    WalletRescanReserver reserver(pwallet);
+    {
+        LOCK2(cs_main, pwallet->cs_wallet);
+
+        EnsureWalletIsUnlocked(pwallet);
+
+        CKey key;
+        std::vector<unsigned char> vec(ParseHex(request.params[0].get_str()));
+        key.Set(vec.begin(),vec.end(),true);
+        if (!key.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key encoding");
+
+        CPubKey pubkey = key.GetPubKey();
+        assert(key.VerifyPubKey(pubkey));
+        CKeyID vchAddress = pubkey.GetID();
+        {
+            pwallet->MarkDirty();
+            // Don't throw error in case a key is already there
+            if (pwallet->HaveKey(vchAddress)) {
+                return NullUniValue;
+            }
+
+            if (!pwallet->AddKeyPubKey(key, pubkey)) {
+                throw JSONRPCError(RPC_WALLET_ERROR, "Error adding key to wallet");
+            }
+        }
+    }
+
+    return NullUniValue;
+}
+
 UniValue getaddressforprivkey(const JSONRPCRequest& request)
 {
     CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
