@@ -7598,6 +7598,7 @@ extern UniValue importviewkey(const JSONRPCRequest& request);
 extern UniValue getaddressforprivkey(const JSONRPCRequest& request);
 extern UniValue getviewkeyforprivkey(const JSONRPCRequest& request);
 extern UniValue getaddressforpubkey(const JSONRPCRequest& request);
+extern UniValue getaddressforviewpubkey(const JSONRPCRequest& request);
 extern UniValue importprivkeysfromfile(const JSONRPCRequest& request);
 extern UniValue importaddress(const JSONRPCRequest& request);
 extern UniValue importpubkey(const JSONRPCRequest& request);
@@ -7640,6 +7641,7 @@ static const CRPCCommand commands[] =
     { "wallet",             "getbalanceforcurrency",            &getbalance,                    {"currency", "account","minconf","include_watchonly"} },
     { "wallet",             "getaddressfornickname",            &getaddressfornickname,             {} },
     { "wallet",             "getaddressforpubkey",              &getaddressforpubkey,           {"pubkey"} },
+    { "wallet",             "getaddressforviewpubkey",          &getaddressforviewpubkey,       {"pubkey", "viewpubkey"} },
     { "wallet",             "getaddressforprivkey",             &getaddressforprivkey,          {"privkey", "address_type"} },
     { "wallet",             "getviewkeyforprivkey",             &getviewkeyforprivkey,          {"privkey"} },
     { "wallet",             "getchildkeyforprivkey",            &getchildkeyforprivkey,         {"privkey", "childkeynumber", "address_type"} },

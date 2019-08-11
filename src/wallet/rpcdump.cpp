@@ -402,6 +402,32 @@ UniValue getaddressforpubkey(const JSONRPCRequest& request)
     return str;
 }
 
+UniValue getaddressforviewpubkey(const JSONRPCRequest& request)
+{
+    CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
+    if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
+        return NullUniValue;
+    }
+
+    if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
+        throw std::runtime_error(
+            "getaddressforviewpubkey \"pubkey\" \"viewpubkey\"\n"
+            "\nReturns the public address for the public key and public viewkey.\n"
+            "\nArguments:\n"
+            "1. \"pubkey\"          (string, required) The public key\n"
+            "2. \"viewpubkey\"      (string, required) The public viewkey\n"
+            + HelpExampleCli("getaddressforviewpubkey", "\"mykey\" \"myviewkey\"") +
+            "\nAs a JSON-RPC call\n"
+            + HelpExampleRpc("getaddressforviewpubkey", "\"mykey\" \"myviewkey\"")
+        );
+
+    CPubKey pubkey(ParseHex(request.params[0].get_str()));
+    CPubKey viewpubkey(ParseHex(request.params[1].get_str()));
+    CTxDestination dest = GetDestinationForKey(pubkey, OutputType::WITHVIEWKEY, viewpubkey);
+    std::string str = EncodeDestinationHasSecondKey(dest);
+    return str;
+}
+
 UniValue getnumberofchildkeysforprivkey(const JSONRPCRequest& request)
 {
     CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
