@@ -262,9 +262,9 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state, bool fChe
                 return state.Invalid(false, REJECT_INVALID, "Bad transaction: the viewpubkey is invalid.");
 
 
-            uint256 hash=Hash(tx.vin[i].nickname.begin(),tx.vin[i].nickname.end(),tx.vin[i].address.begin(),tx.vin[i].address.end());
+            uint256 hash = Hash(tx.vin[i].nickname.begin(), tx.vin[i].nickname.end(), tx.vin[i].address.begin(), tx.vin[i].address.end());
 
-            if (checkdblnicks && GetNicknameForAddress(tx.vin[i].address).size()>0 && GetHashForAddress(tx.vin[i].address)!=blockhash && !nicknamemasterpubkey.Verify(hash, tx.vin[i].nicknamesig))                
+            if (checkdblnicks && GetAnyNicknameForAddress(tx.vin[i].address).size() > 0 && GetHashForAddress(tx.vin[i].address) != blockhash && !nicknamemasterpubkey.Verify(hash, tx.vin[i].nicknamesig))                
                 return state.Invalid(false, REJECT_INVALID, "Bad transaction: this address already has a nickname.");
     
             if (!tx.vin[i].address.Verify(hash, tx.vin[i].nicknamesig) && !nicknamemasterpubkey.Verify(hash, tx.vin[i].nicknamesig)) 
@@ -323,7 +323,7 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
 
             uint256 hash=Hash(tx.vin[i].nickname.begin(),tx.vin[i].nickname.end(),tx.vin[i].address.begin(),tx.vin[i].address.end());
 
-            if (GetNicknameForAddress(tx.vin[i].address).size()>0 && (!usehash || GetHashForAddress(tx.vin[i].address)!=blockhash) && !nicknamemasterpubkey.Verify(hash, tx.vin[i].nicknamesig))
+            if (GetAnyNicknameForAddress(tx.vin[i].address).size() > 0 && (!usehash || GetHashForAddress(tx.vin[i].address)!=blockhash) && !nicknamemasterpubkey.Verify(hash, tx.vin[i].nicknamesig))
                 return state.Invalid(false, REJECT_INVALID, "Bad transaction: this address already has a nickname."); 
     
             if (!tx.vin[i].address.Verify(hash, tx.vin[i].nicknamesig) && !nicknamemasterpubkey.Verify(hash, tx.vin[i].nicknamesig)) 

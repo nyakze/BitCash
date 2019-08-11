@@ -256,6 +256,26 @@ void OverviewPage::setClientModel(ClientModel *model)
     }
 }
 
+bool LocalGetNonPrivateForDestination(const CTxDestination& dest)
+{
+    bool key2 = false;
+
+    if (auto id = boost::get<CKeyID>(&dest)) {
+        key2=id->nonprivate;
+    }
+    return key2;   
+}
+
+bool LocalGetHasViewKeyForDestination(const CTxDestination& dest)
+{
+    bool key2 = false;
+
+    if (auto id = boost::get<CKeyID>(&dest)) {
+        key2=id->hasviewkey;
+    }
+    return key2;   
+}
+
 void OverviewPage::setWalletModel(WalletModel *model)
 {
     this->walletModel = model;
@@ -286,14 +306,14 @@ void OverviewPage::setWalletModel(WalletModel *model)
         updateWatchOnlyLabels(wallet.haveWatchOnly());
         connect(model, SIGNAL(notifyWatchonlyChanged(bool)), this, SLOT(updateWatchOnlyLabels(bool)));
 
-        CPubKey pkey=model->wallet().GetCurrentAddressPubKey();
-        CTxDestination dest=PubKeyToDestination(pkey);
+        CPubKey pkey = model->wallet().GetCurrentAddressPubKey();
+        CTxDestination dest = PubKeyToDestination(pkey);
 
         QVariant returnedValue;
         QVariant address, nick, transmodel;
-        std::string addr=EncodeDestination(dest,pkey);
-        address=QString::fromStdString(addr);
-        nick=QString::fromStdString(GetNicknameForAddress(pkey));
+        std::string addr = EncodeDestination(dest, pkey);
+        address = QString::fromStdString(addr);
+        nick = QString::fromStdString(GetNicknameForAddress(pkey, LocalGetNonPrivateForDestination(dest), LocalGetHasViewKeyForDestination(dest)));
 
         QMetaObject::invokeMethod(qmlrootitem, "setreceivingaddress", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, address), Q_ARG(QVariant, nick));
 

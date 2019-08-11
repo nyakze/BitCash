@@ -156,7 +156,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const interface
                     // Sent to Bitcash Address
                     sub.type = TransactionRecord::SendToAddress;
                     sub.address = EncodeDestinationHasSecondKey(wtx.txout_address[nOut]);                   
-                    std::string nick = GetNicknameForAddress(GetSecondPubKeyForDestination(wtx.txout_address[nOut]));
+                    std::string nick = GetNicknameForAddress(GetSecondPubKeyForDestination(wtx.txout_address[nOut]), GetNonPrivateForDestination(wtx.txout_address[nOut]), GetHasViewKeyForDestination(wtx.txout_address[nOut]));
                     if (nick.size()>0) sub.address = nick;
                 }
                 else

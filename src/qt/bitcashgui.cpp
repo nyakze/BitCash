@@ -1268,7 +1268,7 @@ void BitcashGUI::importKeyBtnClicked(QString keystr)
             CTxDestination dest = PubKeyToDestination(pubkey);
             std::string addr = EncodeDestination(dest, pubkey);
             address = QString::fromStdString(addr);
-            nick = QString::fromStdString(GetNicknameForAddress(pubkey));
+            nick = QString::fromStdString(GetNicknameForAddress(pubkey, GetNonPrivateForDestination(dest), GetHasViewKeyForDestination(dest)));
 
             QMetaObject::invokeMethod(qmlrootitem, "setreceivingaddress", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, address), Q_ARG(QVariant, nick));
         }

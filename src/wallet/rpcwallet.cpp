@@ -173,9 +173,6 @@ static UniValue createcoinbaseforaddress(const JSONRPCRequest& request)
     }
     int nHeight = request.params[1].get_int();
 
-    CPubKey addr = GetSecondPubKeyForDestination(destination);
-    bool nonprivate = GetNonPrivateForDestination(destination);
-
     // Create coinbase transaction.
     CMutableTransaction coinbaseTx;
     coinbaseTx.vin.resize(1);
@@ -656,8 +653,10 @@ static UniValue getcurrentnickname(const JSONRPCRequest& request)
     if (!pwallet->IsLocked()) {
         pwallet->TopUpKeyPool();
     }
+
+    CTxDestination destination = PubKeyToDestination(pwallet->GetCurrentAddressPubKey());
   
-    return GetNicknameForAddress(pwallet->GetCurrentAddressPubKey());
+    return GetNicknameForAddress(GetSecondPubKeyForDestination(destination), GetNonPrivateForDestination(destination), GetHasViewKeyForDestination(destination));
 }
 
 static UniValue getnicknameforaddress(const JSONRPCRequest& request)
@@ -688,7 +687,7 @@ static UniValue getnicknameforaddress(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Error: Invalid address");
     }
 
-    return GetNicknameForAddress(GetSecondPubKeyForDestination(destination));
+    return GetNicknameForAddress(GetSecondPubKeyForDestination(destination), GetNonPrivateForDestination(destination), GetHasViewKeyForDestination(destination));
 }
 
 static UniValue getaddressfornickname(const JSONRPCRequest& request)

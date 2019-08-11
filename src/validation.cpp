@@ -583,8 +583,8 @@ static bool CheckInputsFromMempoolAndCache(const CTransaction& tx, CValidationSt
                 return state.Invalid(false, REJECT_INVALID, "This nickname already exists.");
             if (!txin.address.IsValid())
                 return state.Invalid(false, REJECT_INVALID, "This address is invalid.");
-            uint256 hash=Hash(txin.nickname.begin(),txin.nickname.end(),txin.address.begin(),txin.address.end());
-            if (GetNicknameForAddress(txin.address).size()>0  && !nicknamemasterpubkey.Verify(hash, txin.nicknamesig))
+            uint256 hash = Hash(txin.nickname.begin(), txin.nickname.end(), txin.address.begin(), txin.address.end());
+            if (GetAnyNicknameForAddress(txin.address).size() > 0  && !nicknamemasterpubkey.Verify(hash, txin.nicknamesig))
                 return state.Invalid(false, REJECT_INVALID, "This address already has a nickname.");
 
 

@@ -51,7 +51,8 @@ bool SetNickname(const std::string& strName,const CPubKey address, uint256 hash,
 bool DeleteNickname(const std::string& strName,const CPubKey address);
 CPubKey GetAddressForNickname(std::string nick);
 bool DoesNicknameExist(std::string nick);
-std::string GetNicknameForAddress(CPubKey address);
+std::string GetNicknameForAddress(CPubKey address, bool isnonprivate, bool hasviewkey);
+std::string GetAnyNicknameForAddress(CPubKey address);
 uint256 GetHashForNickname(std::string nick);
 bool IsNonPrivateNickname(std::string nick);
 uint256 GetHashForAddress(CPubKey address);
