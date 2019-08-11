@@ -364,6 +364,35 @@ UniValue importhexviewkey(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
+UniValue encodesecret(const JSONRPCRequest& request)
+{
+    CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
+    if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
+        return NullUniValue;
+    }
+
+    if (request.fHelp || request.params.size() < 1 || request.params.size() > 1)
+        throw std::runtime_error(
+            "encodesecret \"key\"\n"
+            "\nEncodes a hex encoded private key.\n"
+            "\nArguments:\n"
+            "1. \"key\"          (string, required) The hex encoded key\n"
+            "\nExamples:\n"
+            "\nImport the view key\n"
+            + HelpExampleCli("encodesecret", "\"mykey\"") +
+            "\nAs a JSON-RPC call\n"
+            + HelpExampleRpc("encodesecret", "\"mykey\"")
+        );
+
+
+    CKey key;
+    std::vector<unsigned char> vec(ParseHex(request.params[0].get_str()));
+    key.Set(vec.begin(),vec.end(),true);
+    if (!key.IsValid()) throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key encoding");
+
+    return EncodeSecret(key);
+}
+
 UniValue getaddressforprivkey(const JSONRPCRequest& request)
 {
     CWallet * const pwallet = GetWalletForJSONRPCRequest(request);

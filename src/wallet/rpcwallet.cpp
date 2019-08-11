@@ -2424,7 +2424,7 @@ static UniValue sendtoaddresswithprivkey(const JSONRPCRequest& request)
     if (request.fHelp || request.params.size() < 2 || request.params.size() > 11)
         throw std::runtime_error(
             "sendtoaddresswithprivkey \"privkey\" \"withviewkey\" \"address\" amount ( \"referenceline\" \"comment\" \"comment_to\" subtractfeefromamount replaceable conf_target \"estimate_mode\")\n"
-            "\nSend an amount to a given address from the address associated to the private key. This command can also spend funds from a watch only address (watch addresses only work with the master private key).\n"
+            "\nSend an amount to a given address from the address associated to the private key. This command can also spend funds from a watch only address (watch addresses only work with a viewkey).\n"
             + HelpRequiringPassphrase(pwallet) +
             "\nArguments:\n"
             "1. \"privkey\"            (string, required) The private key (see dumpprivkey)\n"
@@ -2460,7 +2460,7 @@ static UniValue sendtoaddresswithprivkey(const JSONRPCRequest& request)
     if (request.fHelp || request.params.size() < 3 || request.params.size() > 12)
         throw std::runtime_error(
             "sendtoaddresswithprivkeyfromcurrency currency \"privkey\" \"withviewkey\" \"address\" amount ( \"referenceline\" \"comment\" \"comment_to\" subtractfeefromamount replaceable conf_target \"estimate_mode\")\n"
-            "\nSend an amount to a given address from the address associated to the private key. This command can also spend funds from a watch only address (watch addresses only work with the master private key).\n"
+            "\nSend an amount to a given address from the address associated to the private key. This command can also spend funds from a watch only address (watch addresses only work with a viewkey).\n"
             + HelpRequiringPassphrase(pwallet) +
             "\nArguments:\n"
             "1. currency               (numeric, required) The currency account from which to send 0=BitCash 1=US Dollar\n"
@@ -2592,7 +2592,7 @@ static UniValue sendtoaddressandsignlater(const JSONRPCRequest& request)
     if (request.fHelp || request.params.size() < 4 || request.params.size() > 11)
         throw std::runtime_error(
             "sendtoaddressandsignlater currency \"fromaddress\" \"address\" amount ( \"referenceline\" \"comment\" \"comment_to\" subtractfeefromamount replaceable conf_target \"estimate_mode\")\n"
-            "\nCreate an unsigned transaction to send an amount to a given address from a given address. It will return the created HEX encoded transaction as well as all HEX encoded input transactions. This command can also spend funds from a watch only address (watch addresses only work with the master private key).\n"
+            "\nCreate an unsigned transaction to send an amount to a given address from a given address. It will return the created HEX encoded transaction as well as all HEX encoded input transactions. This command can also spend funds from a watch only address (watch addresses only work with a viewkey).\n"
             + HelpRequiringPassphrase(pwallet) +
             "\nArguments:\n"
             "1. currency               (numeric, required) The currency account from which to send 0=BitCash 1=US Dollar\n"
@@ -7595,6 +7595,7 @@ extern UniValue dumpviewkey(const JSONRPCRequest& request); // in rpcdump.cpp
 extern UniValue importprivkey(const JSONRPCRequest& request);
 extern UniValue importviewkey(const JSONRPCRequest& request);
 extern UniValue importhexviewkey(const JSONRPCRequest& request);
+extern UniValue encodesecret(const JSONRPCRequest& request);
 extern UniValue getaddressforprivkey(const JSONRPCRequest& request);
 extern UniValue getviewkeyforprivkey(const JSONRPCRequest& request);
 extern UniValue getaddressforpubkey(const JSONRPCRequest& request);
@@ -7634,6 +7635,7 @@ static const CRPCCommand commands[] =
     { "wallet",             "dumpprivkey",                      &dumpprivkey,                   {"address"}  },
     { "wallet",             "dumpviewkey",                      &dumpviewkey,                   {"address"}  },
     { "wallet",             "dumpwallet",                       &dumpwallet,                    {"filename"} },
+    { "wallet",             "encodesecret",                     &encodesecret,                  {"key"} },
     { "wallet",             "encryptwallet",                    &encryptwallet,                 {"passphrase"} },
     { "wallet",             "getaddressinfo",                   &getaddressinfo,                {"address"} },
     { "wallet",             "getbalance",                       &getbalance,                    {"account","minconf","include_watchonly"} },
