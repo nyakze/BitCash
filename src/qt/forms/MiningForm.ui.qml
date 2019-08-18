@@ -381,7 +381,7 @@ Item {
         height: 44
         text: qsTr("Information before you start")
         anchors.top: stopanimation.bottom
-        anchors.topMargin: 0
+        anchors.topMargin: -20
         anchors.right: startminingbutton.right
         anchors.rightMargin: 0
         font.pixelSize: 16
@@ -505,9 +505,9 @@ Item {
         anchors.left: infowhitebox.left
         anchors.top: infowhitebox.top
         anchors.right: infowhitebox.right
-        anchors.leftMargin: 15
-        anchors.rightMargin: 15
-        anchors.topMargin: 15
+        anchors.leftMargin: 36
+        anchors.rightMargin: 36
+        anchors.topMargin: 36
         text: qsTr("Welcome to Bitcash mining!  The one click solution for mining!  \n\nBefore we begin, please take note of a few requirements for mining:\n\nNvidia video card\n980 model or later (minimum 3gb vram)\n\nNow select your pool, click start mining and begin receiving bitcash rewards directly to your wallet!  \n\nThat's it!  Leave you wallet open while mining and enjoy!  \n\nThe algo your mining is X16R, and you miner is Trex miner which has been integrated into the bitcash wallet.\n\nAny questions please visit us on discord https://discord.gg/t2MdnWQ")
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         font.pixelSize: 14
@@ -524,7 +524,7 @@ Item {
         anchors.top: mininginfotext.bottom
         anchors.topMargin: 20
         anchors.left: infowhitebox.left
-        anchors.leftMargin: 15
+        anchors.leftMargin: 36
         font.pixelSize: 16
         leftPadding: 40
         rightPadding: 20
