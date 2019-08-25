@@ -410,6 +410,9 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
 
 /** Functions for validating blocks and updating the block tree */
 
+/** Check if the price information and price signature is valid*/
+bool CheckPriceInfo(CPriceInfo &nPriceInfo, std::vector<unsigned char> &priceSig, int &numberOfPrivatekeyUsed);
+
 /** Context-independent validity checks */
 bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true, bool fCheckMerkleRoot = true, bool checkdblnicknames = false);
 

@@ -622,7 +622,7 @@ CAmount GetPriceInformationFromWebserver(std::string server, std::string &price,
     secondprice = 0;
     try
     {
-	std::string priceinfo = getdocumentwithcurl(server);
+        std::string priceinfo = getdocumentwithcurl(server);
 
         RSJresource  json (priceinfo);
 
@@ -639,17 +639,24 @@ CAmount GetPriceInformationFromWebserver(std::string server, std::string &price,
     {
         return 0;
     }
-    if (IsHex(price)) { 
+    if (IsHex(price) && IsHex(signature)) {
         std::vector<unsigned char> txData(ParseHex(price));
         CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
         try {
             CPriceInfo nPriceInfo;
             ssData >> nPriceInfo;
-            if (nPriceInfo.prices[0] > 0) {
-                if (nPriceInfo.priceCount > 1 && nPriceInfo.prices[1] > 0)
+
+            std::vector<unsigned char> priceSig;//Signature for nPriceInfo
+            priceSig = ParseHex(signature);
+            int privkeyusednr;
+
+            if (CheckPriceInfo(nPriceInfo, priceSig, privkeyusednr)) {
                 secondprice = nPriceInfo.prices[1];
                 return nPriceInfo.prices[0];
-            } else return 0;
+            } else {
+                return 0;
+            }
+
         } catch (const std::exception&) {
             // Fall through.
             return 0;
@@ -668,8 +675,8 @@ CAmount GetOnePriceInformation(std::string &price, std::string &signature, CAmou
     while (res <= 0 && count < size*4) {
         int i = rand() % size;
         //get the i. element of exchanges
-	std::set<std::string>::iterator it = exchanges.begin();
-	std::advance(it, i);
+        std::set<std::string>::iterator it = exchanges.begin();
+        std::advance(it, i);
         std::string ex = *it;
 
         res = GetPriceInformationFromWebserver(ex, price, signature, secondprice);
@@ -721,13 +728,18 @@ std::string CheckPriceServer(int i)
 
         bool found = false;
         CAmount price1, price2;
-        if (IsHex(price)) { 
+        if (IsHex(price) && IsHex(signature)) { 
             std::vector<unsigned char> txData(ParseHex(price));
             CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
             try {
                 CPriceInfo nPriceInfo;
                 ssData >> nPriceInfo;
-                if (nPriceInfo.priceCount >= 2 && nPriceInfo.prices[0] > 0 && nPriceInfo.prices[1] > 0) {
+
+                std::vector<unsigned char> priceSig;//Signature for nPriceInfo
+                priceSig = ParseHex(signature);
+                int privkeyusednr;
+
+                if (CheckPriceInfo(nPriceInfo, priceSig, privkeyusednr)) {
                     price1 = nPriceInfo.prices[0];
                     price2 = nPriceInfo.prices[1];
                     found = true;
@@ -817,10 +829,10 @@ CAmount GetPriceInformationFromDifferentServers(std::string &price, std::string 
 
 bool GetAllPriceInformationFromWebserver(std::string server, std::string &price, std::string &signature, std::string &price2, std::string &signature2, std::string &price3, std::string &signature3)
 {
+    std::set<int> privatekeyused;
     try
     {
         std::string priceinfo = getdocumentwithcurl(server);
-
         RSJresource  json (priceinfo);
 
         std::string tempprice;
@@ -832,14 +844,25 @@ bool GetAllPriceInformationFromWebserver(std::string server, std::string &price,
             tempsignature = json[i]["signature2"].as<std::string>("");
 
             bool isokay = true;
-            if (IsHex(tempprice)) { 
+            if (IsHex(tempprice) && IsHex(tempsignature)) { 
                 std::vector<unsigned char> txData(ParseHex(tempprice));
                 CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
                 try {
                     CPriceInfo nPriceInfo;
                     ssData >> nPriceInfo;
-                    if (nPriceInfo.prices[0] > 0) {
-                        isokay = true;
+
+                    std::vector<unsigned char> priceSig;//Signature for nPriceInfo
+                    priceSig = ParseHex(tempsignature);
+                    int privkeyusednr;
+
+                    if (CheckPriceInfo(nPriceInfo, priceSig, privkeyusednr)) {
+                        std::set<int>::iterator it = privatekeyused.find(privkeyusednr);
+	                    if(it != privatekeyused.end()) {
+                            isokay = false;
+                        } else {
+                            privatekeyused.insert(privkeyusednr);
+                            isokay = true;
+                        }
                     } else isokay = false;
                 } catch (const std::exception&) {
                     // Fall through.
@@ -894,7 +917,6 @@ bool GetPriceInformation(std::string &price, std::string &signature, std::string
         std::string ex = *it;
 
         res = GetAllPriceInformationFromWebserver(ex, price, signature, price2, signature2, price3, signature3);
-
         count++;
     }
 

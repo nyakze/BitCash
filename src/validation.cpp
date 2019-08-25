@@ -3358,12 +3358,96 @@ static bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state,
     return true;
 }
 
+bool CheckPriceInfo(CPriceInfo &nPriceInfo, std::vector<unsigned char> &priceSig, int &numberOfPrivatekeyUsed)
+{
+    int64_t nTime = std::max(chainActive.Tip()->GetMedianTimePast() + 1, GetAdjustedTime());
+
+    //Verify signature of price information
+    CHashWriter ss(SER_GETHASH, 0);
+    ss << nPriceInfo;
+
+    uint256 pricehash = ss.GetHash();
+
+    if  (nPriceInfo.priceCount != 2) {
+       return false;
+    }
+
+    for (int i = 0; i < nPriceInfo.priceCount; i++) {
+        if (nPriceInfo.priceCount >= 2)
+        {
+            if (nPriceInfo.prices[0] < nPriceInfo.prices[1])    {
+                return false;
+            }
+        }
+        if  (nPriceInfo.prices[i]==0) {
+            return false;
+        }
+    } 
+
+
+    if (
+        (!(nPriceInfo.priceTime == nTime || (nPriceInfo.priceTime > nTime && nPriceInfo.priceTime <= nTime + MAX_PRICETIME_DIFFERENCE) 
+                                                      || (nPriceInfo.priceTime < nTime && nPriceInfo.priceTime + MAX_PRICETIME_DIFFERENCE >= nTime)))) {
+        return false;
+    }
+
+    if (!hasconvertedpubkeys) {
+        
+        pricepubkey1 = CPubKey(ParseHex(PricePubKey1));
+	    pricepubkey2 = CPubKey(ParseHex(PricePubKey2));
+    	pricepubkey3 = CPubKey(ParseHex(PricePubKey3));
+    	pricepubkey4 = CPubKey(ParseHex(PricePubKey4));
+    	pricepubkey5 = CPubKey(ParseHex(PricePubKey5));
+    	pricepubkey6 = CPubKey(ParseHex(PricePubKey6));
+    	pricepubkey7 = CPubKey(ParseHex(PricePubKey7));
+    	pricepubkey8 = CPubKey(ParseHex(PricePubKey8));
+    	pricepubkey9 = CPubKey(ParseHex(PricePubKey9));
+    	pricepubkey10 = CPubKey(ParseHex(PricePubKey10));
+    	pricepubkey11 = CPubKey(ParseHex(PricePubKey11));
+    	pricepubkey12 = CPubKey(ParseHex(PricePubKey12));
+    	pricepubkey13 = CPubKey(ParseHex(PricePubKey13));
+    	pricepubkey14 = CPubKey(ParseHex(PricePubKey14));
+
+        hasconvertedpubkeys=true;
+    }
+
+    for (int i = 0; i < nPriceInfo.priceCount; i++) {
+        if (nPriceInfo.prices[i]<=0)
+        return false;
+    }
+
+    int i1 = 0;
+ 	int i2 = 0;
+   	int i3 = 0;
+    if (pricepubkey1.Verify(pricehash, priceSig)) i1 = 1;else
+    if (pricepubkey2.Verify(pricehash, priceSig)) i1 = 2;else
+    if (pricepubkey3.Verify(pricehash, priceSig)) i1 = 3;else
+    if (pricepubkey4.Verify(pricehash, priceSig)) i1 = 4;else
+    if (pricepubkey5.Verify(pricehash, priceSig)) i1 = 5;else
+    if (pricepubkey6.Verify(pricehash, priceSig)) i1 = 6;else
+    if (pricepubkey7.Verify(pricehash, priceSig)) i1 = 7;else
+    if (pricepubkey8.Verify(pricehash, priceSig)) i1 = 8;else
+    if (pricepubkey9.Verify(pricehash, priceSig)) i1 = 9;else
+    if (pricepubkey10.Verify(pricehash, priceSig)) i1 = 10;else
+    if (pricepubkey11.Verify(pricehash, priceSig)) i1 = 11;else
+    if (pricepubkey12.Verify(pricehash, priceSig)) i1 = 12;else
+    if (pricepubkey13.Verify(pricehash, priceSig)) i1 = 13;else
+    if (pricepubkey14.Verify(pricehash, priceSig)) i1 = 14;
+    if (i1 <= 0) {
+       //Invalid price signature
+       return false;
+    }
+    numberOfPrivatekeyUsed = i1;
+
+    return true;
+}
+
 bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW, bool fCheckMerkleRoot, bool checkdblnicknames)
 {
     // These are checks that are independent of context.
 
     CPubKey nicknamemasterpubkey(ParseHex(NicknameMasterPubKey));
-    uint256 blockhash=block.GetHash();
+    uint256 blockhash = block.GetHash();
 
     if (block.fChecked)
         return true;
@@ -3504,20 +3588,20 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
 
     if (!hasconvertedpubkeys) {
         
-        pricepubkey1=CPubKey(ParseHex(PricePubKey1));
-	pricepubkey2=CPubKey(ParseHex(PricePubKey2));
-	pricepubkey3=CPubKey(ParseHex(PricePubKey3));
-	pricepubkey4=CPubKey(ParseHex(PricePubKey4));
-	pricepubkey5=CPubKey(ParseHex(PricePubKey5));
-	pricepubkey6=CPubKey(ParseHex(PricePubKey6));
-	pricepubkey7=CPubKey(ParseHex(PricePubKey7));
-	pricepubkey8=CPubKey(ParseHex(PricePubKey8));
-	pricepubkey9=CPubKey(ParseHex(PricePubKey9));
-	pricepubkey10=CPubKey(ParseHex(PricePubKey10));
-	pricepubkey11=CPubKey(ParseHex(PricePubKey11));
-	pricepubkey12=CPubKey(ParseHex(PricePubKey12));
-	pricepubkey13=CPubKey(ParseHex(PricePubKey13));
-	pricepubkey14=CPubKey(ParseHex(PricePubKey14));
+        pricepubkey1 = CPubKey(ParseHex(PricePubKey1));
+    	pricepubkey2 = CPubKey(ParseHex(PricePubKey2));
+    	pricepubkey3 = CPubKey(ParseHex(PricePubKey3));
+	    pricepubkey4 = CPubKey(ParseHex(PricePubKey4));
+    	pricepubkey5 = CPubKey(ParseHex(PricePubKey5));
+    	pricepubkey6 = CPubKey(ParseHex(PricePubKey6));
+    	pricepubkey7 = CPubKey(ParseHex(PricePubKey7));
+    	pricepubkey8 = CPubKey(ParseHex(PricePubKey8));
+    	pricepubkey9 = CPubKey(ParseHex(PricePubKey9));
+    	pricepubkey10 = CPubKey(ParseHex(PricePubKey10));
+    	pricepubkey11 = CPubKey(ParseHex(PricePubKey11));
+	    pricepubkey12 = CPubKey(ParseHex(PricePubKey12));
+	    pricepubkey13 = CPubKey(ParseHex(PricePubKey13));
+    	pricepubkey14 = CPubKey(ParseHex(PricePubKey14));
 
         hasconvertedpubkeys=true;
     }
@@ -3535,66 +3619,66 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         int i1 = 0;
  	int i2 = 0;
 	int i3 = 0;
-        if (pricepubkey1.Verify(pricehash, block.priceSig)) i1=1;else
-        if (pricepubkey2.Verify(pricehash, block.priceSig)) i1=2;else
-        if (pricepubkey3.Verify(pricehash, block.priceSig)) i1=3;else
-        if (pricepubkey4.Verify(pricehash, block.priceSig)) i1=4;else
-        if (pricepubkey5.Verify(pricehash, block.priceSig)) i1=5;else
-        if (pricepubkey6.Verify(pricehash, block.priceSig)) i1=6;else
-        if (pricepubkey7.Verify(pricehash, block.priceSig)) i1=7;else
-        if (pricepubkey8.Verify(pricehash, block.priceSig)) i1=8;else
-        if (pricepubkey9.Verify(pricehash, block.priceSig)) i1=9;else
-        if (pricepubkey10.Verify(pricehash, block.priceSig)) i1=10;else
-        if (pricepubkey11.Verify(pricehash, block.priceSig)) i1=11;else
-        if (pricepubkey12.Verify(pricehash, block.priceSig)) i1=12;else
-        if (pricepubkey13.Verify(pricehash, block.priceSig)) i1=13;else
-        if (pricepubkey14.Verify(pricehash, block.priceSig)) i1=14;
-        if (i1<=0) {
+        if (pricepubkey1.Verify(pricehash, block.priceSig)) i1 = 1;else
+        if (pricepubkey2.Verify(pricehash, block.priceSig)) i1 = 2;else
+        if (pricepubkey3.Verify(pricehash, block.priceSig)) i1 = 3;else
+        if (pricepubkey4.Verify(pricehash, block.priceSig)) i1 = 4;else
+        if (pricepubkey5.Verify(pricehash, block.priceSig)) i1 = 5;else
+        if (pricepubkey6.Verify(pricehash, block.priceSig)) i1 = 6;else
+        if (pricepubkey7.Verify(pricehash, block.priceSig)) i1 = 7;else
+        if (pricepubkey8.Verify(pricehash, block.priceSig)) i1 = 8;else
+        if (pricepubkey9.Verify(pricehash, block.priceSig)) i1 = 9;else
+        if (pricepubkey10.Verify(pricehash, block.priceSig)) i1 = 10;else
+        if (pricepubkey11.Verify(pricehash, block.priceSig)) i1 = 11;else
+        if (pricepubkey12.Verify(pricehash, block.priceSig)) i1 = 12;else
+        if (pricepubkey13.Verify(pricehash, block.priceSig)) i1 = 13;else
+        if (pricepubkey14.Verify(pricehash, block.priceSig)) i1 = 14;
+        if (i1 <= 0) {
             //Invalid price signature
             return state.DoS(100, false, REJECT_INVALID, "bad-price-signature", false, "No valid signature for price information.");
         }
 
-	if (pricepubkey1.Verify(pricehash2, block.priceSig2)) i2=1;else
-        if (pricepubkey2.Verify(pricehash2, block.priceSig2)) i2=2;else
-        if (pricepubkey3.Verify(pricehash2, block.priceSig2)) i2=3;else
-        if (pricepubkey4.Verify(pricehash2, block.priceSig2)) i2=4;else
-        if (pricepubkey5.Verify(pricehash2, block.priceSig2)) i2=5;else
-        if (pricepubkey6.Verify(pricehash2, block.priceSig2)) i2=6;else
-        if (pricepubkey7.Verify(pricehash2, block.priceSig2)) i2=7;else
-        if (pricepubkey8.Verify(pricehash2, block.priceSig2)) i2=8;else
-        if (pricepubkey9.Verify(pricehash2, block.priceSig2)) i2=9;else
-        if (pricepubkey10.Verify(pricehash2, block.priceSig2)) i2=10;else
-        if (pricepubkey11.Verify(pricehash2, block.priceSig2)) i2=11;else
-        if (pricepubkey12.Verify(pricehash2, block.priceSig2)) i2=12;else
-        if (pricepubkey13.Verify(pricehash2, block.priceSig2)) i2=13;else
-        if (pricepubkey14.Verify(pricehash2, block.priceSig2)) i2=14;
-        if (i2<=0) {
+	if (pricepubkey1.Verify(pricehash2, block.priceSig2)) i2 = 1;else
+        if (pricepubkey2.Verify(pricehash2, block.priceSig2)) i2 = 2;else
+        if (pricepubkey3.Verify(pricehash2, block.priceSig2)) i2 = 3;else
+        if (pricepubkey4.Verify(pricehash2, block.priceSig2)) i2 = 4;else
+        if (pricepubkey5.Verify(pricehash2, block.priceSig2)) i2 = 5;else
+        if (pricepubkey6.Verify(pricehash2, block.priceSig2)) i2 = 6;else
+        if (pricepubkey7.Verify(pricehash2, block.priceSig2)) i2 = 7;else
+        if (pricepubkey8.Verify(pricehash2, block.priceSig2)) i2 = 8;else
+        if (pricepubkey9.Verify(pricehash2, block.priceSig2)) i2 = 9;else
+        if (pricepubkey10.Verify(pricehash2, block.priceSig2)) i2 = 10;else
+        if (pricepubkey11.Verify(pricehash2, block.priceSig2)) i2 = 11;else
+        if (pricepubkey12.Verify(pricehash2, block.priceSig2)) i2 = 12;else
+        if (pricepubkey13.Verify(pricehash2, block.priceSig2)) i2 = 13;else
+        if (pricepubkey14.Verify(pricehash2, block.priceSig2)) i2 = 14;
+        if (i2 <= 0) {
             //Invalid price signature
             return state.DoS(100, false, REJECT_INVALID, "bad-price-signature2", false, "No valid signature for price information.");
         }
 
-        if (pricepubkey1.Verify(pricehash3, block.priceSig3)) i3=1;else
-        if (pricepubkey2.Verify(pricehash3, block.priceSig3)) i3=2;else
-        if (pricepubkey3.Verify(pricehash3, block.priceSig3)) i3=3;else
-        if (pricepubkey4.Verify(pricehash3, block.priceSig3)) i3=4;else
-        if (pricepubkey5.Verify(pricehash3, block.priceSig3)) i3=5;else
-        if (pricepubkey6.Verify(pricehash3, block.priceSig3)) i3=6;else
-        if (pricepubkey7.Verify(pricehash3, block.priceSig3)) i3=7;else
-        if (pricepubkey8.Verify(pricehash3, block.priceSig3)) i3=8;else
-        if (pricepubkey9.Verify(pricehash3, block.priceSig3)) i3=9;else
-        if (pricepubkey10.Verify(pricehash3, block.priceSig3)) i3=10;else
-        if (pricepubkey11.Verify(pricehash3, block.priceSig3)) i3=11;else
-        if (pricepubkey12.Verify(pricehash3, block.priceSig3)) i3=12;else
-        if (pricepubkey13.Verify(pricehash3, block.priceSig3)) i3=13;else
-        if (pricepubkey14.Verify(pricehash3, block.priceSig3)) i3=14;
-        if (i3<=0) {
+        if (pricepubkey1.Verify(pricehash3, block.priceSig3)) i3 = 1;else
+        if (pricepubkey2.Verify(pricehash3, block.priceSig3)) i3 = 2;else
+        if (pricepubkey3.Verify(pricehash3, block.priceSig3)) i3 = 3;else
+        if (pricepubkey4.Verify(pricehash3, block.priceSig3)) i3 = 4;else
+        if (pricepubkey5.Verify(pricehash3, block.priceSig3)) i3 = 5;else
+        if (pricepubkey6.Verify(pricehash3, block.priceSig3)) i3 = 6;else
+        if (pricepubkey7.Verify(pricehash3, block.priceSig3)) i3 = 7;else
+        if (pricepubkey8.Verify(pricehash3, block.priceSig3)) i3 = 8;else
+        if (pricepubkey9.Verify(pricehash3, block.priceSig3)) i3 = 9;else
+        if (pricepubkey10.Verify(pricehash3, block.priceSig3)) i3 = 10;else
+        if (pricepubkey11.Verify(pricehash3, block.priceSig3)) i3 = 11;else
+        if (pricepubkey12.Verify(pricehash3, block.priceSig3)) i3 = 12;else
+        if (pricepubkey13.Verify(pricehash3, block.priceSig3)) i3 = 13;else
+        if (pricepubkey14.Verify(pricehash3, block.priceSig3)) i3 = 14;
+        if (i3 <= 0) {
             //Invalid price signature
             return state.DoS(100, false, REJECT_INVALID, "bad-price-signature3", false, "No valid signature for price information.");
         }
     
         if (i1 == i2 || i2 == i3 || i1 == i3) {
             //Invalid price signature
-            return state.DoS(100, false, REJECT_INVALID, "bad-price-signature4", false, "The blocks need 3 price information from 3 different exchanges.");
+            return state.DoS(100, false, REJECT_INVALID, "bad-price-signature4", false, "The blocks needs 3 price information from 3 different exchanges.");
         }
     }
 
