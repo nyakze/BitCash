@@ -302,6 +302,7 @@ crypto_libbitcash_crypto_a_SOURCES = \
   crypto/shavite.c \
   crypto/simd.c \
   crypto/skein.c \
+  crypto/tiger.cpp \
   crypto/sph_hamsi.c \
   crypto/sph_hamsi_helper.c \
   crypto/sph_fugue.c \
@@ -330,6 +331,7 @@ crypto_libbitcash_crypto_a_SOURCES = \
   crypto/sph_whirlpool.h \
   crypto/sph_sha2.h \
   crypto/sph_types.h \
+  crypto/sph_tiger.h \
   crypto/sha512.cpp \
   crypto/sha512.h
 

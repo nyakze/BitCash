@@ -1899,6 +1899,9 @@ int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Para
     if (pindexPrev != nullptr && pindexPrev->nTime > params.X16RTIME)
        nVersion |= hashx16Ractive;
 
+    if (pindexPrev != nullptr && pindexPrev->nTime > params.X16RV2TIME)
+       nVersion |= hashx16rv2active;
+
     return nVersion;
 }
 
@@ -3453,11 +3456,16 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         return true;
 
     const bool x16ractive = (isX16Ractive(block.nVersion));
+    const bool x16rv2active = (isX16RV2active(block.nVersion));
 
     //Check that the correct block version with the hashing algo is used     
     if (x16ractive != block.nTime > consensusParams.X16RTIME) {
         return state.DoS(100, false, REJECT_INVALID, "bad-hash-algo", false, "The wrong hashing algo is used for the block.");
     }
+    if (x16rv2active != block.nTime > consensusParams.X16RV2TIME) {
+        return state.DoS(100, false, REJECT_INVALID, "bad-hash-algo", false, "The wrong hashing algo is used for the block.");
+    }
+
 
     // Check that the header is valid (particularly PoW).  This is mostly
     // redundant with the call in AcceptBlockHeader.

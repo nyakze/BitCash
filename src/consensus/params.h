@@ -94,6 +94,7 @@ struct Params {
     uint64_t NONPRIVACY;
     uint64_t STABLETIME;
     uint64_t MASTERKEYDUMMY;
+    uint64_t X16RV2TIME;
 };
 } // namespace Consensus
 

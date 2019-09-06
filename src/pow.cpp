@@ -38,20 +38,27 @@ PoW GetNextWorkRequiredBug(const CBlockIndex* pindexLast, const CBlockHeader* pb
     }
 
     pindex = pindexLast;
+    bool foundx16rv2 = false;
 
-    //reset Difficulty when the X16R fork happens
     for (unsigned int nCountBlocks = 0; nCountBlocks <= nPastBlocks-1; nCountBlocks++) {
-
+            
        int64_t newtime = pindexLast->nTime;
 
        if(nCountBlocks != nPastBlocks) {
-            assert(pindex->pprev); // should never fail
-            pindex = pindex->pprev;
+           assert(pindex->pprev); // should never fail
+           pindex = pindex->pprev;
        }
 
-       if (newtime > params.X16RTIME-5*60 && pindex->nTime <= params.X16RTIME+5*60) {
-           return PoW{bnPowLimit.GetCompact(),pindexLast->nEdgeBits};
+       if (newtime > params.X16RTIME - 5 * 60 && pindex->nTime <= params.X16RTIME + 5 * 60) {
+          return PoW{bnPowLimit.GetCompact(),pindexLast->nEdgeBits};
        }
+       if (pindex->nTime > params.X16RV2TIME) {
+          foundx16rv2 = true;
+       }
+    }
+
+    if (pblock != nullptr && pblock->nTime > params.X16RV2TIME && pblock->nTime <= params.X16RV2TIME + 60 * 60 && !foundx16rv2) {
+        return PoW{bnPowLimit.GetCompact(),pindexLast->nEdgeBits};
     }
 
     arith_uint256 bnTargetNow = arith_uint256().SetCompact(pindexLast->nBits);    
@@ -146,7 +153,7 @@ PoW GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pbloc
 {
     assert(pindexLast != nullptr);
 
-    if (pindexLast->nHeight<=52063) return GetNextWorkRequiredBug(pindexLast,pblock,params);
+    if (pindexLast->nHeight <= 52063) return GetNextWorkRequiredBug(pindexLast, pblock, params);
 
     const CBlockIndex *pindex = pindexLast;
     int64_t nPastBlocks = 24;
@@ -159,6 +166,7 @@ PoW GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pbloc
     }
 
     pindex = pindexLast;
+    bool foundx16rv2 = false;
 
     for (unsigned int nCountBlocks = 0; nCountBlocks <= nPastBlocks-1; nCountBlocks++) {
             
@@ -169,9 +177,15 @@ PoW GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pbloc
            pindex = pindex->pprev;
        }
 
-       if (newtime > params.X16RTIME-5*60 && pindex->nTime <= params.X16RTIME+5*60) {
+       if (newtime > params.X16RTIME - 5 * 60 && pindex->nTime <= params.X16RTIME + 5 * 60) {
           return PoW{bnPowLimit.GetCompact(),pindexLast->nEdgeBits};
        }
+       if (pindex->nTime > params.X16RV2TIME) {
+          foundx16rv2 = true;
+       }
+    }
+    if (pblock != nullptr && pblock->nTime > params.X16RV2TIME && pblock->nTime <= params.X16RV2TIME + 60 * 60 && !foundx16rv2) {
+        return PoW{bnPowLimit.GetCompact(),pindexLast->nEdgeBits};
     }
 
     pindex = pindexLast;
@@ -181,9 +195,9 @@ PoW GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pbloc
     int64_t lasttime,currenttime,virtualtimespan;
     arith_uint256 LastbnTarget;    
 
-    virtualtimespan=0;
-    lasttime=0;
-    currenttime=0;
+    virtualtimespan = 0;
+    lasttime = 0;
+    currenttime = 0;
 
     //Calculate a "virtual time span". 
     //This means we try to calculate how much time it would have taken to calculate all 24 block, 
@@ -207,13 +221,13 @@ PoW GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pbloc
             {
                 if (times[i]<=times[nCountBlocks])
                 {
-                   for (int e=i+1;e<=nCountBlocks-1;e++){
+                   for (int e = i + 1;e <= nCountBlocks - 1; e++){
                        times[e]=(times[nCountBlocks]-times[i])/((nCountBlocks)-(i))+times[i];
                    }                   
                    break;
-                } else if (i==0)
+                } else if (i == 0)
                 {
-                   for (int e=0;e<=nCountBlocks-1;e++){
+                   for (int e = 0; e <= nCountBlocks-1; e++){
                        times[e]=times[nCountBlocks];
                    }
                 }
@@ -314,3 +328,4 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params&
 
     return true;
 }
+

@@ -128,8 +128,12 @@ int64_t UpdateTime(CBlockHeader* pblock, const Consensus::Params& consensusParam
     if (pblock->nTime > consensusParams.X16RTIME)
        pblock->nVersion |= hashx16Ractive;
 
+
+    if (pblock->nTime > consensusParams.X16RV2TIME)
+       pblock->nVersion |= hashx16rv2active;
     return nNewTime - nOldTime;
 }
+
 
 BlockAssembler::Options::Options() {
     blockMinFeeRate = CFeeRate(DEFAULT_BLOCK_MIN_TX_FEE);
@@ -295,6 +299,8 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlockWithScriptPubKey(c
        pblock->nVersion |= stabletimeactive;
     if (pblock->nTime > chainparams.GetConsensus().X16RTIME)
        pblock->nVersion |= hashx16Ractive;
+    if (pblock->nTime > chainparams.GetConsensus().X16RV2TIME)
+       pblock->nVersion |= hashx16rv2active;
 
     // -regtest only: allow overriding block.nVersion with
     // -blockversion=N to test forking scenarios
@@ -399,6 +405,8 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(interfaces::Walle
        pblock->nVersion |= stabletimeactive;
     if (pblock->nTime > chainparams.GetConsensus().X16RTIME)
        pblock->nVersion |= hashx16Ractive;
+    if (pblock->nTime > chainparams.GetConsensus().X16RV2TIME)
+       pblock->nVersion |= hashx16rv2active;
 
     // -regtest only: allow overriding block.nVersion with
     // -blockversion=N to test forking scenarios

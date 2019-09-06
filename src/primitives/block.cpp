@@ -9,6 +9,12 @@
 #include <tinyformat.h>
 #include <utilstrencodings.h>
 #include <crypto/common.h>
+#include <streams.h>
+
+bool isX16RV2active(int32_t nVersion)
+{
+    return ((nVersion & hashx16rv2active) != 0);
+}
 
 bool isX16Ractive(int32_t nVersion)
 {
@@ -38,6 +44,11 @@ CAmount CBlockHeader::GetPriceinCurrency(unsigned char currency) const
 
 uint256 CBlockHeader::GetHash() const
 {
+    if ( isX16RV2active(this->nVersion)) {                
+        CDataStream ssBlock(SER_NETWORK, PROTOCOL_VERSION);
+        ssBlock << *this;        
+        return HashX16RV2(ssBlock.begin(), ssBlock.end(), hashPrevBlock);
+    } else
     if ( isX16Ractive(this->nVersion)) {
         return HashX16R(BEGIN(nVersion), END(nNonce), hashPrevBlock);
     } else {
