@@ -19,6 +19,7 @@ extern bool userefline;
 extern bool usenonprivacy;
 extern bool usecurrency;
 extern bool usemasterkeydummyonly;
+extern bool usepriceranges;
 
 /** An outpoint - a combination of a transaction hash and an index n into its vout */
 class COutPoint
@@ -328,6 +329,7 @@ inline void UnserializeTransaction(TxType& tx, Stream& s) {
     usenonprivacy = tx.nVersion >= 4;
     usecurrency = tx.nVersion >= 5;
     usemasterkeydummyonly = tx.nVersion >= 6;
+    usepriceranges = tx.nVersion >= 7;
     /* Try to read the vin. In case the dummy is there, this will be read as an empty vector. */
     s >> tx.vin;
     if (tx.vin.size() == 0 && fAllowWitness) {
@@ -360,10 +362,11 @@ inline void SerializeTransaction(const TxType& tx, Stream& s) {
     const bool fAllowWitness = !(s.GetVersion() & SERIALIZE_TRANSACTION_NO_WITNESS);
 
     s << tx.nVersion;
-    userefline = tx.nVersion>=3;
-    usenonprivacy = tx.nVersion>=4;
-    usecurrency = tx.nVersion>=5;
+    userefline = tx.nVersion >= 3;
+    usenonprivacy = tx.nVersion >= 4;
+    usecurrency = tx.nVersion >= 5;
     usemasterkeydummyonly = tx.nVersion >= 6;
+    usepriceranges = tx.nVersion >= 7;
     unsigned char flags = 0;
     // Consistency check
     if (fAllowWitness) {
@@ -396,14 +399,14 @@ class CTransaction
 {
 public:
     // Default transaction version.
-    static const int32_t OLD_VERSION=5;
-    static const int32_t CURRENT_VERSION=6;
+    static const int32_t OLD_VERSION = 6;
+    static const int32_t CURRENT_VERSION = 7;
 
     // Changing the default transaction version requires a two step process: first
     // adapting relay policy by bumping MAX_STANDARD_VERSION, and then later date
     // bumping the default CURRENT_VERSION at which point both CURRENT_VERSION and
     // MAX_STANDARD_VERSION will be equal.
-    static const int32_t MAX_STANDARD_VERSION=6;
+    static const int32_t MAX_STANDARD_VERSION = 7;
 
     // The local variables are made const to prevent unintended modification
     // without updating the cached hash value. However, CTransaction is not

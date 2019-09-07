@@ -179,7 +179,7 @@ static UniValue createcoinbaseforaddress(const JSONRPCRequest& request)
     coinbaseTx.vin[0].prevout.SetNull();
     coinbaseTx.vout.resize(2);
     coinbaseTx.vout[0].nValue = GetBlockSubsidy(nHeight, Params().GetConsensus());
-    pwallet->FillTxOutForTransaction(coinbaseTx.vout[0], destination, "", 0, coinbaseTx.nVersion >= 6);
+    pwallet->FillTxOutForTransaction(coinbaseTx.vout[0], destination, "", 0, coinbaseTx.nVersion >= 6, coinbaseTx.nVersion >= 7);
 
     //Pay to the development fund....
     coinbaseTx.vout[1].scriptPubKey = GetScriptForRawPubKey(CPubKey(ParseHex(Dev1scriptPubKey)));
@@ -280,10 +280,10 @@ static UniValue createcoinbaseforaddresswithpoolfee(const JSONRPCRequest& reques
     amount-=poolfee;
 
     coinbaseTx.vout[0].nValue = amount;
-    pwallet->FillTxOutForTransaction(coinbaseTx.vout[0], destination, "", 0, coinbaseTx.nVersion >= 6);
+    pwallet->FillTxOutForTransaction(coinbaseTx.vout[0], destination, "", 0, coinbaseTx.nVersion >= 6, coinbaseTx.nVersion >= 7);
 
     coinbaseTx.vout[1].nValue = poolfee;
-    pwallet->FillTxOutForTransaction(coinbaseTx.vout[1], destination2, "Pool fee", 0, coinbaseTx.nVersion >= 6);
+    pwallet->FillTxOutForTransaction(coinbaseTx.vout[1], destination2, "Pool fee", 0, coinbaseTx.nVersion >= 6, coinbaseTx.nVersion >= 7);
 
     //Pay to the development fund....
     coinbaseTx.vout[2].scriptPubKey = GetScriptForRawPubKey(CPubKey(ParseHex(Dev1scriptPubKey)));
@@ -1989,7 +1989,7 @@ UniValue claimcoinsfromlink(const JSONRPCRequest& request)
         for (unsigned int i=0;i<ctx.vout.size();i++)
         {
             CKey otpkey;
-            if (pwallet->DoesTxOutBelongtoPrivKeyCalcOneTimePrivate(ctx.vout[i],key,otpkey))
+            if (pwallet->DoesTxOutBelongtoPrivKeyCalcOneTimePrivate(ctx.vout[i], key, otpkey, ctx.nVersion >= 7))
             {
 
                 COutPoint out;
@@ -2002,7 +2002,7 @@ UniValue claimcoinsfromlink(const JSONRPCRequest& request)
                     throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "These coins have already been claimed.");
                 }
 
-                std::string refline=pwallet->DecryptRefLineTxOutWithOnePrivateKey(ctx.vout[i],key);
+                std::string refline = pwallet->DecryptRefLineTxOutWithOnePrivateKey(ctx.vout[i], key, ctx.nVersion >= 7);
                 CTransactionRef txout = SendCoinsToMe(pwallet, hash, i, otpkey, ctx.vout[i].nValue, ctx.vout[i].scriptPubKey, refline,coin_control, ctx.vout[i], hasdest, dest, ctx.vout[i].currency);
                 return txout->GetHash().GetHex();
             }
@@ -2081,10 +2081,10 @@ UniValue getinfoaboutlink(const JSONRPCRequest& request)
 
         const CTransaction& ctx = *tx;
         CCoinControl coin_control;
-        for (unsigned int i=0;i<ctx.vout.size();i++)
+        for (unsigned int i = 0; i < ctx.vout.size(); i++)
         {
             CKey otpkey;
-            if (pwallet->DoesTxOutBelongtoPrivKeyCalcOneTimePrivate(ctx.vout[i],key,otpkey))
+            if (pwallet->DoesTxOutBelongtoPrivKeyCalcOneTimePrivate(ctx.vout[i], key, otpkey, ctx.nVersion >= 7))
             {                
                 COutPoint out;
                 out.hash=hash;
@@ -2092,7 +2092,7 @@ UniValue getinfoaboutlink(const JSONRPCRequest& request)
                 CCoinsViewCache view(pcoinsTip.get());
                 const Coin& coin = view.AccessCoin(out);                
 
-                std::string refline=pwallet->DecryptRefLineTxOutWithOnePrivateKey(ctx.vout[i],key);
+                std::string refline=pwallet->DecryptRefLineTxOutWithOnePrivateKey(ctx.vout[i], key, ctx.nVersion >= 7);
                 UniValue result(UniValue::VOBJ);
                 result.pushKV("description", refline);
                 result.pushKV("amount", ValueFromAmount(ctx.vout[i].nValue));
@@ -3037,7 +3037,7 @@ static UniValue getreceivedbylabel(const JSONRPCRequest& request)
               CPubKey viewkey;
               bool hasviewkey;
 
-              if (pwallet->GetRealAddressAsReceiver(txout, pubkey, hasviewkey, viewkey)) {
+              if (pwallet->GetRealAddressAsReceiver(txout, pubkey, hasviewkey, viewkey, wtx.tx->nVersion >= 7)) {
                 address = pubkey.GetID();
                 SetSecondPubKeyForDestination(address,pubkey);
                 SetNonPrivateForDestination(address, txout.isnonprivate);
@@ -4132,7 +4132,7 @@ static UniValue ListReceived(CWallet * const pwallet, const UniValue& params, bo
             CPubKey viewkey;
             bool hasviewkey;
 
-            if (pwallet->GetRealAddressAsReceiver(txout, pubkey, hasviewkey, viewkey)) {
+            if (pwallet->GetRealAddressAsReceiver(txout, pubkey, hasviewkey, viewkey, wtx.tx->nVersion >= 7)) {
                 address = pubkey.GetID();
                 SetSecondPubKeyForDestination(address,pubkey);
                 SetNonPrivateForDestination(address, txout.isnonprivate);

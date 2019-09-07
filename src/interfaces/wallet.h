@@ -87,17 +87,17 @@ public:
 
     virtual CPubKey GetCurrentAddressPubKey() = 0;
 
-    virtual std::string DecryptRefLineTxOut(CTxOut out) = 0;
+    virtual std::string DecryptRefLineTxOut(CTxOut out, bool saltisactive) = 0;
 
-    virtual bool GetRealAddressAsSender(CTxOut out,CPubKey& recipientpubkey, bool &hasviewkey, CPubKey &viewkey) = 0;
+    virtual bool GetRealAddressAsSender(CTxOut out,CPubKey& recipientpubkey, bool &hasviewkey, CPubKey &viewkey, bool saltisactive) = 0;
 
     virtual bool GetViewKeyForAddressAsSender(CTxOut out, CKey& ViewKey) = 0;
 
-    virtual std::string DecryptRefLineTxOutWithOnePrivateKey(CTxOut out,CKey key) = 0;
+    virtual std::string DecryptRefLineTxOutWithOnePrivateKey(CTxOut out, CKey key, bool saltisactive) = 0;
 
-    virtual bool DoesTxOutBelongtoPrivKeyCalcOneTimePrivate(const CTxOut& txout, CKey key, CKey& otpk) = 0;
+    virtual bool DoesTxOutBelongtoPrivKeyCalcOneTimePrivate(const CTxOut& txout, CKey key, CKey& otpk, bool saltisactive) = 0;
     
-    virtual bool FillTxOutForTransaction(CTxOut& out, CPubKey recipientpubkey, std::string referenceline, unsigned char currency, bool nonprivate, bool withviewkey, CPubKey viewpubkey, bool masterkeyisremoved) = 0;
+    virtual bool FillTxOutForTransaction(CTxOut& out, CPubKey recipientpubkey, std::string referenceline, unsigned char currency, bool nonprivate, bool withviewkey, CPubKey viewpubkey, bool masterkeyisremoved, bool saltisactive) = 0;
 
     //! Get public key.
     virtual bool getPubKey(const CKeyID& address, CPubKey& pub_key) = 0;
@@ -239,7 +239,7 @@ public:
     virtual isminetype txinIsMine(const CTxIn& txin) = 0;
 
     //! Return whether transaction output belongs to wallet.
-    virtual isminetype txoutIsMine(const CTxOut& txout) = 0;
+    virtual isminetype txoutIsMine(const CTxOut& txout, bool saltisactive) = 0;
 
     //! Return debit amount if transaction input belongs to wallet.
     virtual CAmount getDebit(const CTxIn& txin, isminefilter filter, unsigned char currency) = 0;

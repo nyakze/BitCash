@@ -26,10 +26,12 @@ public:
         outpoint = COutPoint(tx->GetHash(), i);
         txout = tx->vout[i];
         effective_value = txout.nValue;
+        saltisactive = tx->nVersion >= 7;
     }
 
     COutPoint outpoint;
     CTxOut txout;
+    bool saltisactive;
     CAmount effective_value;
     CAmount fee = 0;
     CAmount long_term_fee = 0;

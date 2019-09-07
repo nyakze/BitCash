@@ -133,7 +133,7 @@ void TxToUnivWithWallet(const CWallet* pwallet,const CTransaction& tx, const uin
         {
             out.pushKV("viewkey", EncodeSecret(viewkey));
         }
-        if (pwallet->GetRealAddressAndRefline(txout, recipientpubkey, referenceline, "", false))
+        if (pwallet->GetRealAddressAndRefline(txout, recipientpubkey, referenceline, "", false, tx.nVersion >= 7))
         {         
             if (txout.isnonprivate) {
                 out.pushKV("address", EncodeDestinationHasSecondKey(GetDestinationForKey(recipientpubkey, OutputType::NONPRIVATE)));
@@ -216,7 +216,7 @@ void TxToUnivWithWalletMK(const CWallet* pwallet,std::string masterprivatekey, c
         {
             out.pushKV("viewkey", EncodeSecret(viewkey));
         }
-        if (pwallet->GetRealAddressAndRefline(txout,recipientpubkey,referenceline,masterprivatekey,true))
+        if (pwallet->GetRealAddressAndRefline(txout, recipientpubkey, referenceline, masterprivatekey, true, tx.nVersion >= 7))
         {         
             if (txout.isnonprivate) {
                 out.pushKV("address", EncodeDestinationHasSecondKey(GetDestinationForKey(recipientpubkey, OutputType::NONPRIVATE)));
@@ -293,7 +293,7 @@ void TxToUnivWithWalletVK(const CWallet* pwallet,CKey &viewkey, const CTransacti
         CPubKey recipientpubkey;
         std::string referenceline;
 #ifdef ENABLE_WALLET
-        if (pwallet->GetRealAddressAndReflineWithViewkey(txout, recipientpubkey, referenceline, viewkey))
+        if (pwallet->GetRealAddressAndReflineWithViewkey(txout, recipientpubkey, referenceline, viewkey, tx.nVersion >= 7))
         {         
             if (txout.isnonprivate) {
                 out.pushKV("address", EncodeDestinationHasSecondKey(GetDestinationForKey(recipientpubkey, OutputType::NONPRIVATE)));
@@ -776,7 +776,7 @@ static UniValue createrawtransaction(const JSONRPCRequest& request)
             CTxOut out(nAmount, scriptPubKey,0 );
 #ifdef ENABLE_WALLET
             CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
-            pwallet->FillTxOutForTransaction(out, destination, referenceline, 0, rawTx.nVersion >= 6);
+            pwallet->FillTxOutForTransaction(out, destination, referenceline, 0, rawTx.nVersion >= 6, rawTx.nVersion >= 7);
 #endif
             rawTx.vout.push_back(out);
 

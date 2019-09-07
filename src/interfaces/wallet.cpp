@@ -90,13 +90,13 @@ WalletTx MakeWalletTx(CWallet& wallet, const CWalletTx& wtx)
     {
         const CTxOut& txout = result.tx->vout[nOut];
         if (txout.referenceline != ""){ 
-            result.reflines.push_back(wtx.DecryptRefLineTxOut(txout));
+            result.reflines.push_back(wtx.DecryptRefLineTxOut(txout, wtx.tx->nVersion >= 7));
         } else result.reflines.push_back("");
           
         CPubKey pubkey;
         CPubKey viewkey;
         bool hasviewkey;
-        if (wallet.GetRealAddressAsSender(wtx.tx->vout[nOut], pubkey, hasviewkey, viewkey)){
+        if (wallet.GetRealAddressAsSender(wtx.tx->vout[nOut], pubkey, hasviewkey, viewkey, wtx.tx->nVersion >= 7)){
             CTxDestination address;
             address = pubkey.GetID();
             SetSecondPubKeyForDestination(address, pubkey);
@@ -170,14 +170,18 @@ public:
     {
         return m_wallet.GetKeyFromPool(pub_key, internal);
     }
-    std::string DecryptRefLineTxOut(CTxOut out)  override { return m_wallet.DecryptRefLineTxOut(out); }
-    bool GetRealAddressAsSender(CTxOut out,CPubKey& recipientpubkey, bool &hasviewkey, CPubKey &viewkey) override { return m_wallet.GetRealAddressAsSender(out, recipientpubkey, hasviewkey, viewkey); }
+    std::string DecryptRefLineTxOut(CTxOut out, bool saltisactive)  override { return m_wallet.DecryptRefLineTxOut(out, saltisactive); }
+    bool GetRealAddressAsSender(CTxOut out,CPubKey& recipientpubkey, bool &hasviewkey, CPubKey &viewkey, bool saltisactive) override { return m_wallet.GetRealAddressAsSender(out, recipientpubkey, hasviewkey, viewkey, saltisactive); }
     bool GetViewKeyForAddressAsSender(CTxOut out, CKey& ViewKey) override { return m_wallet.GetViewKeyForAddressAsSender(out, ViewKey); }
-    std::string DecryptRefLineTxOutWithOnePrivateKey(CTxOut out,CKey key) override { return m_wallet.DecryptRefLineTxOutWithOnePrivateKey(out,key); }
+    std::string DecryptRefLineTxOutWithOnePrivateKey(CTxOut out, CKey key, bool saltisactive) override { return m_wallet.DecryptRefLineTxOutWithOnePrivateKey(out, key, saltisactive); }
 
-    bool FillTxOutForTransaction(CTxOut& out, CPubKey recipientpubkey, std::string referenceline, unsigned char currency, bool nonprivate, bool withviewkey, CPubKey viewpubkey, bool masterkeyisremoved) override { return m_wallet. FillTxOutForTransaction(out, recipientpubkey, referenceline, currency, nonprivate, withviewkey, viewpubkey, masterkeyisremoved); }
+    bool FillTxOutForTransaction(CTxOut& out, CPubKey recipientpubkey, std::string referenceline, unsigned char currency, bool nonprivate, 
+                                    bool withviewkey, CPubKey viewpubkey, bool masterkeyisremoved, bool saltisactive) override 
+    { 
+        return m_wallet. FillTxOutForTransaction(out, recipientpubkey, referenceline, currency, nonprivate, withviewkey, viewpubkey, masterkeyisremoved, saltisactive); 
+    }
 
-    bool DoesTxOutBelongtoPrivKeyCalcOneTimePrivate(const CTxOut& txout, CKey key, CKey& otpk) override { return m_wallet.DoesTxOutBelongtoPrivKeyCalcOneTimePrivate(txout,key,otpk); }
+    bool DoesTxOutBelongtoPrivKeyCalcOneTimePrivate(const CTxOut& txout, CKey key, CKey& otpk, bool saltisactive) override { return m_wallet.DoesTxOutBelongtoPrivKeyCalcOneTimePrivate(txout, key, otpk, saltisactive); }
 
     unsigned char GetInputCurrency(const CTxIn &txin) override { return m_wallet.GetInputCurrency(txin); }
     bool getPubKey(const CKeyID& address, CPubKey& pub_key) override { return m_wallet.GetPubKey(address, pub_key); }
@@ -422,10 +426,10 @@ public:
         LOCK2(::cs_main, m_wallet.cs_wallet);
         return m_wallet.IsMine(txin);
     }
-    isminetype txoutIsMine(const CTxOut& txout) override
+    isminetype txoutIsMine(const CTxOut& txout, bool saltisactive) override
     {
         LOCK2(::cs_main, m_wallet.cs_wallet);
-        return m_wallet.IsMine(txout,12);
+        return m_wallet.IsMine(txout, 12, saltisactive);
     }
     CAmount getDebit(const CTxIn& txin, isminefilter filter, unsigned char currency) override
     {

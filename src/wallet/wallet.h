@@ -477,7 +477,7 @@ public:
 
     CAmount GetChange() const;
 
-    std::string DecryptRefLineTxOut(CTxOut out) const;
+    std::string DecryptRefLineTxOut(CTxOut out, bool saltisactive) const;
 
     // Get the marginal bytes if spending the specified output from this transaction
     int GetSpendSize(unsigned int out) const
@@ -903,21 +903,21 @@ public:
 
     CPubKey GetCurrentAddressPubKey();
     std::string CalculateEncryptionKey(CPubKey pubkey,CKey privkey) const;
-    std::string EncryptRefLineTry(std::string referenceline,CPubKey pubkey,CKey privkey) const;
-    std::string EncryptRefLine(std::string referenceline,CPubKey pubkey,CKey privkey) const;
-    std::string DecryptRefLine(std::string referenceline,CPubKey pubkey,CKey privkey) const;
-    std::string DecryptRefLineTxOut(CTxOut out) const;
-    std::string DecryptRefLineTxOutWithOnePrivateKey(CTxOut out,CKey key) const;
-    bool DoesTxOutBelongtoPrivKeyCalcOneTimePrivate(const CTxOut& txout, CKey key, CKey& otpk);
-    void DecryptPrivateKey(unsigned char *privatekey,CPubKey pubkey,CKey privkey) const;
-    void EncryptPrivateKey(unsigned char *privatekey,CPubKey pubkey,CKey privkey) const;
-    bool FillTxOutForTransaction(CTxOut& out,CPubKey recipientpubkey,std::string referenceline, unsigned char currency, bool nonprivate, bool withviewkey, CPubKey viewpubkey, bool masterkeyisremoved);
-    bool FillTxOutForTransaction(CTxOut& out,CTxDestination destination,std::string referenceline, unsigned char currency, bool masterkeyisremoved);
-    bool GetRealAddressAndRefline(CTxOut out,CPubKey& recipientpubkey,std::string& referenceline,std::string mpk,bool usempk) const;
-    bool GetRealAddressAndReflineWithViewkey(CTxOut out, CPubKey& recipientpubkey, std::string& referenceline, CKey &viewkey) const;
+    std::string EncryptRefLineTry(std::string referenceline,CPubKey pubkey,CKey privkey, bool saltisactive, unsigned int salt1, unsigned int salt2) const;
+    std::string EncryptRefLine(std::string referenceline,CPubKey pubkey,CKey privkey, bool saltisactive, unsigned int salt1, unsigned int salt2) const;
+    std::string DecryptRefLine(std::string referenceline,CPubKey pubkey,CKey privkey, bool saltisactive, unsigned int salt1, unsigned int salt2) const;
+    std::string DecryptRefLineTxOut(CTxOut out, bool saltisactive) const;
+    std::string DecryptRefLineTxOutWithOnePrivateKey(CTxOut out, CKey key, bool saltisactive) const;
+    bool DoesTxOutBelongtoPrivKeyCalcOneTimePrivate(const CTxOut& txout, CKey key, CKey& otpk, bool saltisactive);
+    void DecryptPrivateKey(unsigned char *privatekey, CPubKey pubkey, CKey privkey, bool saltisactive, unsigned int salt1, unsigned int salt2) const;
+    void EncryptPrivateKey(unsigned char *privatekey, CPubKey pubkey, CKey privkey, bool saltisactive, unsigned int salt1, unsigned int salt2) const;
+    bool FillTxOutForTransaction(CTxOut& out,CPubKey recipientpubkey,std::string referenceline, unsigned char currency, bool nonprivate, bool withviewkey, CPubKey viewpubkey, bool masterkeyisremoved, bool saltisactive);
+    bool FillTxOutForTransaction(CTxOut& out,CTxDestination destination,std::string referenceline, unsigned char currency, bool masterkeyisremoved, bool saltisactive);
+    bool GetRealAddressAndRefline(CTxOut out, CPubKey& recipientpubkey, std::string& referenceline, std::string mpk, bool usempk, bool saltisactive) const;
+    bool GetRealAddressAndReflineWithViewkey(CTxOut out, CPubKey& recipientpubkey, std::string& referenceline, CKey &viewkey, bool saltisactive) const;
     bool GetViewKeyForAddressAsSender(CTxOut out, CKey& ViewKey) const;
-    bool GetRealAddressAsSender(CTxOut out, CPubKey& recipientpubkey, bool &hasviewkey, CPubKey &viewkey) const;
-    bool GetRealAddressAsReceiver(CTxOut txout,CPubKey& recipientpubkey, bool &gethasviewkey, CPubKey &getviewkey) const;
+    bool GetRealAddressAsSender(CTxOut out, CPubKey& recipientpubkey, bool &hasviewkey, CPubKey &viewkey, bool saltisactive) const;
+    bool GetRealAddressAsReceiver(CTxOut txout,CPubKey& recipientpubkey, bool &gethasviewkey, CPubKey &getviewkey, bool saltisactive) const;
 
 
     /**
@@ -1095,13 +1095,13 @@ public:
     CAmount GetDebit(const CTxIn& txin, const isminefilter& filter, unsigned char currency) const;   
     CAmount GetDebitForAddress(CTxDestination dest, const CTxIn &txin, unsigned char currency) const;
     isminetype IsMineConst(const CTxOut& txout, int nr) const;
-    isminetype IsMineForOneDestination(const CTxOut& txout, CTxDestination& desttocheck) const;
-    isminetype IsMine(const CTxOut& txout, int nr);
+    isminetype IsMineForOneDestination(const CTxOut& txout, CTxDestination& desttocheck, bool saltisactive) const;
+    isminetype IsMine(const CTxOut& txout, int nr, bool saltisactive);
     isminetype IsMineBasic(const CTxOut& txout, int nr);    
 
     CAmount GetCredit(const CTxOut& txout, const isminefilter& filter, unsigned char currency) const;
     bool IsChange(const CTxOut& txout) const;
-    bool IsChangeForAddress(CTxDestination dest, const CTxOut& txout) const;
+    bool IsChangeForAddress(CTxDestination dest, const CTxOut& txout, bool saltisactive) const;
     CAmount GetChange(const CTxOut& txout) const;
     bool IsMine(const CTransaction& tx);
     bool IsMineForScanningBlockchain(const CTransaction& tx);

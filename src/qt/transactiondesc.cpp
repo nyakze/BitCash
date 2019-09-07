@@ -208,7 +208,7 @@ QString TransactionDesc::toHTML(interfaces::Node& node, interfaces::Wallet& wall
                     bool hasviewkey;
                     bool found = false;
 
-                    if (wallet.GetRealAddressAsSender(txout,pubkey, hasviewkey, viewkey)){
+                    if (wallet.GetRealAddressAsSender(txout,pubkey, hasviewkey, viewkey, wtx.tx->nVersion >= 7)){
                         address = pubkey.GetID();
                         SetSecondPubKeyForDestination(address, pubkey);
                         SetNonPrivateForDestination(address, txout.isnonprivate);
@@ -296,10 +296,10 @@ QString TransactionDesc::toHTML(interfaces::Node& node, interfaces::Wallet& wall
        
         if (txout.referenceline!=""){
         
-                        WalletModel::UnlockContext ctx(model->requestUnlock());
-			std::string decryptedline=wallet.DecryptRefLineTxOut(txout);
-                        QString qstrrefline = QString::fromUtf8(decryptedline.c_str());
-                        strHTML += "<b>" + tr("Description") + ":</b> " + qstrrefline + "<br>";
+            WalletModel::UnlockContext ctx(model->requestUnlock());
+            std::string decryptedline=wallet.DecryptRefLineTxOut(txout, wtx.tx->nVersion >= 7);
+            QString qstrrefline = QString::fromUtf8(decryptedline.c_str());
+            strHTML += "<b>" + tr("Description") + ":</b> " + qstrrefline + "<br>";
         }
     }
 
@@ -352,7 +352,7 @@ QString TransactionDesc::toHTML(interfaces::Node& node, interfaces::Wallet& wall
             if(wallet.txinIsMine(txin))
                 strHTML += "<b>" + tr("Debit") + ":</b> " + BitcashUnits::formatHtmlWithUnit(unit, -wallet.getDebit(txin, ISMINE_ALL, 0)) + "<br>";
         for (const CTxOut& txout : wtx.tx->vout)
-            if(wallet.txoutIsMine(txout))
+            if(wallet.txoutIsMine(txout, wtx.tx->nVersion >= 7))
                 strHTML += "<b>" + tr("Credit") + ":</b> " + BitcashUnits::formatHtmlWithUnit(unit, wallet.getCredit(txout, ISMINE_ALL, 0)) + "<br>";
 
         strHTML += "<br><b>" + tr("Transaction") + ":</b><br>";
@@ -381,8 +381,8 @@ QString TransactionDesc::toHTML(interfaces::Node& node, interfaces::Wallet& wall
                         strHTML += QString::fromStdString(EncodeDestinationHasSecondKey(address));
                     }
                     strHTML = strHTML + " " + tr("Amount") + "=" + BitcashUnits::formatHtmlWithUnit(unit, vout.nValue);
-                    strHTML = strHTML + " IsMine=" + (wallet.txoutIsMine(vout) & ISMINE_SPENDABLE ? tr("true") : tr("false")) + "</li>";
-                    strHTML = strHTML + " IsWatchOnly=" + (wallet.txoutIsMine(vout) & ISMINE_WATCH_ONLY ? tr("true") : tr("false")) + "</li>";
+                    strHTML = strHTML + " IsMine=" + (wallet.txoutIsMine(vout, wtx.tx->nVersion >= 7) & ISMINE_SPENDABLE ? tr("true") : tr("false")) + "</li>";
+                    strHTML = strHTML + " IsWatchOnly=" + (wallet.txoutIsMine(vout, wtx.tx->nVersion >= 7) & ISMINE_WATCH_ONLY ? tr("true") : tr("false")) + "</li>";
                 }
             }
         }

@@ -17,6 +17,7 @@ bool userefline;
 bool usenonprivacy;
 bool usecurrency;
 bool usemasterkeydummyonly;
+bool usepriceranges;
 
 std::string COutPoint::ToString() const
 {
@@ -107,7 +108,7 @@ std::string CTxOut::ToString() const
 CMutableTransaction::CMutableTransaction() : nVersion(CTransaction::CURRENT_VERSION), nLockTime(0) 
 {
     //Do not create transactions with currency information until 2 minutes after the fork
-    if (!ExistParams() || time(nullptr) < Params().GetConsensus().MASTERKEYDUMMY + 2 * 60) nVersion = CTransaction::OLD_VERSION;
+    if (!ExistParams() || time(nullptr) < Params().GetConsensus().X16RV2TIME + 2 * 60) nVersion = CTransaction::OLD_VERSION;
 }
 CMutableTransaction::CMutableTransaction(const CTransaction& tx) : vin(tx.vin), vout(tx.vout), nVersion(tx.nVersion), nLockTime(tx.nLockTime) {}
 

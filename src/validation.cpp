@@ -638,7 +638,7 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
         return state.DoS(100, false, REJECT_INVALID, "coinbase");
     }
 
-    // Only version 5 transactions are allowed in the mempool
+    // Only version 7 transactions are allowed in the mempool
     if (tx.nVersion <= 3) {
         LogPrintf("Version 3 transactions are no longer accepted.\n");
         return state.Invalid(false, REJECT_INVALID, "Old tx version");
@@ -659,6 +659,15 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
         LogPrintf("Version 6 transactions are not yet accepted.\n");
         return state.Invalid(false, REJECT_INVALID, "Old tx version");
     }
+    if (tx.nVersion <= 6 && time(nullptr) > Params().GetConsensus().X16RV2TIME - 5 * 60) {
+        LogPrintf("Version 6 transactions are no longer accepted.\n");
+        return state.Invalid(false, REJECT_INVALID, "Old tx version");
+    }
+    if (tx.nVersion == 7 && time(nullptr) < Params().GetConsensus().X16RV2TIME + 2 * 60) {
+        LogPrintf("Version 7 transactions are not yet accepted.\n");
+        return state.Invalid(false, REJECT_INVALID, "Old tx version");
+    }
+    
 
 
     // Reject transactions with witness before segregated witness activates (override with -prematurewitness)
