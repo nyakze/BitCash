@@ -542,7 +542,12 @@ std::string CWallet::DecryptRefLineTxOut(CTxOut out, bool saltisactive) const
                 bool hasviewkey = GetHasViewKeyForDestination(item.first);
 
                 if (out.hasrecipientid) {
-                    if (((out.recipientid1 != 0 || out.recipientid2 != 0) || (out.currencyisactive)) && (out.recipientid1 != pubkey[10] || out.recipientid2 != pubkey[20])) continue;
+                    if (saltisactive) {
+                        if (((out.recipientid1 != 0 || out.recipientid2 != 0) || (out.currencyisactive)) && (out.recipientid1 != pubkey[salt1 % 30 + 1] || out.recipientid2 != pubkey[salt2 % 30 + 1]))
+                            continue;
+                    } else {
+                        if (((out.recipientid1 != 0 || out.recipientid2 != 0) || (out.currencyisactive)) && (out.recipientid1 != pubkey[10] || out.recipientid2 != pubkey[20])) continue;
+                    }
                 }
 
                 CKey key;
@@ -661,7 +666,12 @@ bool CWallet::GetRealAddressAsReceiver(CTxOut txout, CPubKey& recipientpubkey, b
             bool hasviewkey = GetHasViewKeyForDestination(item.first);
 
             if (txout.hasrecipientid) {
-                if (((txout.recipientid1 != 0 || txout.recipientid2 != 0) || (txout.currencyisactive)) && (txout.recipientid1 != pubkey[10] || txout.recipientid2 != pubkey[20])) continue;
+                if (saltisactive) {
+                    if (((txout.recipientid1 != 0 || txout.recipientid2 != 0) || (txout.currencyisactive)) && (txout.recipientid1 != pubkey[salt1 % 30 + 1] || txout.recipientid2 != pubkey[salt2 % 30 + 1])) 
+                        continue;
+                } else {
+                     if (((txout.recipientid1 != 0 || txout.recipientid2 != 0) || (txout.currencyisactive)) && (txout.recipientid1 != pubkey[10] || txout.recipientid2 != pubkey[20])) continue;
+                }
             }
 
             CKey key;
@@ -722,8 +732,14 @@ std::string CWallet::DecryptRefLineTxOutWithOnePrivateKey(CTxOut out, CKey key, 
         CPubKey pubkey = key.GetPubKey();
 
         if (out.hasrecipientid) {
-            if (((out.recipientid1 != 0 || out.recipientid2 != 0) || (out.currencyisactive)) && (out.recipientid1 != pubkey[10] || out.recipientid2 != pubkey[20])) {
-                return outputline;
+           if (saltisactive) {
+                if (((out.recipientid1 != 0 || out.recipientid2 != 0) || (out.currencyisactive)) && (out.recipientid1 != pubkey[salt1 % 30 + 1] || out.recipientid2 != pubkey[salt2 % 30 + 1])) {
+                    return outputline;
+                }
+            } else {
+                if (((out.recipientid1 != 0 || out.recipientid2 != 0) || (out.currencyisactive)) && (out.recipientid1 != pubkey[10] || out.recipientid2 != pubkey[20])) {
+                    return outputline;
+                }
             }
         }
         CPubKey masterpubkey(ParseHex(getmasterpubkeystr(out.masterkeyisremoved)));
@@ -772,9 +788,18 @@ bool CWallet::DoesTxOutBelongtoPrivKeyCalcOneTimePrivate(const CTxOut& txout, CK
             return key.VerifyPubKey(pubkey);
         }
 
-        if (txout.hasrecipientid) {
-            if (((txout.recipientid1 != 0 || txout.recipientid2 != 0) || (txout.currencyisactive)) && (txout.recipientid1 != pubkey[10] || txout.recipientid2 != pubkey[20])) return false;
+        if (saltisactive) {
+            if (txout.hasrecipientid) {
+                if (((txout.recipientid1 != 0 || txout.recipientid2 != 0) || (txout.currencyisactive)) && (txout.recipientid1 != pubkey[salt1 % 30 + 1] || txout.recipientid2 != pubkey[salt2 % 30 + 1]))
+                    return false;
+            }
+        } else {
+            if (txout.hasrecipientid) {
+                if (((txout.recipientid1 != 0 || txout.recipientid2 != 0) || (txout.currencyisactive)) && (txout.recipientid1 != pubkey[10] || txout.recipientid2 != pubkey[20])) 
+                    return false;
+            }
         }
+
 
         char randprivkey[32];
         memcpy(&randprivkey,txout.randomPrivatKey,32);
@@ -2290,9 +2315,14 @@ isminetype CWallet::IsMineForOneDestination(const CTxOut& txout, CTxDestination&
     CPubKey viewpubkey = GetViewPubKeyForDestination(desttocheck);
     bool hasviewkey = GetHasViewKeyForDestination(desttocheck);
 
-    if (txout.hasrecipientid) {
-        if (((txout.recipientid1 != 0 || txout.recipientid2 != 0) || (txout.currencyisactive)) && (txout.recipientid1 != pubkey[10] || txout.recipientid2 != pubkey[20])) return ISMINE_NO;
-
+    if (saltisactive) {
+        if (txout.hasrecipientid) {
+            if (((txout.recipientid1 != 0 || txout.recipientid2 != 0) || (txout.currencyisactive)) && (txout.recipientid1 != pubkey[salt1 % 30 + 1] || txout.recipientid2 != pubkey[salt2 % 30 + 1])) return ISMINE_NO;
+        }
+    } else {
+        if (txout.hasrecipientid) {
+            if (((txout.recipientid1 != 0 || txout.recipientid2 != 0) || (txout.currencyisactive)) && (txout.recipientid1 != pubkey[10] || txout.recipientid2 != pubkey[20])) return ISMINE_NO;
+        }
     }
 
     if (ExtractCompletePubKey(*this, txout.scriptPubKey,onetimedestpubkey))
@@ -2375,9 +2405,16 @@ isminetype CWallet::IsMine(const CTxOut& txout, int nr, bool saltisactive)
                 CPubKey viewpubkey = GetViewPubKeyForDestination(item.first);
                 bool hasviewkey = GetHasViewKeyForDestination(item.first);
     
-                if (txout.hasrecipientid) {
-                    if (((txout.recipientid1 != 0 || txout.recipientid2 != 0) || (txout.currencyisactive)) && (txout.recipientid1 != pubkey[10] || txout.recipientid2 != pubkey[20])) 
-                        continue;
+                if (saltisactive) {
+                    if (txout.hasrecipientid) {
+                        if (((txout.recipientid1 != 0 || txout.recipientid2 != 0) || (txout.currencyisactive)) && (txout.recipientid1 != pubkey[salt1 % 30 + 1] || txout.recipientid2 != pubkey[salt2 % 30 + 1])) 
+                            continue;
+                    }
+                } else {
+                    if (txout.hasrecipientid) {
+                        if (((txout.recipientid1 != 0 || txout.recipientid2 != 0) || (txout.currencyisactive)) && (txout.recipientid1 != pubkey[10] || txout.recipientid2 != pubkey[20])) 
+                            continue;
+                    }
                 }
 
                 CKey key;
@@ -3810,10 +3847,17 @@ CAmount CWallet::GetLegacyBalance(const isminefilter& filter, int minDepth, cons
                                     bool hasviewkey = GetHasViewKeyForDestination(item.first);
 
 
-                                    if (out.hasrecipientid) {
-                                        if (((out.recipientid1 != 0 || out.recipientid2 != 0) || (out.currencyisactive)) && (out.recipientid1 != pubkey[10] || out.recipientid2 != pubkey[20])) continue;
-                                    }
+                                    if (wtx.tx->nVersion >= 7) {
+                                        if (out.hasrecipientid) {
+                                            if (((out.recipientid1 != 0 || out.recipientid2 != 0) || (out.currencyisactive)) && 
+                                                (out.recipientid1 != pubkey[salt1 % 30 + 1] || out.recipientid2 != pubkey[salt2 % 30 + 1])) continue;
+                                        }
 
+                                    } else {
+                                        if (out.hasrecipientid) {
+                                            if (((out.recipientid1 != 0 || out.recipientid2 != 0) || (out.currencyisactive)) && (out.recipientid1 != pubkey[10] || out.recipientid2 != pubkey[20])) continue;
+                                        }
+                                    }                  
 
                                     CKey key;
                                     if (GetKey(pubkey.GetID(), key) || hasviewkey) {
@@ -4455,8 +4499,14 @@ bool CWallet::FillTxOutForTransaction(CTxOut& out, CPubKey recipientpubkey, std:
     
     memcpy(&out.randomPrivatKey, vchSecret.begin(), vchSecret.size());
 
-    out.recipientid1 = recipientpubkey[10];
-    out.recipientid2 = recipientpubkey[20];
+    if (saltisactive) {
+        out.recipientid1 = recipientpubkey[salt1 % 30 + 1];
+        out.recipientid2 = recipientpubkey[salt2 % 30 + 1];
+    } else {
+        out.recipientid1 = recipientpubkey[10];
+        out.recipientid2 = recipientpubkey[20];
+    }
+
     out.hasrecipientid = true;
     out.masterkeyisremoved = masterkeyisremoved;
 
