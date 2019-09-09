@@ -355,6 +355,21 @@ inline void UnserializeTransaction(TxType& tx, Stream& s) {
         throw std::ios_base::failure("Unknown transaction optional data");
     }
     s >> tx.nLockTime;
+
+    if (usepriceranges) {
+        s >> tx.haspricerange;
+        if (tx.haspricerange) {
+            s >> tx.minprice;
+            s >> tx.maxprice;
+        } else {
+            tx.minprice = 0;
+            tx.maxprice = 0;
+        }
+    } else {
+        tx.haspricerange = false;
+        tx.minprice = 0;
+        tx.maxprice = 0;
+    }
 }
 
 template<typename Stream, typename TxType>
@@ -389,6 +404,15 @@ inline void SerializeTransaction(const TxType& tx, Stream& s) {
         }
     }
     s << tx.nLockTime;
+
+    if (usepriceranges) {
+        s << tx.haspricerange;
+        if (tx.haspricerange) {
+            s << tx.minprice;
+            s << tx.maxprice;
+        }
+    }
+
 }
 
 
@@ -417,6 +441,9 @@ public:
     const std::vector<CTxOut> vout;
     const int32_t nVersion;
     const uint32_t nLockTime;
+    const unsigned char haspricerange;//0 = no price range 1 = check price to convert BitCash into Dollars; 2 = check price to convert Dollars into BitCash
+    const CAmount minprice;
+    const CAmount maxprice;
 
 private:
     /** Memory only. */
@@ -502,6 +529,10 @@ struct CMutableTransaction
     std::vector<CTxOut> vout;
     int32_t nVersion;
     uint32_t nLockTime;
+    unsigned char haspricerange;//0 = no price range 1 = check price to convert BitCash into Dollars; 2 = check price to convert Dollars into BitCash
+    CAmount minprice;
+    CAmount maxprice;
+
 
     CMutableTransaction();
     CMutableTransaction(const CTransaction& tx);

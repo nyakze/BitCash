@@ -6,6 +6,7 @@
 #include <wallet/wallet.h>
 
 #include <boost/algorithm/string/case_conv.hpp> 
+#include <rpc/blockchain.h>
 #include <checkpoints.h>
 #include <chain.h>
 #include <wallet/coincontrol.h>
@@ -4664,7 +4665,11 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
 
     CAmount price = COIN;
     CAmount secondprice = COIN;
-    price = GetCachedPriceInformation(30 * 60 * 1000, secondprice);
+    price = GetBlockPrice(0);
+    secondprice = GetBlockPrice(1);
+    if (price == 0 || secondprice == 0) {
+        price = GetCachedPriceInformation(30 * 60 * 1000, secondprice);
+    }
 
 //std::cout << "price: " <<FormatMoney(price) << std::endl;
 
@@ -5024,12 +5029,18 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
 //std::cout << "Input BitCash: " << FormatMoney(txNew.vout[i].nValueBitCash) << std::endl;
                             //Convert BitCash into Dollars
                             txNew.vout[i].nValue = (__int128_t)txNew.vout[i].nValueBitCash * (__int128_t)secondprice / (__int128_t)COIN;
+                            txNew.haspricerange = 1;
+                            txNew.minprice = secondprice * 97 / 100;
+                            txNew.maxprice = secondprice * 103 / 100;
 //std::cout << "Converted to Dollars: " << FormatMoney(txNew.vout[i].nValue) << std::endl;
                         } else
 		        if (curr == 1 && txNew.vout[i].currency == 0) {
 //std::cout << "Input Dollars: " << FormatMoney(txNew.vout[i].nValueBitCash) << std::endl;
                             //Convert Dollars into BitCash
                             txNew.vout[i].nValue = (__int128_t)txNew.vout[i].nValueBitCash * (__int128_t)COIN / (__int128_t)price;
+                            txNew.haspricerange = 2;
+                            txNew.minprice = price * 97 / 100;
+                            txNew.maxprice = price * 103 / 100;
 //std::cout << "Converted to BitCash: " << FormatMoney(txNew.vout[i].nValue) << std::endl;
                         }
 

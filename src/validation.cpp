@@ -6,6 +6,7 @@
 #include <validation.h>
 
 #include <arith_uint256.h>
+#include <rpc/blockchain.h>
 #include <boost/algorithm/string/case_conv.hpp> 
 #include <chain.h>
 #include <chainparams.h>
@@ -765,6 +766,17 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
         }
     }
 
+    if (tx.haspricerange) {
+        double pri;
+        if (tx.haspricerange == 1) {
+            pri = GetBlockPrice(1);
+        } else {
+            pri = GetBlockPrice(0);
+        }
+        if (pri < tx.minprice || pri > tx.maxprice) {
+            return state.Invalid(false, REJECT_DUPLICATE, "price-out-of-range");
+        }
+    }
 
     {
         //difference to Bitcoin: a transaction in the mempool can NOT be referred to as input to another transaction, because the nValue of a transaction 
@@ -2354,12 +2366,18 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
                     if (tx.vout[j].nValue != (__int128_t)tx.vout[j].nValueBitCash * (__int128_t)pricerate2 / (__int128_t)COIN) {
                         return state.DoS(100, false, REJECT_INVALID, "bad-currency-conversion", false, "The currency conversion is not correct.");
                     }
+                    if (tx.haspricerange == 1 && (pricerate2 < tx.minprice || pricerate2 > tx.maxprice)) {
+                        return state.DoS(100, false, REJECT_INVALID, "price-not-in-range", false, "The block price is not in the range specified for the transaction.");
+                    }
                 } else
 		        if (inputcurrency == 1 && tx.vout[j].currency == 0) {
                     //Convert Dollars into BitCash
                     if (tx.vout[j].nValue != (__int128_t)tx.vout[j].nValueBitCash * (__int128_t)COIN / (__int128_t)pricerate) {
                         return state.DoS(100, false, REJECT_INVALID, "bad-currency-conversion", false, "The currency conversion is not correct.");
                     }               
+                    if (tx.haspricerange == 2 && (pricerate < tx.minprice || pricerate > tx.maxprice)) {
+                        return state.DoS(100, false, REJECT_INVALID, "price-not-in-range", false, "The block price is not in the range specified for the transaction.");
+                    }
                 }
             } else
             {

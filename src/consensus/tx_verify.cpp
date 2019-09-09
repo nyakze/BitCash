@@ -176,6 +176,10 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state, bool fChe
         if (!txin.isnickname) isnick=false;
     }
 
+    if (tx.haspricerange && tx.minprice > tx.maxprice) {
+        return state.DoS(10, false, REJECT_INVALID, "Minprice-higher-than-maxprice");
+    }
+
     if (tx.vin.empty())
         return state.DoS(10, false, REJECT_INVALID, "Bad-txns-vin-empty");
     if (tx.vout.empty() && !isnick)

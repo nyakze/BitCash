@@ -70,6 +70,9 @@ void TxToUnivWithWallet(const CWallet* pwallet,const CTransaction& tx, const uin
     entry.pushKV("txid", tx.GetHash().GetHex());
     entry.pushKV("hash", tx.GetWitnessHash().GetHex());
     entry.pushKV("version", tx.nVersion);
+    entry.pushKV("haspricerange", tx.haspricerange);
+    entry.pushKV("minprice", ValueFromAmount(tx.minprice));
+    entry.pushKV("maxprice", ValueFromAmount(tx.maxprice));
     entry.pushKV("size", (int)::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION));
     entry.pushKV("vsize", (GetTransactionWeight(tx) + WITNESS_SCALE_FACTOR - 1) / WITNESS_SCALE_FACTOR);
     entry.pushKV("weight", GetTransactionWeight(tx));
@@ -163,6 +166,9 @@ void TxToUnivWithWalletMK(const CWallet* pwallet,std::string masterprivatekey, c
     entry.pushKV("txid", tx.GetHash().GetHex());
     entry.pushKV("hash", tx.GetWitnessHash().GetHex());
     entry.pushKV("version", tx.nVersion);
+    entry.pushKV("haspricerange", tx.haspricerange);
+    entry.pushKV("minprice", ValueFromAmount(tx.minprice));
+    entry.pushKV("maxprice", ValueFromAmount(tx.maxprice));
     entry.pushKV("size", (int)::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION));
     entry.pushKV("vsize", (GetTransactionWeight(tx) + WITNESS_SCALE_FACTOR - 1) / WITNESS_SCALE_FACTOR);
     entry.pushKV("weight", GetTransactionWeight(tx));
@@ -245,6 +251,9 @@ void TxToUnivWithWalletVK(const CWallet* pwallet,CKey &viewkey, const CTransacti
     entry.pushKV("txid", tx.GetHash().GetHex());
     entry.pushKV("hash", tx.GetWitnessHash().GetHex());
     entry.pushKV("version", tx.nVersion);
+    entry.pushKV("haspricerange", tx.haspricerange);
+    entry.pushKV("minprice", ValueFromAmount(tx.minprice));
+    entry.pushKV("maxprice", ValueFromAmount(tx.maxprice));
     entry.pushKV("size", (int)::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION));
     entry.pushKV("vsize", (GetTransactionWeight(tx) + WITNESS_SCALE_FACTOR - 1) / WITNESS_SCALE_FACTOR);
     entry.pushKV("weight", GetTransactionWeight(tx));
