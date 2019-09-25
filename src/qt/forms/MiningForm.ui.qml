@@ -477,7 +477,7 @@ Item {
         anchors.topMargin: 1
         currentIndex: 0
         visible: false
-        model: ["stratum+tcp://mine.icemining.ca:3649", "stratum+tcp://bitc-us.skypool.co:8101", "stratum+tcp://eu.bsod.pw:2564", "stratum+tcp://pool.rig.tokyo:8001", "stratum+tcp://us.gethash.cc:3639", "stratum+tcp://x16r.mine.zpool.ca:3636"]
+        model: ["stratum+tcp://mine.icemining.ca:3649", "stratum+tcp://bitc-us.skypool.co:8101", "stratum+tcp://eu.bsod.pw:2564", "stratum+tcp://x16r.mine.zergpool.com:3636", "stratum+tcp://x16r.mine.ahashpool.com:3636", "stratum+tcp://x16r.mine.zpool.ca:3636"]
     }
 
     property alias infowhitebox: infowhitebox
@@ -508,7 +508,7 @@ Item {
         anchors.leftMargin: 36
         anchors.rightMargin: 36
         anchors.topMargin: 36
-        text: qsTr("Welcome to Bitcash mining!  The one click solution for mining!  \n\nBefore we begin, please take note of a few requirements for mining:\n\nNvidia video card\n980 model or later (minimum 3gb vram)\n\nNow select your pool, click start mining and begin receiving bitcash rewards directly to your wallet!  \n\nThat's it!  Leave you wallet open while mining and enjoy!  \n\nThe algo your mining is X16R, and you miner is Trex miner which has been integrated into the bitcash wallet.\n\nAny questions please visit us on discord https://discord.gg/t2MdnWQ")
+        text: qsTr("Welcome to Bitcash mining!  The one click solution for mining!  \n\nBefore we begin, please take note of a few requirements for mining:\n\nNvidia video card\n980 model or later (minimum 3gb vram)\n\nNow select your pool, click start mining and begin receiving bitcash rewards directly to your wallet!  \n\nThat's it!  Leave you wallet open while mining and enjoy!  \n\nThe algo your mining is X16RV2, and your miner is Trex miner which has been integrated into the bitcash wallet.\n\nAny questions please visit us on discord https://discord.gg/t2MdnWQ")
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         font.pixelSize: 14
         font.family: "Montserrat"
