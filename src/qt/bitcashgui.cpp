@@ -1318,7 +1318,7 @@ void BitcashGUI::StartMiningBtnClicked()
 
     bool failedtoinitdll = false;
 
-    #ifdef WIN32
+/*    #ifdef WIN32
             CWallet* pwallet = GetWallet("");
             if (!pwallet) return;
 
@@ -1364,9 +1364,9 @@ void BitcashGUI::StartMiningBtnClicked()
             } else {
                 QMessageBox::information(this, tr("Could not start miner"),tr("Could not start bitcashminer.exe."));
             }
-    #else
+    #else*/
         failedtoinitdll = true;
-    #endif
+//    #endif
 
     if (failedtoinitdll) {
 
