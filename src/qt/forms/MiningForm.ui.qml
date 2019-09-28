@@ -380,6 +380,7 @@ Item {
         x: 527
         height: 44
         text: qsTr("Information before you start")
+        visible: false
         anchors.top: stopanimation.bottom
         anchors.topMargin: -20
         anchors.right: startminingbutton.right
