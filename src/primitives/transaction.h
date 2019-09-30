@@ -20,6 +20,7 @@ extern bool usenonprivacy;
 extern bool usecurrency;
 extern bool usemasterkeydummyonly;
 extern bool usepriceranges;
+extern bool usehashforcoinbase;
 
 /** An outpoint - a combination of a transaction hash and an index n into its vout */
 class COutPoint
@@ -330,6 +331,7 @@ inline void UnserializeTransaction(TxType& tx, Stream& s) {
     usecurrency = tx.nVersion >= 5;
     usemasterkeydummyonly = tx.nVersion >= 6;
     usepriceranges = tx.nVersion >= 7;
+    usehashforcoinbase = tx.nVersion >= 8;
     /* Try to read the vin. In case the dummy is there, this will be read as an empty vector. */
     s >> tx.vin;
     if (tx.vin.size() == 0 && fAllowWitness) {
@@ -370,6 +372,18 @@ inline void UnserializeTransaction(TxType& tx, Stream& s) {
         tx.minprice = 0;
         tx.maxprice = 0;
     }
+
+    if (usehashforcoinbase) {
+        s >> tx.hashashinfo;
+        if (tx.hashashinfo) {
+            s >> tx.hashforpriceinfo;
+        } else {
+            tx.hashforpriceinfo = uint256S("0x0");
+        }
+    } else {
+        tx.hashashinfo = false;
+        tx.hashforpriceinfo = uint256S("0x0");
+    }
 }
 
 template<typename Stream, typename TxType>
@@ -382,6 +396,7 @@ inline void SerializeTransaction(const TxType& tx, Stream& s) {
     usecurrency = tx.nVersion >= 5;
     usemasterkeydummyonly = tx.nVersion >= 6;
     usepriceranges = tx.nVersion >= 7;
+    usehashforcoinbase = tx.nVersion >= 8;
     unsigned char flags = 0;
     // Consistency check
     if (fAllowWitness) {
@@ -413,6 +428,13 @@ inline void SerializeTransaction(const TxType& tx, Stream& s) {
         }
     }
 
+    if (usehashforcoinbase) {
+        s << tx.hashashinfo;
+        if (tx.hashashinfo) {
+            s << tx.hashforpriceinfo;
+        }
+    }
+
 }
 
 
@@ -423,14 +445,14 @@ class CTransaction
 {
 public:
     // Default transaction version.
-    static const int32_t OLD_VERSION = 6;
-    static const int32_t CURRENT_VERSION = 7;
+    static const int32_t OLD_VERSION = 7;
+    static const int32_t CURRENT_VERSION = 8;
 
     // Changing the default transaction version requires a two step process: first
     // adapting relay policy by bumping MAX_STANDARD_VERSION, and then later date
     // bumping the default CURRENT_VERSION at which point both CURRENT_VERSION and
     // MAX_STANDARD_VERSION will be equal.
-    static const int32_t MAX_STANDARD_VERSION = 7;
+    static const int32_t MAX_STANDARD_VERSION = 8;
 
     // The local variables are made const to prevent unintended modification
     // without updating the cached hash value. However, CTransaction is not
@@ -444,6 +466,9 @@ public:
     const unsigned char haspricerange;//0 = no price range 1 = check price to convert BitCash into Dollars; 2 = check price to convert Dollars into BitCash
     const CAmount minprice;
     const CAmount maxprice;
+    const unsigned char hashashinfo;//0 = no hash 1 = has hash
+    const uint256 hashforpriceinfo;
+
 
 private:
     /** Memory only. */
@@ -532,6 +557,8 @@ struct CMutableTransaction
     unsigned char haspricerange;//0 = no price range 1 = check price to convert BitCash into Dollars; 2 = check price to convert Dollars into BitCash
     CAmount minprice;
     CAmount maxprice;
+    unsigned char hashashinfo;//0 = no hash 1 = has hash
+    uint256 hashforpriceinfo;
 
 
     CMutableTransaction();

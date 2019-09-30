@@ -1923,6 +1923,9 @@ int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Para
     if (pindexPrev != nullptr && pindexPrev->nTime > params.X16RV2TIME)
        nVersion |= hashx16rv2active;
 
+    if (pindexPrev != nullptr && pindexPrev->nTime > params.GPUMINERTIME)
+       nVersion |= gpumineractive;
+
     return nVersion;
 }
 
@@ -3484,6 +3487,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
 
     const bool x16ractive = (isX16Ractive(block.nVersion));
     const bool x16rv2active = (isX16RV2active(block.nVersion));
+    const bool isgpumineractive = (isGPUMINERactive(block.nVersion));
 
     //Check that the correct block version with the hashing algo is used     
     if (x16ractive != block.nTime > consensusParams.X16RTIME) {
@@ -3492,6 +3496,10 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     if (x16rv2active != block.nTime > consensusParams.X16RV2TIME) {
         return state.DoS(100, false, REJECT_INVALID, "bad-hash-algo", false, "The wrong hashing algo is used for the block.");
     }
+    if (isgpumineractive != block.nTime > consensusParams.GPUMINERTIME) {
+        return state.DoS(100, false, REJECT_INVALID, "bad-hash-algo", false, "The wrong hashing algo is used for the block.");
+    }
+
 
 
     // Check that the header is valid (particularly PoW).  This is mostly
@@ -3733,6 +3741,25 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     for (unsigned int i = 1; i < block.vtx.size(); i++)
         if (block.vtx[i]->IsCoinBase())
             return state.DoS(100, false, REJECT_INVALID, "bad-cb-multiple", false, "more than one coinbase");
+
+    // Check if coinbase transaction stores hash for price info
+    if (block.nTime > consensusParams.GPUMINERTIME) {
+        if (!block.vtx[0]->hashashinfo)
+            return state.DoS(100, false, REJECT_INVALID, "bad-cb-nohash", false, "Coinbase does not store a hash for the price info");
+
+
+        CHashWriter ss(SER_GETHASH, 0);
+
+        ss << block.nPriceInfo;
+        ss << block.priceSig;
+        ss << block.nPriceInfo2;
+        ss << block.priceSig2;
+        ss << block.nPriceInfo3;
+        ss << block.priceSig3;
+       
+        if (block.vtx[0]->hashforpriceinfo != ss.GetHash())
+            return state.DoS(100, false, REJECT_INVALID, "bad-cb-wrong-hash", false, "Hash stored in the coinbase does not match the hash of price info");
+    }    
 
     // Check transactions
     for (const auto& tx : block.vtx) {

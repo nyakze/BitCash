@@ -18,6 +18,7 @@ bool usenonprivacy;
 bool usecurrency;
 bool usemasterkeydummyonly;
 bool usepriceranges;
+bool usehashforcoinbase;
 
 std::string COutPoint::ToString() const
 {
@@ -105,12 +106,13 @@ std::string CTxOut::ToString() const
     return strprintf("CTxOut(nValue=%d.%08d, scriptPubKey=%s, currency=%d.%08d)", nValue / COIN, nValue % COIN, HexStr(scriptPubKey).substr(0, 30),currency / COIN, currency % COIN);
 }
 
-CMutableTransaction::CMutableTransaction() : nVersion(CTransaction::CURRENT_VERSION), nLockTime(0), haspricerange(false), minprice(0), maxprice(0)
+CMutableTransaction::CMutableTransaction() : nVersion(CTransaction::CURRENT_VERSION), nLockTime(0), haspricerange(false), minprice(0), maxprice(0), hashashinfo(false), hashforpriceinfo(uint256S("0x0"))
+
 {
-    //Do not create transactions with currency information until 2 minutes after the fork
-    if (!ExistParams() || time(nullptr) < Params().GetConsensus().X16RV2TIME + 2 * 60) nVersion = CTransaction::OLD_VERSION;
+    //Do not create transactions with hash in the coinbase until 5 minutes before the fork
+    if (!ExistParams() || time(nullptr) < Params().GetConsensus().GPUMINERTIME - 5 * 60) nVersion = CTransaction::OLD_VERSION;
 }
-CMutableTransaction::CMutableTransaction(const CTransaction& tx) : vin(tx.vin), vout(tx.vout), nVersion(tx.nVersion), nLockTime(tx.nLockTime), haspricerange(tx.haspricerange), minprice(tx.minprice), maxprice(tx.maxprice) {}
+CMutableTransaction::CMutableTransaction(const CTransaction& tx) : vin(tx.vin), vout(tx.vout), nVersion(tx.nVersion), nLockTime(tx.nLockTime), haspricerange(tx.haspricerange), minprice(tx.minprice), maxprice(tx.maxprice), hashashinfo(tx.hashashinfo), hashforpriceinfo(tx.hashforpriceinfo) {}
 
 uint256 CMutableTransaction::GetHash() const
 {
@@ -131,9 +133,9 @@ uint256 CTransaction::GetWitnessHash() const
 }
 
 /* For backward compatibility, the hash is initialized to 0. TODO: remove the need for this default constructor entirely. */
-CTransaction::CTransaction() : vin(), vout(), nVersion(CTransaction::CURRENT_VERSION), nLockTime(0), hash(), haspricerange(false), minprice(0), maxprice(0)  {}
-CTransaction::CTransaction(const CMutableTransaction &tx) : vin(tx.vin), vout(tx.vout), nVersion(tx.nVersion), nLockTime(tx.nLockTime), hash(ComputeHash()), haspricerange(tx.haspricerange), minprice(tx.minprice), maxprice(tx.maxprice) {}
-CTransaction::CTransaction(CMutableTransaction &&tx) : vin(std::move(tx.vin)), vout(std::move(tx.vout)), nVersion(tx.nVersion), nLockTime(tx.nLockTime), hash(ComputeHash()), haspricerange(tx.haspricerange), minprice(tx.minprice), maxprice(tx.maxprice)  {}
+CTransaction::CTransaction() : vin(), vout(), nVersion(CTransaction::CURRENT_VERSION), nLockTime(0), hash(), haspricerange(false), minprice(0), maxprice(0), hashashinfo(false), hashforpriceinfo(uint256S("0x0"))  {}
+CTransaction::CTransaction(const CMutableTransaction &tx) : vin(tx.vin), vout(tx.vout), nVersion(tx.nVersion), nLockTime(tx.nLockTime), hash(ComputeHash()), haspricerange(tx.haspricerange), minprice(tx.minprice), maxprice(tx.maxprice), hashashinfo(tx.hashashinfo), hashforpriceinfo(tx.hashforpriceinfo) {}
+CTransaction::CTransaction(CMutableTransaction &&tx) : vin(std::move(tx.vin)), vout(std::move(tx.vout)), nVersion(tx.nVersion), nLockTime(tx.nLockTime), hash(ComputeHash()), haspricerange(tx.haspricerange), minprice(tx.minprice), maxprice(tx.maxprice), hashashinfo(tx.hashashinfo), hashforpriceinfo(tx.hashforpriceinfo)  {}
 
 CAmount CTransaction::GetValueOutInCurrency(unsigned char currency, CAmount price) const
 {

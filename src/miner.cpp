@@ -132,6 +132,10 @@ int64_t UpdateTime(CBlockHeader* pblock, const Consensus::Params& consensusParam
 
     if (pblock->nTime > consensusParams.X16RV2TIME)
        pblock->nVersion |= hashx16rv2active;
+
+    if (pblock->nTime > consensusParams.GPUMINERTIME)
+       pblock->nVersion |= gpumineractive;
+
     return nNewTime - nOldTime;
 }
 
@@ -302,6 +306,8 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlockWithScriptPubKey(c
        pblock->nVersion |= hashx16Ractive;
     if (pblock->nTime > chainparams.GetConsensus().X16RV2TIME)
        pblock->nVersion |= hashx16rv2active;
+    if (pblock->nTime > chainparams.GetConsensus().GPUMINERTIME)
+       pblock->nVersion |= gpumineractive;
 
     // -regtest only: allow overriding block.nVersion with
     // -blockversion=N to test forking scenarios
@@ -348,6 +354,18 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlockWithScriptPubKey(c
     coinbaseTx.vout[1].nValueBitCash = coinbaseTx.vout[1].nValue;
 
     coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
+
+    coinbaseTx.hashashinfo = true;
+
+    CHashWriter ss(SER_GETHASH, 0);
+        ss << pblock->nPriceInfo;
+        ss << pblock->priceSig;
+        ss << pblock->nPriceInfo2;
+        ss << pblock->priceSig2;
+        ss << pblock->nPriceInfo3;
+        ss << pblock->priceSig3;
+    coinbaseTx.hashforpriceinfo = ss.GetHash();
+
     pblock->vtx[0] = MakeTransactionRef(std::move(coinbaseTx));
     pblocktemplate->vTxFees[0] = -nFees;
     
@@ -408,6 +426,8 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(interfaces::Walle
        pblock->nVersion |= hashx16Ractive;
     if (pblock->nTime > chainparams.GetConsensus().X16RV2TIME)
        pblock->nVersion |= hashx16rv2active;
+    if (pblock->nTime > chainparams.GetConsensus().GPUMINERTIME)
+       pblock->nVersion |= gpumineractive;
 
     // -regtest only: allow overriding block.nVersion with
     // -blockversion=N to test forking scenarios
@@ -463,6 +483,18 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(interfaces::Walle
     } else {
         coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;    
     }
+
+    coinbaseTx.hashashinfo = true;
+
+    CHashWriter ss(SER_GETHASH, 0);
+        ss << pblock->nPriceInfo;
+        ss << pblock->priceSig;
+        ss << pblock->nPriceInfo2;
+        ss << pblock->priceSig2;
+        ss << pblock->nPriceInfo3;
+        ss << pblock->priceSig3;
+    coinbaseTx.hashforpriceinfo = ss.GetHash();
+
     pblock->vtx[0] = MakeTransactionRef(std::move(coinbaseTx));
     pblocktemplate->vTxFees[0] = -nFees;
 
@@ -1506,6 +1538,18 @@ void MinerWorker(int thread_id, MinerContext& ctx)
                 // so that we can use the correct time.
                 break;
             }
+
+            CHashWriter ss(SER_GETHASH, 0);
+                ss << pblock->nPriceInfo;
+                ss << pblock->priceSig;
+                ss << pblock->nPriceInfo2;
+                ss << pblock->priceSig2;
+                ss << pblock->nPriceInfo3;
+                ss << pblock->priceSig3;
+
+            CMutableTransaction tx(*pblock->vtx[0]);
+            tx.hashforpriceinfo = ss.GetHash();
+	        pblock->vtx[0] = MakeTransactionRef(std::move(tx));
 
             if (ctx.chainparams.GetConsensus().fPowAllowMinDifficultyBlocks) {
                 // Changing pblock->nTime can change work required on testnet:

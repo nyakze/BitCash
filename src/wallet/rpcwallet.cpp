@@ -146,13 +146,14 @@ static UniValue createcoinbaseforaddress(const JSONRPCRequest& request)
         return NullUniValue;
     }
 
-    if (request.fHelp || request.params.size() != 2)
+    if (request.fHelp || request.params.size() < 2 || request.params.size() > 3)
         throw std::runtime_error(
-            "createcoinbaseforaddress \"address\" \"blockheight\"\n"
+            "createcoinbaseforaddress \"address\" \"blockheight\" (\"pricehash\")\n"
             "\nReturns a coinbase transaction for the Bitcash address.\n"
             "\nArguments:\n"
             "1. \"address\"          (string, required) The BitCash address.\n"
             "2. \"blockheight\"      (numeric, required) The blockheight of the new block to calculate.\n"
+            "3. \"pricehash\"        (string, optional) The hash of the price info\n"
             "\nResult:\n"
             "\"coinbase\"                (string) Coinbase as HEX string.\n"
             "\"coinbasepart1\"           (string) Coinbase part 1 as HEX string.\n"
@@ -187,6 +188,14 @@ static UniValue createcoinbaseforaddress(const JSONRPCRequest& request)
     coinbaseTx.vout[1].nValueBitCash = coinbaseTx.vout[1].nValue;
     
     coinbaseTx.vin[0].scriptSig = CScript() << nHeight << ParseHex("FFBBAAEE003344BBFFBBAAEE003344BB") << OP_0;
+
+    if (!request.params[2].isNull()) {
+        std::string strHash = request.params[2].get_str();
+        uint256 hash(uint256S(strHash));
+        coinbaseTx.hashashinfo = true;
+        coinbaseTx.hashforpriceinfo = hash;
+    }
+
 
     CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
     stream << coinbaseTx;
@@ -225,15 +234,16 @@ static UniValue createcoinbaseforaddresswithpoolfee(const JSONRPCRequest& reques
         return NullUniValue;
     }
 
-    if (request.fHelp || request.params.size() != 4)
+    if (request.fHelp || request.params.size() < 4 || request.params.size() > 5)
         throw std::runtime_error(
-            "createcoinbaseforaddresswithpoolfee \"address\" \"blockheight\" \"pool fee address\" \"pool fee permille\"\n"
+            "createcoinbaseforaddresswithpoolfee \"address\" \"blockheight\" \"pool fee address\" \"pool fee permille\" (\"pricehash\")\n"
             "\nReturns a coinbase transaction for the Bitcash address.\n"
             "\nArguments:\n"
             "1. \"address\"          (string, required) The BitCash address.\n"
             "2. \"blockheight\"      (numeric, required) The blockheight of the new block to calculate.\n"
             "3. \"pool fee address\" (string, required) Pool fee payout address.\n"
             "4. \"pool fee permille\" (numeric, required) The permille of the block reward for the pool operator.\n"
+            "5. \"pricehash\"        (string, optional) The hash of the price info\n"
 
             "\nResult:\n"
             "\"coinbase\"                (string) Coinbase as HEX string.\n"
@@ -291,6 +301,13 @@ static UniValue createcoinbaseforaddresswithpoolfee(const JSONRPCRequest& reques
     coinbaseTx.vout[2].nValueBitCash = coinbaseTx.vout[2].nValue;
     
     coinbaseTx.vin[0].scriptSig = CScript() << nHeight << ParseHex("FFBBAAEE003344BBFFBBAAEE003344BB") << OP_0;
+
+    if (!request.params[4].isNull()) {
+        std::string strHash = request.params[4].get_str();
+        uint256 hash(uint256S(strHash));
+        coinbaseTx.hashashinfo = true;
+        coinbaseTx.hashforpriceinfo = hash;
+    }
 
     CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
     stream << coinbaseTx;
@@ -7628,8 +7645,8 @@ static const CRPCCommand commands[] =
     { "wallet",             "backupwallet",                     &backupwallet,                  {"destination"} },
     { "wallet",             "bumpfee",                          &bumpfee,                       {"txid", "options"} },
     { "wallet",             "claimcoinsfromlink",               &claimcoinsfromlink,            {"link"} },
-    { "wallet",             "createcoinbaseforaddress",         &createcoinbaseforaddress,      {"address", "blockheight"} },
-    { "wallet",             "createcoinbaseforaddresswithpoolfee",&createcoinbaseforaddresswithpoolfee,    {"address", "blockheight", "pooladdress", "poolfeepermille"} },
+    { "wallet",             "createcoinbaseforaddress",         &createcoinbaseforaddress,      {"address", "blockheight", "pricehash"} },
+    { "wallet",             "createcoinbaseforaddresswithpoolfee",&createcoinbaseforaddresswithpoolfee,    {"address", "blockheight", "pooladdress", "poolfeepermille", "pricehash"} },
     { "wallet",             "createprivatekeyandaddress",       &createprivatekeyandaddress,    {"address_type"} },
 
     { "wallet",             "dumpprivkey",                      &dumpprivkey,                   {"address"}  },

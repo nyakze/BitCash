@@ -12,6 +12,7 @@
 #include <uint256.h>
 #include <set>
 
+#define gpumineractive ((uint32_t)1) << 5
 #define hashx16rv2active ((uint32_t)1) << 4
 #define hashx16Ractive ((uint32_t)1) << 3
 #define stabletimeactive ((uint32_t)1) << 2
@@ -19,6 +20,7 @@
 extern bool isX16Ractive(int32_t nVersion);
 extern bool isstabletimeactive(int32_t nVersion);
 extern bool isX16RV2active(int32_t nVersion);
+extern bool isGPUMINERactive(int32_t nVersion);
 
 //Stores a signed price information
 class CPriceInfo
