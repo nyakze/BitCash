@@ -96,6 +96,7 @@ uint64_t nLastBlockWeight = 0;
 const int MAX_NONCE = 0xfffff;
 CAmount minedcoins=0;
 bool triedoneproofofwork = false;
+bool addednewpriceinfo = false;
 
 bool AddPriceInformation(CBlockHeader *pblock);
 
@@ -115,16 +116,19 @@ int64_t UpdateTime(CBlockHeader* pblock, const Consensus::Params& consensusParam
         (!(pblock->nPriceInfo.priceTime == pblock->nTime || (pblock->nPriceInfo.priceTime > pblock->nTime && pblock->nPriceInfo.priceTime <= pblock->nTime + MAX_PRICETIME_DIFFERENCE / 3) 
                                                          || (pblock->nPriceInfo.priceTime < pblock->nTime && pblock->nPriceInfo.priceTime + MAX_PRICETIME_DIFFERENCE / 3 >= pblock->nTime)))) {
         AddPriceInformation(pblock);
+        addednewpriceinfo = true;
     } else
     if (pblock->nTime > consensusParams.STABLETIME && 
         (!(pblock->nPriceInfo2.priceTime == pblock->nTime || (pblock->nPriceInfo2.priceTime > pblock->nTime && pblock->nPriceInfo2.priceTime <= pblock->nTime + MAX_PRICETIME_DIFFERENCE / 3) 
                                                          || (pblock->nPriceInfo2.priceTime < pblock->nTime && pblock->nPriceInfo2.priceTime + MAX_PRICETIME_DIFFERENCE / 3 >= pblock->nTime)))) {
         AddPriceInformation(pblock);
+        addednewpriceinfo = true;
     } else
     if (pblock->nTime > consensusParams.STABLETIME && 
         (!(pblock->nPriceInfo3.priceTime == pblock->nTime || (pblock->nPriceInfo3.priceTime > pblock->nTime && pblock->nPriceInfo3.priceTime <= pblock->nTime + MAX_PRICETIME_DIFFERENCE / 3) 
                                                          || (pblock->nPriceInfo3.priceTime < pblock->nTime && pblock->nPriceInfo3.priceTime + MAX_PRICETIME_DIFFERENCE / 3 >= pblock->nTime)))) {
         AddPriceInformation(pblock);
+        addednewpriceinfo = true;
     }
     if (pblock->nTime > consensusParams.X16RTIME)
        pblock->nVersion |= hashx16Ractive;
@@ -1532,6 +1536,7 @@ void MinerWorker(int thread_id, MinerContext& ctx)
                 break;
             }
 
+            addednewpriceinfo = false;
             // Update nTime every few seconds
             if (UpdateTime(pblock, ctx.chainparams.GetConsensus(), pindexPrev) < 0) {
                 // Recreate the block if the clock has run backwards,
@@ -1539,17 +1544,19 @@ void MinerWorker(int thread_id, MinerContext& ctx)
                 break;
             }
 
-            CHashWriter ss(SER_GETHASH, 0);
-                ss << pblock->nPriceInfo;
-                ss << pblock->priceSig;
-                ss << pblock->nPriceInfo2;
-                ss << pblock->priceSig2;
-                ss << pblock->nPriceInfo3;
-                ss << pblock->priceSig3;
+            if (addednewpriceinfo) {
+                CHashWriter ss(SER_GETHASH, 0);
+                    ss << pblock->nPriceInfo;
+                    ss << pblock->priceSig;
+                    ss << pblock->nPriceInfo2;
+                    ss << pblock->priceSig2;
+                    ss << pblock->nPriceInfo3;
+                    ss << pblock->priceSig3;
 
-            CMutableTransaction tx(*pblock->vtx[0]);
-            tx.hashforpriceinfo = ss.GetHash();
-	        pblock->vtx[0] = MakeTransactionRef(std::move(tx));
+                CMutableTransaction tx(*pblock->vtx[0]);
+                tx.hashforpriceinfo = ss.GetHash();
+	            pblock->vtx[0] = MakeTransactionRef(std::move(tx));
+            }
 
             if (ctx.chainparams.GetConsensus().fPowAllowMinDifficultyBlocks) {
                 // Changing pblock->nTime can change work required on testnet:
