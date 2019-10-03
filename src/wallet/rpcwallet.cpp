@@ -1137,12 +1137,16 @@ static UniValue getaddressesbyaccount(const JSONRPCRequest& request)
 static CTransactionRef SendMoney(CWallet * const pwallet, const CTxDestination &address, CAmount nValue, bool fSubtractFeeFromAmount, const CCoinControl& coin_control, mapValue_t mapValue, std::string fromAccount, std::string referenceline, bool onlyfromoneaddress, CTxDestination fromaddress, bool provideprivatekey, CKey privatekey, unsigned char fromcurrency, bool donotsignnow)
 {
     CAmount curBalance;
-    if (provideprivatekey) {        
-        CPubKey pubkey = privatekey.GetPubKey();
-        CTxDestination dest = pubkey.GetID();
-        SetSecondPubKeyForDestination(dest, pubkey);
+    if (provideprivatekey) {
+        if (onlyfromoneaddress) {
+            curBalance = pwallet->GetWatchOnlyBalanceForAddress(fromaddress, fromcurrency);   
+        } else {
+            CPubKey pubkey = privatekey.GetPubKey();
+            CTxDestination dest = pubkey.GetID();
+            SetSecondPubKeyForDestination(dest, pubkey);
 
-        curBalance = pwallet->GetWatchOnlyBalanceForAddress(dest, fromcurrency);   
+            curBalance = pwallet->GetWatchOnlyBalanceForAddress(dest, fromcurrency);   
+        }        
     } else 
     if (donotsignnow) {
         curBalance = pwallet->GetWatchOnlyBalanceForAddress(fromaddress, fromcurrency) + pwallet->GetBalanceForAddress(fromaddress, fromcurrency);   
