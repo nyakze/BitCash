@@ -1332,18 +1332,33 @@ void BitcashGUI::StartMiningBtnClicked()
                     poolstr = "stratum+tcp://mine.icemining.ca:3649";
                 break;
                 case 1:
-                    poolstr = "stratum+tcp://asia.gos.cx:3639";
-                break;
-                case 2:
                     poolstr = "stratum+tcp://eu.bsod.pw:2564";
                 break;
+                case 2:
+                    poolstr = "stratum+tcp://us.bsod.pw:2564";
+                break;
                 case 3:
-                    poolstr = "stratum+tcp://x16rv2.mine.zergpool.com:3637";
+                    poolstr = "stratum+tcp://asia.bsod.pw:2564";
                 break;
                 case 4:
-                    poolstr = "stratum+tcp://x16rv2.mine.ahashpool.com:3637";
+                    poolstr = "stratum+tcp://us.gos.cx:3639";
                 break;
                 case 5:
+                    poolstr = "stratum+tcp://eu.gos.cx:3639";
+                break;
+                case 6:
+                    poolstr = "stratum+tcp://ru.gos.cx:3639";
+                break;
+                case 7:
+                    poolstr = "stratum+tcp://asia.gos.cx:3639";
+                break;
+                case 8:
+                    poolstr = "stratum+tcp://x16rv2.mine.zergpool.com:3637";
+                break;
+                case 9:
+                    poolstr = "stratum+tcp://x16rv2.mine.ahashpool.com:3637";
+                break;
+                case 10:
                     poolstr = "stratum+tcp://x16rv2.mine.zpool.ca:3637";
                 break;
             }

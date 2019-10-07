@@ -478,7 +478,17 @@ Item {
         anchors.topMargin: 1
         currentIndex: 0
         visible: false
-        model: ["stratum+tcp://mine.icemining.ca:3649", "stratum+tcp://asia.gos.cx:3639", "stratum+tcp://eu.bsod.pw:2564", "stratum+tcp://x16rv2.mine.zergpool.com:3637", "stratum+tcp://x16rv2.mine.ahashpool.com:3637", "stratum+tcp://x16rv2.mine.zpool.ca:3637"]
+        model: ["stratum+tcp://mine.icemining.ca:3649",
+                "stratum+tcp://eu.bsod.pw:2564",
+                "stratum+tcp://us.bsod.pw:2564",
+                "stratum+tcp://asia.bsod.pw:2564",
+                "stratum+tcp://us.gos.cx:3639",
+                "stratum+tcp://eu.gos.cx:3639",
+                "stratum+tcp://ru.gos.cx:3639",
+                "stratum+tcp://asia.gos.cx:3639",
+                "stratum+tcp://x16rv2.mine.zergpool.com:3637",
+                "stratum+tcp://x16rv2.mine.ahashpool.com:3637",
+                "stratum+tcp://x16rv2.mine.zpool.ca:3637"]
     }
 
     property alias infowhitebox: infowhitebox
