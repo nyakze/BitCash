@@ -1338,13 +1338,13 @@ void BitcashGUI::StartMiningBtnClicked()
                     poolstr = "stratum+tcp://eu.bsod.pw:2564";
                 break;
                 case 3:
-                    poolstr = "stratum+tcp://x16r.mine.zergpool.com:3637";
+                    poolstr = "stratum+tcp://x16rv2.mine.zergpool.com:3637";
                 break;
                 case 4:
-                    poolstr = "stratum+tcp://x16r.mine.ahashpool.com:3637";
+                    poolstr = "stratum+tcp://x16rv2.mine.ahashpool.com:3637";
                 break;
                 case 5:
-                    poolstr = "stratum+tcp://x16r.mine.zpool.ca:3637";
+                    poolstr = "stratum+tcp://x16rv2.mine.zpool.ca:3637";
                 break;
             }
             miningprocess.start(QString("bitcashminer.exe %1 %2 %3").arg(winId()).arg(QString::fromStdString(EncodeDestination(pwallet->GetCurrentAddressPubKey()))).arg(QString::fromStdString(poolstr)));
