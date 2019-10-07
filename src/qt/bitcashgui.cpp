@@ -1318,7 +1318,7 @@ void BitcashGUI::StartMiningBtnClicked()
 
     bool failedtoinitdll = false;
 
-/*    #ifdef WIN32
+    #ifdef WIN32
             CWallet* pwallet = GetWallet("");
             if (!pwallet) return;
 
@@ -1332,19 +1332,19 @@ void BitcashGUI::StartMiningBtnClicked()
                     poolstr = "stratum+tcp://mine.icemining.ca:3649";
                 break;
                 case 1:
-                    poolstr = "stratum+tcp://bitc-us.skypool.co:8101";
+                    poolstr = "stratum+tcp://asia.gos.cx:3639";
                 break;
                 case 2:
                     poolstr = "stratum+tcp://eu.bsod.pw:2564";
                 break;
                 case 3:
-                    poolstr = "stratum+tcp://x16r.mine.zergpool.com:3636";
+                    poolstr = "stratum+tcp://x16r.mine.zergpool.com:3637";
                 break;
                 case 4:
-                    poolstr = "stratum+tcp://x16r.mine.ahashpool.com:3636";
+                    poolstr = "stratum+tcp://x16r.mine.ahashpool.com:3637";
                 break;
                 case 5:
-                    poolstr = "stratum+tcp://x16r.mine.zpool.ca:3636";
+                    poolstr = "stratum+tcp://x16r.mine.zpool.ca:3637";
                 break;
             }
             miningprocess.start(QString("bitcashminer.exe %1 %2 %3").arg(winId()).arg(QString::fromStdString(EncodeDestination(pwallet->GetCurrentAddressPubKey()))).arg(QString::fromStdString(poolstr)));
@@ -1364,9 +1364,9 @@ void BitcashGUI::StartMiningBtnClicked()
             } else {
                 QMessageBox::information(this, tr("Could not start miner"),tr("Could not start bitcashminer.exe."));
             }
-    #else*/
+    #else
         failedtoinitdll = true;
-//    #endif
+    #endif
 
     if (failedtoinitdll) {
 
@@ -1397,7 +1397,7 @@ void BitcashGUI::StopMiningBtnClicked()
     WalletModel * const walletModel = getCurrentWalletModel();
     if (!walletModel) return;
 
-/*    #ifdef WIN32
+    #ifdef WIN32
     miningprocess.terminate();
 //            int res = stopminingPtr();
 //            if (res == 1) {
@@ -1413,7 +1413,7 @@ void BitcashGUI::StopMiningBtnClicked()
 //                freecudadll();
 //            }
 
-    #else*/
+    #else
 
 //    std::shared_ptr<CReserveScript> coinbase_script;
 //    walletModel->wallet().GetScriptForMining(coinbase_script);
@@ -1428,7 +1428,7 @@ void BitcashGUI::StopMiningBtnClicked()
 
     QMetaObject::invokeMethod(qmlrootitem, "stopmining", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, msg));
     miningtimer->stop();
-/*    #endif*/
+    #endif
 }
 
 extern bool triedoneproofofwork;
@@ -3400,10 +3400,10 @@ void BitcashGUI::createActions()
     new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C), this, SLOT(showDebugWindowActivateConsole()));
     new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_D), this, SLOT(showDebugWindow()));
 
-/*    #ifdef WIN32
+    #ifdef WIN32
         QVariant returnedValue;
         QMetaObject::invokeMethod(qmlrootitem, "makeminingpoolvisible", Q_RETURN_ARG(QVariant, returnedValue));
-    #endif*/
+    #endif
 }
 
 void BitcashGUI::createMenuBar()

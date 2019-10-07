@@ -242,6 +242,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "importprivkey", 2, "rescan" },
     { "importprivkey", 3, "importchildkeys" },
     { "importprivkey", 4, "settomainkey" },
+    { "importprivkeysfromfile", 2, "rescan" },
     { "importaddress", 2, "rescan" },
     { "importaddress", 3, "p2sh" },
     { "importpubkey", 2, "rescan" },

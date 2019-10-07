@@ -18,6 +18,7 @@ MiningForm {
      function makeminingpoolvisibleintern() {
         miningpoollabel.visible = true
         poolcombo.visible = true
+        informationbtn.visible = true
      }
 
      function getminingpoolintern()
