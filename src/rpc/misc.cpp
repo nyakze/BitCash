@@ -482,6 +482,107 @@ static UniValue signdoublepricewithprivkey(const JSONRPCRequest& request)
     return obj;
 }
 
+static UniValue signtriplepricewithprivkey(const JSONRPCRequest& request)
+{
+    if (request.fHelp || request.params.size() != 4)
+        throw std::runtime_error(
+            "signtriplepricewithprivkey \"privkey\" \"price\" \"price2\" \"price3\"\n"
+            "\nSign two price information with a private key\n"
+            "\nArguments:\n"
+            "1. \"privkey\"         (string, required) The private key to sign the message with.\n"
+            "2. \"price\"           (numeric or string, required) The price in USD.\n"
+            "3. \"price2\"          (numeric or string, required) The price in USD.\n"
+            "4. \"price3\"          (numeric or string, required) The price in USD.\n"
+
+            "\nResult:\n"
+            "\"priceinfo3\"          (string) The time stamped price information message HEX encoded\n"
+            "\"signature3\"          (string) The signature of the price information message HEX encoded\n"
+            "\nExamples:\n"
+            "\nCreate the signature\n"
+            + HelpExampleCli("signtriplepricewithprivkey", "\"privkey\" \"1.50\" \"1.50\" \"1.50\"") +
+            "\nAs json rpc\n"
+            + HelpExampleRpc("signtriplepricewithprivkey", "\"privkey\", \"1.50\" \"1.50\" \"1.50\"")
+        );
+
+    std::string strPrivkey = request.params[0].get_str();
+    CAmount priceusd = AmountFromValue(request.params[1]);
+    if (priceusd <= 0)
+        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount for send");
+
+    CAmount priceusd2 = AmountFromValue(request.params[2]);
+    if (priceusd2 <= 0)
+        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount for send");
+
+    CAmount priceusd3 = AmountFromValue(request.params[3]);
+    if (priceusd3 <= 0)
+        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount for send");
+
+
+    CPriceInfo pinfo;
+    pinfo.priceTime = GetAdjustedTime();
+    pinfo.priceCount = 3;
+    if (priceusd > priceusd2) {
+        pinfo.prices[0] = priceusd;
+        pinfo.prices[1] = priceusd2;
+    } else
+    {
+        pinfo.prices[0] = priceusd2;
+        pinfo.prices[1] = priceusd;
+    }
+    pinfo.prices[2] = priceusd3;
+
+    CKey key = DecodeSecret(strPrivkey);
+    if (!key.IsValid()) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key");
+    }
+
+    CDataStream ssPrice(SER_NETWORK, PROTOCOL_VERSION);
+    ssPrice << pinfo;
+
+    CHashWriter ss(SER_GETHASH, 0);
+    ss << pinfo;
+
+    uint256 hash = ss.GetHash();
+//        std::cout << std::endl<< "hash when signing: " << hash.ToString() << std::endl;
+
+    std::vector<unsigned char> vchSig;
+    if (!key.Sign(hash, vchSig))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Sign failed");
+
+    CPriceInfo pinfo2;
+    pinfo2.priceTime = GetAdjustedTime();
+    pinfo2.priceCount = 2;
+    if (priceusd > priceusd2) {
+        pinfo2.prices[0] = priceusd;
+        pinfo2.prices[1] = priceusd2;
+    } else
+    {
+        pinfo2.prices[0] = priceusd2;
+        pinfo2.prices[1] = priceusd;
+    }
+
+    CDataStream ssPriceold(SER_NETWORK, PROTOCOL_VERSION);
+    ssPriceold << pinfo2;
+
+    CHashWriter ss2(SER_GETHASH, 0);
+    ss2 << pinfo2;
+
+    uint256 hash2 = ss2.GetHash();
+//        std::cout << std::endl<< "hash when signing: " << hash.ToString() << std::endl;
+
+    std::vector<unsigned char> vchSigold;
+    if (!key.Sign(hash2, vchSigold))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Sign failed");
+
+    UniValue obj(UniValue::VOBJ);
+    obj.pushKV("priceinfo3", HexStr(ssPrice.begin(), ssPrice.end()));
+    obj.pushKV("signature3", HexStr(vchSig.begin(), vchSig.end()));
+
+    obj.pushKV("priceinfo2", HexStr(ssPriceold.begin(), ssPriceold.end()));
+    obj.pushKV("signature2", HexStr(vchSigold.begin(), vchSigold.end()));
+
+    return obj;
+}
 
 static UniValue setmocktime(const JSONRPCRequest& request)
 {
@@ -702,6 +803,7 @@ static const CRPCCommand commands[] =
     { "util",               "signmessagewithprivkey",       &signmessagewithprivkey,    {"privkey","message"} },
     { "util",               "signpricewithprivkey",         &signpricewithprivkey,      {"privkey","price"} },
     { "util",               "signdoublepricewithprivkey",   &signdoublepricewithprivkey,{"privkey","price","price2"} },
+    { "util",               "signtriplepricewithprivkey",   &signtriplepricewithprivkey,{"privkey","price","price2","price3"} },
 
     /* Not shown in help */
     { "hidden",             "setmocktime",            &setmocktime,            {"timestamp"}},
