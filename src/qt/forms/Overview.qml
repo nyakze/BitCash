@@ -8,6 +8,11 @@ Item {
     width: 1280
     height: 800
 
+    Timer {
+            interval: 3000; running: true; repeat: true
+            onTriggered: switchcurrencies()
+        }
+
     onWidthChanged: {
        if (overviewForm.width<1200){
            if (1200-overviewForm.width>70){
@@ -86,9 +91,69 @@ Item {
 
     signal sendtobitcashsignalintern()
     signal sendtodollarsignalintern()
+    signal sendtogoldsignalintern()
+    signal sendtodollarfromgoldsignalintern()
     signal startMiningSignalInternoverview()
     signal startBackupSignalInternoverview()
     signal startTradingSignalInternoverview()
+
+    property int currency : 1
+
+    function switchcurrencies()
+    {
+        currency++;
+        if (currency > 2) currency = 1;
+        if (currency == 1)
+        {
+            totalLabelDo.visible = true
+            totalLabelGo.visible = false
+        } else
+        {
+            totalLabelDo.visible = false
+            totalLabelGo.visible = true
+        }
+        totalbitcashiconDo.visible = totalLabelDo.visible
+        label3Do.visible = totalLabelDo.visible
+        pricecaption.visible = totalLabelDo.visible
+        priceLabelDo.visible = totalLabelDo.visible
+        price2LabelDo.visible = totalLabelDo.visible
+        pricebitcashiconDo.visible = totalLabelDo.visible
+        price2bitcashiconDo.visible = totalLabelDo.visible
+        convertinfonextprice.visible = totalLabelDo.visible
+        convertinfonextprice2.visible = totalLabelDo.visible
+        labelsupply2.visible = totalLabelDo.visible
+        supplyusdLabel.visible = totalLabelDo.visible
+        supplyusdicon.visible = totalLabelDo.visible
+        availLabelDo.visible = totalLabelDo.visible
+        availbitcashiconDo.visible = totalLabelDo.visible
+        immatureLabelDo.visible = totalLabelDo.visible
+        immaturebitcashiconDo.visible = totalLabelDo.visible
+        pendingLabelDo.visible = totalLabelDo.visible
+        pendingbitcashiconDo.visible = totalLabelDo.visible
+        converttodollarbtn.visible = totalLabelDo.visible
+        converttobitcashbtn.visible = totalLabelDo.visible
+
+        totalbitcashiconGo.visible = totalLabelGo.visible
+        label4Do.visible = totalLabelGo.visible
+        pricecaption2.visible = totalLabelGo.visible
+        priceLabelGo.visible = totalLabelGo.visible
+        pricebitcashiconGo.visible = totalLabelGo.visible
+        labelsupply3.visible = totalLabelGo.visible
+        supplygoldLabel.visible = totalLabelGo.visible
+        supplygoldicon.visible = totalLabelGo.visible
+        availLabelGo.visible = totalLabelGo.visible
+        availbitcashiconGo.visible = totalLabelGo.visible
+        immatureLabelGo.visible = totalLabelGo.visible
+        immaturebitcashiconGo.visible = totalLabelGo.visible
+        pendingLabelGo.visible = totalLabelGo.visible
+        pendingbitcashiconGo.visible = totalLabelGo.visible
+        convertinfonextprice3.visible = totalLabelGo.visible
+        convertinfonextprice4.visible = totalLabelGo.visible
+        price2bitcashiconGo.visible = totalLabelGo.visible
+        price2LabelGo.visible = totalLabelGo.visible
+        convertgoldtodollarbtn.visible = totalLabelGo.visible
+        convertdollartogoldbtn.visible = totalLabelGo.visible
+    }
 
     function setbalancesintern(avail, pending, immature, total) {
         availLabel.text = avail
@@ -104,9 +169,18 @@ Item {
         totalLabelDo.text = total
     }
 
-    function setpriceDointern(price, price2) {
+    function setbalancesinternGo(avail, pending, immature, total) {
+        availLabelGo.text = avail
+        pendingLabelGo.text = pending
+        immatureLabelGo.text = immature
+        totalLabelGo.text = total
+    }
+
+    function setpriceDointern(price, price2, pricegold) {
         priceLabelDo.text = price
         price2LabelDo.text = price2
+        priceLabelGo.text = pricegold
+        price2LabelGo.text = pricegold
     }
 
     function setwalletvalueintern(value)
@@ -121,9 +195,10 @@ Item {
         return "../res/assets/Type of Transaction/history-type-received.png";
     } 
 
-    function setsupplyintern(bitcash, dollar, blockheight) {
+    function setsupplyintern(bitcash, dollar, gold, blockheight) {
         supplyLabel.text = bitcash
         supplyusdLabel.text = dollar
+        supplygoldLabel.text = gold
         blockheightLabel.text = blockheight;
     }
 
@@ -161,6 +236,26 @@ Item {
         }
 
         Mybutton {
+            id: convertgoldtodollarbtn
+            width: 76
+            height: 44
+            anchors.right: converttobitcashbtn.left
+            anchors.rightMargin: 20
+            font.bold: false
+            font.weight: Font.DemiBold
+            font.pixelSize: 14
+            imagestartleft: 15
+            rightPadding: 20
+            leftPadding: 20
+            font.family: "Montserrat SemiBold"
+            font.capitalization: Font.MixedCase
+            anchors.top: immatureLabelDo.bottom
+            anchors.topMargin: 25
+            iconname: "../res/assets/Miscellaneous/convergoldttodollar.png"
+            onClicked: sendtodollarfromgoldsignalintern()
+        }
+
+        Mybutton {
             id: converttobitcashbtn
             width: 76
             height: 44
@@ -178,6 +273,26 @@ Item {
             anchors.topMargin: 25
             iconname: "../res/assets/Miscellaneous/converttobitcash.png"
             onClicked: sendtobitcashsignalintern()
+        }
+
+        Mybutton {
+            id: convertdollartogoldbtn
+            width: 76
+            height: 44
+            anchors.right: immatureLabelDo.right
+            anchors.rightMargin: 0
+            font.bold: false
+            font.weight: Font.DemiBold
+            font.pixelSize: 14
+            imagestartleft: 15
+            rightPadding: 20
+            leftPadding: 20
+            font.family: "Montserrat SemiBold"
+            font.capitalization: Font.MixedCase
+            anchors.top: immatureLabelDo.bottom
+            anchors.topMargin: 25
+            iconname: "../res/assets/Miscellaneous/convertdollartogold.png"
+            onClicked: sendtogoldsignalintern()
         }
 
         Image {
@@ -293,6 +408,19 @@ Item {
         Label {
             id: labelsupply2
             text: qsTr("Dollar supply")
+            font.pixelSize: 12
+            font.family: "Montserrat Light"
+            font.weight: Font.Light
+            anchors.left: label2.left
+            anchors.leftMargin: 0
+            anchors.top: labelsupply1.bottom
+            anchors.topMargin: 0
+            color: "#202124"
+        }
+
+        Label {
+            id: labelsupply3
+            text: qsTr("Gold supply")
             font.pixelSize: 12
             font.family: "Montserrat Light"
             font.weight: Font.Light
@@ -441,6 +569,33 @@ Item {
         }
 
         Label {
+            id: supplygoldicon
+            anchors.right: supplygoldLabel.left
+            anchors.verticalCenter: supplygoldLabel.verticalCenter
+            font.pixelSize: 12
+            font.family: "Montserrat Light"
+            font.weight: Font.Light
+            color: "#202124"
+            text: qsTr("⅁")
+            anchors.rightMargin: 0
+        }
+
+        Label {
+            id: supplygoldLabel
+            x: 285
+            y: 33
+            text: qsTr("-")
+            font.pixelSize: 12
+            font.family: "Montserrat Light"
+            font.weight: Font.Light
+            leftPadding: 0
+            anchors.top: labelsupply2.top
+            anchors.right: parent.right
+            anchors.rightMargin: 36
+            color: "#202124"
+        }
+
+        Label {
             id: blockheightLabel
             x: 285
             y: 33
@@ -510,6 +665,33 @@ Item {
         }
 
         Label {
+            id: availLabelGo
+            x: 285
+            y: 33
+            text: qsTr("32.950000000")
+            font.pixelSize: 14
+            font.family: "Montserrat SemiBold"
+            font.weight: Font.DemiBold
+            leftPadding: 0
+            anchors.top: availLabel.bottom
+            anchors.topMargin: 5
+            anchors.right: parent.right
+            anchors.rightMargin: 36
+            color: "#202124"
+        }
+
+        Label {
+            id: availbitcashiconGo
+            anchors.right: availLabelGo.left
+            anchors.verticalCenter: availLabelGo.verticalCenter
+            font.pixelSize: 14
+            font.family: "Montserrat SemiBold"
+            font.weight: Font.DemiBold
+            color: "#202124"
+            text: qsTr("⅁")
+        }
+
+        Label {
             id: pendingLabel
             x: 282
             y: 104
@@ -564,6 +746,33 @@ Item {
             }
         }
 
+        Label {
+            id: pendingLabelGo
+            x: 282
+            text: qsTr("8764332,956544566")
+            font.pixelSize: 14
+            font.family: "Montserrat SemiBold"
+            font.weight: Font.DemiBold
+            leftPadding: 0
+            anchors.top: pendingLabel.bottom
+            anchors.topMargin: 5
+            horizontalAlignment: Text.AlignRight
+            anchors.right: parent.right
+            anchors.rightMargin: 36
+            color: "#202124"
+            Label {
+                id: pendingbitcashiconGo
+                anchors.right: pendingLabelGo.left
+                anchors.verticalCenter: pendingLabelGo.verticalCenter
+
+                font.pixelSize: 14
+                font.family: "Montserrat SemiBold"
+                font.weight: Font.DemiBold
+                color: "#202124"
+                text: qsTr("⅁")
+            }
+        }
+
         Rectangle {
             id: totalbalancerect
             onWidthChanged: {
@@ -586,13 +795,22 @@ Item {
                totalLabelDo.font.letterSpacing = totalLabel.font.letterSpacing
                totalbitcashiconDo.font.pixelSize = totalbitcashicon.font.pixelSize
 
+               totalLabelGo.font.pixelSize = totalLabel.font.pixelSize
+               totalLabelGo.font.letterSpacing = totalLabel.font.letterSpacing
+               totalLabelGo.font.letterSpacing = totalLabel.font.letterSpacing
+               totalbitcashiconGo.font.pixelSize = totalbitcashicon.font.pixelSize
+
                priceLabelDo.font.pixelSize = totalLabel.font.pixelSize * 2/3
                priceLabelDo.font.letterSpacing = totalLabel.font.letterSpacing * 2/3
                priceLabelDo.font.letterSpacing = totalLabel.font.letterSpacing * 2/3
                price2LabelDo.font.pixelSize = totalLabel.font.pixelSize * 2/3
                price2LabelDo.font.letterSpacing = totalLabel.font.letterSpacing * 2/3
                price2LabelDo.font.letterSpacing = totalLabel.font.letterSpacing * 2/3
+               priceLabelGo.font.pixelSize = totalLabel.font.pixelSize * 2/3
+               priceLabelGo.font.letterSpacing = totalLabel.font.letterSpacing * 2/3
+               priceLabelGo.font.letterSpacing = totalLabel.font.letterSpacing * 2/3
                pricebitcashiconDo.font.pixelSize = totalbitcashicon.font.pixelSize * 2/3
+               pricebitcashiconGo.font.pixelSize = totalbitcashicon.font.pixelSize * 2/3
                price2bitcashiconDo.font.pixelSize = totalbitcashicon.font.pixelSize * 2/3
             }
             y: 25
@@ -661,6 +879,19 @@ Item {
         }
 
         Label {
+            id: label4Do
+            text: qsTr("Total Gold balance")
+            anchors.top: totalLabel.bottom
+            anchors.topMargin: 20
+            font.pixelSize: 18
+            font.family: "Montserrat SemiBold"
+            font.weight: Font.DemiBold
+            anchors.left: parent.left
+            anchors.leftMargin: 36
+            color: "#212225"
+        }
+
+        Label {
             id: totalLabelDo
             text: qsTr("3345154,000000000")
             font.pixelSize: 42
@@ -687,8 +918,47 @@ Item {
         }
 
         Label {
+            id: totalLabelGo
+            text: qsTr("3345154,000000000")
+            font.pixelSize: 42
+            font.family: "Montserrat Light"
+            font.weight: Font.Light
+            leftPadding: 0
+            anchors.left: totalbitcashiconGo.right
+            anchors.leftMargin: 0
+            anchors.top: label3Do.bottom
+            anchors.topMargin: 10
+            color: "#3e45ac"
+        }
+        Label {
+            id: totalbitcashiconGo
+            anchors.left: parent.left
+            anchors.leftMargin: 36
+            anchors.verticalCenter: totalLabelGo.verticalCenter
+
+            font.pixelSize: 42
+            font.family: "Montserrat Light"
+            font.weight: Font.Light
+            color: "#3e45ac"
+            text: qsTr("⅁")
+        }
+
+        Label {
             id: pricecaption
             text: qsTr("Price of one BitCash in USD")
+            anchors.top: totalbitcashiconDo.bottom
+            anchors.topMargin: 20
+            font.pixelSize: 18
+            font.family: "Montserrat SemiBold"
+            font.weight: Font.DemiBold
+            anchors.left: parent.left
+            anchors.leftMargin: 36
+            color: "#212225"
+        }
+
+        Label {
+            id: pricecaption2
+            text: qsTr("Price of Gold in USD")
             anchors.top: totalbitcashiconDo.bottom
             anchors.topMargin: 20
             font.pixelSize: 18
@@ -712,6 +982,21 @@ Item {
             anchors.topMargin: 10
             color: "#3e45ac"
         }
+
+        Label {
+            id: priceLabelGo
+            text: qsTr("-")
+            font.pixelSize: 30
+            font.family: "Montserrat Light"
+            font.weight: Font.Light
+            leftPadding: 0
+            anchors.left: pricebitcashiconGo.right
+            anchors.leftMargin: 0
+            anchors.top: pricecaption.bottom
+            anchors.topMargin: 10
+            color: "#3e45ac"
+        }
+
         Label {
             id: price2LabelDo
             text: qsTr("-")
@@ -725,8 +1010,35 @@ Item {
             anchors.topMargin: 10
             color: "#3e45ac"
         }
+
+        Label {
+            id: price2LabelGo
+            text: qsTr("-")
+            font.pixelSize: 30
+            font.family: "Montserrat Light"
+            font.weight: Font.Light
+            leftPadding: 0
+            anchors.left: price2bitcashiconGo.right
+            anchors.leftMargin: 0
+            anchors.top: priceLabelDo.bottom
+            anchors.topMargin: 10
+            color: "#3e45ac"
+        }
         Label {
             id: pricebitcashiconDo
+            anchors.left: convertinfonextprice.right
+            anchors.leftMargin: 10
+            anchors.verticalCenter: priceLabelDo.verticalCenter
+
+            font.pixelSize: 30
+            font.family: "Montserrat Light"
+            font.weight: Font.Light
+            color: "#3e45ac"
+            text: qsTr(": $")
+        }
+
+        Label {
+            id: pricebitcashiconGo
             anchors.left: convertinfonextprice.right
             anchors.leftMargin: 10
             anchors.verticalCenter: priceLabelDo.verticalCenter
@@ -758,8 +1070,42 @@ Item {
             }
         }
 
+        Image {
+            id: convertinfonextprice3
+            anchors.left: parent.left
+            anchors.leftMargin: 36
+            anchors.verticalCenter: priceLabelGo.verticalCenter
+            fillMode: Image.PreserveAspectFit
+            source: "../res/assets/Miscellaneous/converdollartogoldblack.png"
+            property string toolTipText: qsTr("Convert BitCash Dollars into Gold (d->g).")
+            ToolTip.text: toolTipText
+            ToolTip.visible: toolTipText ? ma9.containsMouse : false
+            ToolTip.delay: 100
+            ToolTip.timeout: 5000
+            MouseArea {
+                id: ma9
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: sendtogoldsignalintern()
+            }
+        }
+
+
         Label {
             id: price2bitcashiconDo
+            anchors.left: convertinfonextprice2.right
+            anchors.leftMargin: 10
+            anchors.verticalCenter: price2LabelDo.verticalCenter
+
+            font.pixelSize: 30
+            font.family: "Montserrat Light"
+            font.weight: Font.Light
+            color: "#3e45ac"
+            text: qsTr(": $")
+        }
+
+        Label {
+            id: price2bitcashiconGo
             anchors.left: convertinfonextprice2.right
             anchors.leftMargin: 10
             anchors.verticalCenter: price2LabelDo.verticalCenter
@@ -790,6 +1136,27 @@ Item {
                 onClicked: sendtodollarsignalintern()
             }
         }
+
+        Image {
+            id: convertinfonextprice4
+            anchors.left: parent.left
+            anchors.leftMargin: 36
+            anchors.verticalCenter: price2LabelDo.verticalCenter
+            fillMode: Image.PreserveAspectFit
+            source: "../res/assets/Miscellaneous/convertgoldtodollarblack.png"
+            property string toolTipText: qsTr("Convert Gold into BitCash Dollars (g->d).")
+            ToolTip.text: toolTipText
+            ToolTip.visible: toolTipText ? ma10.containsMouse : false
+            ToolTip.delay: 100
+            ToolTip.timeout: 5000
+            MouseArea {
+                id: ma10
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: sendtodollarfromgoldsignalintern()
+            }
+        }
+
 
         }
 
@@ -893,6 +1260,35 @@ Item {
             color: "#202124"
         }
 
+        Label {
+            id: immaturebitcashiconGo
+            anchors.right: immatureLabelGo.left
+            anchors.verticalCenter: immatureLabelGo.verticalCenter
+
+            font.pixelSize: 14
+            font.family: "Montserrat SemiBold"
+            font.weight: Font.DemiBold
+            color: "#202124"
+            text: qsTr("⅁")
+        }
+
+
+        Label {
+            id: immatureLabelGo
+            x: 282
+            text: qsTr("2,453000")
+            font.pixelSize: 14
+            font.weight: Font.DemiBold
+            font.family: "Montserrat SemiBold"
+            leftPadding: 0
+            anchors.top: immatureLabel.bottom
+            anchors.topMargin: 5
+            horizontalAlignment: Text.AlignRight
+            anchors.right: parent.right
+            anchors.rightMargin: 36
+            color: "#202124"
+        }
+
         Rectangle {
             id: rectangle1
             height: 1
@@ -925,6 +1321,7 @@ Item {
     property int  typewidth : 150
     property int  amountwidth : 220
     property int  amountusdwidth : 220
+    property int  amountgoldwidth : 220
     Label{
         id: lasttranslabel
         anchors.top: balancerect.bottom
@@ -1006,7 +1403,7 @@ Item {
                             background: Rectangle { color: "#ebebeb" }
                         }
                         Label {
-                            width: overviewForm.width-datewidth-typewidth-addresswidth-amountwidth-amountusdwidth-30-30
+                            width: overviewForm.width-datewidth-typewidth-addresswidth-amountwidth-amountusdwidth-amountgoldwidth-30-30
                             height: 44
                             text: qsTr("Description")
                             verticalAlignment: Text.AlignVCenter
@@ -1041,6 +1438,23 @@ Item {
                             width: amountusdwidth
                             height: 44
                             text: qsTr("USD")
+                            verticalAlignment: Text.AlignVCenter
+                            bottomPadding: 10
+                            rightPadding: 20
+                            leftPadding: 20
+                            anchors.verticalCenter: parent.verticalCenter
+                            font.weight: Font.DemiBold
+                            font.family: "Montserrat SemiBold"
+                            horizontalAlignment: Text.AlignRight
+                            font.pixelSize: 13
+                            color:"#202124"
+                            padding: 10
+                            background: Rectangle { color: "#ebebeb" }
+                        }
+                        Label {
+                            width: amountgoldwidth
+                            height: 44
+                            text: qsTr("Gold")
                             verticalAlignment: Text.AlignVCenter
                             bottomPadding: 10
                             rightPadding: 20
@@ -1148,7 +1562,7 @@ Item {
                         }
                         ItemDelegate {
                             property int column: 3
-                            width: overviewForm.width-datewidth-typewidth-addresswidth-amountwidth-amountusdwidth-30-30
+                            width: overviewForm.width-datewidth-typewidth-addresswidth-amountwidth-amountusdwidth-amountgoldwidth-30-30
                             text: ""
                             clip: true
                             Label {
@@ -1190,6 +1604,25 @@ Item {
                             clip: true
                             Label {
                                 text: transactionamountusd
+                                anchors.leftMargin: 8
+                                anchors.rightMargin: 20
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                horizontalAlignment: Text.AlignRight
+                                font.family: "Montserrat SemiBold"
+                                font.weight: Font.DemiBold
+                                font.pixelSize: 14
+                                color: "#202124"
+                            }
+                        }
+                        ItemDelegate {
+                            property int column: 6
+                            width: amountgoldwidth
+                            text: ""
+                            clip: true
+                            Label {
+                                text: transactionamountgold
                                 anchors.leftMargin: 8
                                 anchors.rightMargin: 20
                                 anchors.left: parent.left

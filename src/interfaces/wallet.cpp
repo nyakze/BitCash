@@ -81,6 +81,8 @@ WalletTx MakeWalletTx(CWallet& wallet, const CWalletTx& wtx)
     result.debitbitc = wtx.GetDebit(ISMINE_ALL,0);
     result.creditusd = wtx.GetCredit(ISMINE_ALL,1);
     result.debitusd = wtx.GetDebit(ISMINE_ALL,1);
+    result.creditgold = wtx.GetCredit(ISMINE_ALL,2);
+    result.debitgold = wtx.GetDebit(ISMINE_ALL,2);
     result.inputcurrency = wtx.GetInputCurrency();
     result.change = wtx.GetChange();
     result.time = wtx.GetTxTime();
@@ -402,6 +404,10 @@ public:
         result.balanceDo = m_wallet.GetBalance(1);
         result.unconfirmed_balanceDo = m_wallet.GetUnconfirmedBalance(1);
         result.immature_balanceDo = m_wallet.GetImmatureBalance(1);
+        result.balanceGo = m_wallet.GetBalance(2);
+        result.unconfirmed_balanceGo = m_wallet.GetUnconfirmedBalance(2);
+        result.immature_balanceGo = m_wallet.GetImmatureBalance(2);
+
         return result;
     }
     bool tryGetBalances(WalletBalances& balances, int& num_blocks) override

@@ -196,6 +196,7 @@ void BlockAssembler::ConvertCurrenciesForBlockTemplate()
 
     CAmount pricerate = pblock->GetPriceinCurrency(0);//dollar->bitcash /
     CAmount pricerate2 = pblock->GetPriceinCurrency(1);//bitcash->dollar *
+    CAmount pricerate3 = pblock->GetPriceinCurrency(2);//Gold->Dollar *
 
     for (i = 0;i < pblock->vtx.size(); i++) {
 
@@ -229,6 +230,30 @@ void BlockAssembler::ConvertCurrenciesForBlockTemplate()
                     //std::cout << "Input Dollar: " << FormatMoney(tx.vout[j].nValueBitCash) << std::endl;
                     //Convert Dollars into BitCash
                     tx.vout[j].nValue = (__int128_t)tx.vout[j].nValueBitCash * (__int128_t)COIN / (__int128_t)pricerate;
+                    //std::cout << "Converted to BitCash: " << FormatMoney(tx.vout[j].nValue) << std::endl;
+                } else
+                if (inputcurrency == 0 && tx.vout[j].currency == 2) {
+                    //std::cout << "Input BitCash: " << FormatMoney(tx.vout[j].nValueBitCash) << std::endl;
+                    //Convert BitCash into Gold
+                    tx.vout[j].nValue = ((__int128_t)tx.vout[j].nValueBitCash * (__int128_t)pricerate2 / (__int128_t)COIN) * (__int128_t)COIN / (__int128_t)pricerate3;
+                    //std::cout << "Converted to Dollar: " << FormatMoney(tx.vout[j].nValue) << std::endl;
+                } else
+                if (inputcurrency == 2 && tx.vout[j].currency == 0) {
+                    //std::cout << "Input Dollar: " << FormatMoney(tx.vout[j].nValueBitCash) << std::endl;
+                    //Convert Gold into BitCash
+                    tx.vout[j].nValue = ((__int128_t)tx.vout[j].nValueBitCash * (__int128_t)COIN / (__int128_t)pricerate) * (__int128_t)pricerate3 / (__int128_t)COIN;
+                    //std::cout << "Converted to BitCash: " << FormatMoney(tx.vout[j].nValue) << std::endl;
+                } else
+                if (inputcurrency == 1 && tx.vout[j].currency == 2) {
+                    //std::cout << "Input BitCash: " << FormatMoney(tx.vout[j].nValueBitCash) << std::endl;
+                    //Convert Dollar into Gold
+                    tx.vout[j].nValue = (__int128_t)tx.vout[j].nValueBitCash * (__int128_t)COIN / (__int128_t)pricerate3;
+                    //std::cout << "Converted to Dollar: " << FormatMoney(tx.vout[j].nValue) << std::endl;
+                } else
+                if (inputcurrency == 2 && tx.vout[j].currency == 1) {
+                    //std::cout << "Input Dollar: " << FormatMoney(tx.vout[j].nValueBitCash) << std::endl;
+                    //Convert Gold into Dollar
+                    tx.vout[j].nValue = (__int128_t)tx.vout[j].nValueBitCash * (__int128_t)pricerate3 / (__int128_t)COIN;
                     //std::cout << "Converted to BitCash: " << FormatMoney(tx.vout[j].nValue) << std::endl;
                 }
             } else tx.vout[j].nValue = tx.vout[j].nValueBitCash;
@@ -272,6 +297,9 @@ void BlockAssembler::CalculateFeesForBlock()
             //convert fee into currency 0 
             if (currency == 1) {
                 txfee_aux = (__int128_t)txfee_aux * (__int128_t)COIN / (__int128_t)pblock->GetPriceinCurrency(0);
+            } else
+            if (currency == 2) {
+                txfee_aux = ((__int128_t)txfee_aux * (__int128_t)pblock->GetPriceinCurrency(2) / (__int128_t)COIN ) * (__int128_t)COIN / (__int128_t)pblock->GetPriceinCurrency(0);
             }
         }
         nFees += txfee_aux;
@@ -562,7 +590,7 @@ std::string exchangeinfos[numexchangeinfos] = {
   {"https://webwallet.choosebitcash.com/priceinfo/pricesources.txt"},
   {"https://cadkas.com/priceinfo/pricesources.txt"},
   {"https://price.choosebitcash.com/priceinfo/pricesources.txt"},
-  {"https://price2.choosebitcash.com/priceinfo/pricesources.txt"}
+  {"https://www.peerq.com/priceinfo/pricesources.txt"}
 };
 
 const int numwebsites = 5;
@@ -571,7 +599,7 @@ std::string pricewebsites[numwebsites] = {
   {"https://webwallet.choosebitcash.com/priceinfo/getpriceinfo.php"},
   {"https://cadkas.com/priceinfo/getpriceinfo.php"},
   {"https://price.choosebitcash.com/priceinfo/getpriceinfo.php"},
-  {"https://price2.choosebitcash.com/priceinfo/getpriceinfo.php"}
+  {"https://www.peerq.com/priceinfo/getpriceinfo.php"}
 };
 
 //These are the new info points, which return all available price information at once
@@ -581,7 +609,7 @@ std::string allexchangeinfos[numallexchangeinfos] = {
   {"https://webwallet.choosebitcash.com/priceinfo/priceallsources.txt"},
   {"https://cadkas.com/priceinfo/priceallsources.txt"},
   {"https://price.choosebitcash.com/priceinfo/priceallsources.txt"},
-  {"https://price2.choosebitcash.com/priceinfo/priceallsources.txt"}
+  {"https://www.peerq.com/priceinfo/priceallsources.txt"}
 };
 
 const int numallwebsites = 5;
@@ -590,13 +618,14 @@ std::string allpricewebsites[numallwebsites] = {
   {"https://webwallet.choosebitcash.com/priceinfo/getallpriceinfo.php"},
   {"https://cadkas.com/priceinfo/getallpriceinfo.php"},
   {"https://price.choosebitcash.com/priceinfo/getallpriceinfo.php"},
-  {"https://price2.choosebitcash.com/priceinfo/getallpriceinfo.php"}
+  {"https://www.peerq.com/priceinfo/getallpriceinfo.php"}
 };
 
 
 
 CAmount pricecache = COIN;
 CAmount pricecache2 = COIN;
+CAmount pricecache3 = COIN;
 bool haspriceinfo = false;
 uint64_t pricetime = 0;
 
@@ -662,9 +691,10 @@ void GetExchangesListFromWebserver()
 //std::cout << "count " << exchangesall.size() << std::endl;
 }
 
-CAmount GetPriceInformationFromWebserver(std::string server, std::string &price, std::string &signature, CAmount &secondprice)
+CAmount GetPriceInformationFromWebserver(std::string server, std::string &price, std::string &signature, CAmount &secondprice, CAmount &thirdprice)
 {
     secondprice = 0;
+    thirdprice = 0;
     try
     {
         std::string priceinfo = getdocumentwithcurl(server);
@@ -675,9 +705,13 @@ CAmount GetPriceInformationFromWebserver(std::string server, std::string &price,
             price = json["priceinfo"].as<std::string>("");
             signature = json["signature"].as<std::string>("");
         } else
-        {
+        if (time(nullptr) < Params().GetConsensus().GOLDTIME) {
             price = json["priceinfo2"].as<std::string>("");
             signature = json["signature2"].as<std::string>("");
+        } else
+        {
+            price = json["priceinfo3"].as<std::string>("");
+            signature = json["signature3"].as<std::string>("");
         }
     }
     catch (std::exception& e)
@@ -696,6 +730,9 @@ CAmount GetPriceInformationFromWebserver(std::string server, std::string &price,
             int privkeyusednr;
 
             if (CheckPriceInfo(nPriceInfo, priceSig, privkeyusednr)) {
+                if (nPriceInfo.priceCount >= 3) {
+                    thirdprice = nPriceInfo.prices[2];
+                }
                 secondprice = nPriceInfo.prices[1];
                 return nPriceInfo.prices[0];
             } else {
@@ -711,7 +748,7 @@ CAmount GetPriceInformationFromWebserver(std::string server, std::string &price,
     return 0;
 }
 
-CAmount GetOnePriceInformation(std::string &price, std::string &signature, CAmount &secondprice)
+CAmount GetOnePriceInformation(std::string &price, std::string &signature, CAmount &secondprice, CAmount &thirdprice)
 {   
     CAmount res = 0;
     int size = exchanges.size();
@@ -724,7 +761,7 @@ CAmount GetOnePriceInformation(std::string &price, std::string &signature, CAmou
         std::advance(it, i);
         std::string ex = *it;
 
-        res = GetPriceInformationFromWebserver(ex, price, signature, secondprice);
+        res = GetPriceInformationFromWebserver(ex, price, signature, secondprice, thirdprice);
         count++;
     }
 
@@ -769,7 +806,8 @@ std::string CheckPriceServer(int i)
         int64_t nTime1 = GetTimeMicros();
         std::string price, signature;
         CAmount secondprice;
-        GetPriceInformationFromWebserver(ex, price, signature, secondprice);
+        CAmount thirdprice;
+        GetPriceInformationFromWebserver(ex, price, signature, secondprice, thirdprice);
 
         bool found = false;
         CAmount price1, price2;
@@ -826,7 +864,8 @@ CAmount GetPriceInformationFromDifferentServers(std::string &price, std::string 
 
         
         CAmount secondprice;
-        res = GetPriceInformationFromWebserver(ex, price, signature, secondprice);
+        CAmount thirdprice;
+        res = GetPriceInformationFromWebserver(ex, price, signature, secondprice, thirdprice);
 
         count++;
     }
@@ -846,7 +885,8 @@ CAmount GetPriceInformationFromDifferentServers(std::string &price, std::string 
         std::string ex = *it;
 
         CAmount secondprice;
-        res = GetPriceInformationFromWebserver(ex, price2, signature2, secondprice);
+        CAmount thirdprice;
+        res = GetPriceInformationFromWebserver(ex, price2, signature2, secondprice, thirdprice);
 
         count++;
     }
@@ -865,7 +905,8 @@ CAmount GetPriceInformationFromDifferentServers(std::string &price, std::string 
         std::string ex = *it;
 
         CAmount secondprice;
-        res = GetPriceInformationFromWebserver(ex, price3, signature3, secondprice);
+        CAmount thirdprice;
+        res = GetPriceInformationFromWebserver(ex, price3, signature3, secondprice, thirdprice);
 
         count++;
     }
@@ -885,8 +926,14 @@ bool GetAllPriceInformationFromWebserver(std::string server, std::string &price,
         unsigned int pricecount = 0;
         for (unsigned int i = 0; i < json.as_array().size(); i++)
         {
-            tempprice = json[i]["priceinfo2"].as<std::string>("");
-            tempsignature = json[i]["signature2"].as<std::string>("");
+            if (time(nullptr) < Params().GetConsensus().GOLDTIME) {
+                tempprice = json[i]["priceinfo2"].as<std::string>("");
+                tempsignature = json[i]["signature2"].as<std::string>("");
+            } else
+            {
+                tempprice = json[i]["priceinfo3"].as<std::string>("");
+                tempsignature = json[i]["signature3"].as<std::string>("");
+            }
 
             bool isokay = true;
             if (IsHex(tempprice) && IsHex(tempsignature)) { 
@@ -1082,20 +1129,23 @@ bool AddPriceInformation(CBlockHeader *pblock)
     return true;
 }
 
-CAmount GetCachedPriceInformation(uint64_t cachetime, CAmount &secondpricereturn)
+CAmount GetCachedPriceInformation(uint64_t cachetime, CAmount &secondpricereturn, CAmount &thirdpricereturn)
 {
     std::string price, signature;
     CAmount secondprice = 0;
+    CAmount thirdprice = 0;
     if (!haspriceinfo || GetTimeMillis() > pricetime + cachetime) {        
-        CAmount tempprice = GetOnePriceInformation(price, signature, secondprice);
+        CAmount tempprice = GetOnePriceInformation(price, signature, secondprice, thirdprice);
         if (tempprice != 0) {
       	    pricecache = tempprice;
             pricecache2 = secondprice;
+            pricecache3 = thirdprice;
             pricetime = GetTimeMillis();        
             haspriceinfo = true;
         }
     }
-    secondpricereturn = pricecache2; 
+    secondpricereturn = pricecache2;
+    thirdpricereturn = pricecache3;
     return pricecache;
 }
 

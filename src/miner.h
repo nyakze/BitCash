@@ -30,7 +30,7 @@ const int DEFAULT_MINING_POW_THREADS = 2;
 
 void GetExchangesListFromWebserver();
 CAmount GetPriceInformation();
-CAmount GetCachedPriceInformation(uint64_t cachetime, CAmount &secondpricereturn);
+CAmount GetCachedPriceInformation(uint64_t cachetime, CAmount &secondpricereturn, CAmount &thirdpricereturn);
 std::string CheckPriceServers();
 std::string GetPriceServerName(int i);
 int GetPriceServerCount();

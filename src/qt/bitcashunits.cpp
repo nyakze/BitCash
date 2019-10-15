@@ -42,6 +42,7 @@ QString BitcashUnits::longName(int unit)
     switch(unit)
     {
     case DOLLAR: return QString("USD");
+    case GOLD: return QString("GOLD");
     default: return QString("BITC");
     }
     
@@ -69,6 +70,7 @@ QString BitcashUnits::description(int unit)
     switch(unit)
     {
     case DOLLAR: return QString("US Dollar");
+    case GOLD: return QString("Gold oz.");
     default: return QString("BitCash");
     }
 

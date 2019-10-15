@@ -224,11 +224,12 @@ public Q_SLOTS:
     void welcomebonus();
     void printTwitterBillClicked(QString strlink, int denomination, int curr);
     void RegisterNickBtnClicked(const QString &nickname, const QString &address);
-    void SendLinksBtnClicked(const QString &description, double amount, bool senddollar);
+    void SendLinksBtnClicked(const QString &description, double amount, int curr);
     void createPaymentClicked(const QString &recipient, const QString &description, double amount, int day, int month, bool senddollar);
     void createOrderBtnClicked(double amounttosend, double targetPrice, bool senddollar, bool whenpricegoesabove);
     void SendBtnClicked(const QString &destination, const QString &label, const QString &description, double amount, bool substractfee);
     void SendBtnDoClicked(const QString &destination, const QString &label, const QString &description, double amount, bool substractfee);
+    void SendBtnGoClicked(const QString &destination, const QString &label, const QString &description, double amount, bool substractfee);
     bool SendBtnClickedIntern(const QString &destination, const QString &label, const QString &description, double amount, bool substractfee, bool dialog, unsigned char currency, bool nomessages);
     void SendToTwitterBtnClicked(const QString &destination, const QString &description, double amount, bool senddollar);
     void SendToInstaBtnClicked(const QString &destination, const QString &description, double amount, bool senddollar);

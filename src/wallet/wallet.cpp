@@ -4653,10 +4653,15 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
 	                        bool onlyfromoneaddress, CTxDestination fromaddress, bool provideprivatekey, CKey privatekey, unsigned char fromcurrency)
 {
     unsigned char curr = fromcurrency;
-    if (curr>=2) curr = 0;
+    if (curr >= 3) curr = 0;
 
-    if (time(nullptr) < Params().GetConsensus().STABLETIME + 30 * 60 && fromcurrency>0) {
+    if (time(nullptr) < Params().GetConsensus().STABLETIME + 30 * 60 && fromcurrency > 0) {
         strFailReason = _("Transactions from a Dollar account are not yet allowed.");
+        return false;
+    }
+
+    if (time(nullptr) < Params().GetConsensus().GOLDTIME + 5 * 60 && fromcurrency > 1) {
+        strFailReason = _("Transactions from a Gold account are not yet allowed.");
         return false;
     }
 
@@ -4665,10 +4670,12 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
 
     CAmount price = COIN;
     CAmount secondprice = COIN;
+    CAmount thirdprice = COIN;
     price = GetBlockPrice(0);
     secondprice = GetBlockPrice(1);
+    thirdprice = GetBlockPrice(2);
     if (price == 0 || secondprice == 0) {
-        price = GetCachedPriceInformation(30 * 60 * 1000, secondprice);
+        price = GetCachedPriceInformation(30 * 60 * 1000, secondprice, thirdprice);
     }
 
 //std::cout << "price: " <<FormatMoney(price) << std::endl;
@@ -4798,6 +4805,12 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
                         return false;
                     }
 
+
+                    if (time(nullptr) < Params().GetConsensus().GOLDTIME + 5 * 60 && recipient.currency > 1) {
+                        strFailReason = _("Transactions to a Gold account are not yet allowed.");
+                        return false;
+                    }
+
                     if (!FillTxOutForTransaction(   txout, recipient.cpkey, recipient.refline, recipient.currency, recipient.nonprivate, 
                                                     recipient.hasviewkey, recipient.viewpubkey, txNew.nVersion >= 6, txNew.nVersion >= 7)){
                         strFailReason = _("Can not get private key");
@@ -4922,14 +4935,19 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
                 }
 
                 nFeeNeeded = GetMinimumFee(*this, nBytes, coin_control, ::mempool, ::feeEstimator, &feeCalc);
-		nFeeNeededBitCash = nFeeNeeded;
+		        nFeeNeededBitCash = nFeeNeeded;
 //std::cout << "fee old: " <<FormatMoney(nFeeNeeded) << std::endl;	
                 //Calculate fee in from currency
                 if (fromcurrency == 1) {
-                    nFeeNeeded = (__int128_t)nFeeNeeded * (__int128_t)price / (__int128_t)COIN;
+                    nFeeNeeded = (__int128_t)nFeeNeeded * (__int128_t)price / (__int128_t)COIN;//Fee in BitCash to Fee in Dollar
 //std::cout << "fee new: " <<FormatMoney(nFeeNeeded) << std::endl;
 
 //std::cout << "Relay fee: " <<minRelayTxFee.GetFee(nBytes)<< std::endl;
+                } else
+                if (fromcurrency == 2) {
+                    nFeeNeeded = ((__int128_t)nFeeNeeded * (__int128_t)price / (__int128_t)COIN) * (__int128_t)COIN / (__int128_t)thirdprice;//Fee in BitCash to Fee in Gold
+                    if (nFeeNeeded < 1) nFeeNeeded = 1;
+//std::cout << "fee new: " <<FormatMoney(nFeeNeeded) << std::endl;
                 }
 
                 if (feeCalc.reason == FeeReason::FALLBACK && !m_allow_fallback_fee) {
@@ -4961,13 +4979,18 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
                         unsigned int tx_size_with_change = nBytes + coin_selection_params.change_output_size + 2; // Add 2 as a buffer in case increasing # of outputs changes compact size
                         CAmount fee_needed_with_change = GetMinimumFee(*this, tx_size_with_change, coin_control, ::mempool, ::feeEstimator, nullptr);
 
-                //Calculate fee in from currency
-                if (fromcurrency == 1) {
-//std::cout << "fee_needed_with_change old: " <<FormatMoney(nFeeNeeded) << std::endl;
-                    fee_needed_with_change = (__int128_t)fee_needed_with_change * (__int128_t)price / (__int128_t)COIN;
-//std::cout << "fee_needed_with_change new: " <<FormatMoney(nFeeNeeded) << std::endl;
-                }
 
+//std::cout << "fee old: " <<FormatMoney(nFeeNeeded) << std::endl;	
+                        //Calculate fee in from currency
+                        if (fromcurrency == 1) {
+//std::cout << "fee_needed_with_change old: " <<FormatMoney(nFeeNeeded) << std::endl;
+                            fee_needed_with_change = (__int128_t)fee_needed_with_change * (__int128_t)price / (__int128_t)COIN;//Fee in BitCash to Fee in Dollar
+//std::cout << "fee_needed_with_change new: " <<FormatMoney(nFeeNeeded) << std::endl;
+                        } else
+                        if (fromcurrency == 2) {
+                            fee_needed_with_change = ((__int128_t)fee_needed_with_change * (__int128_t)price / (__int128_t)COIN) * (__int128_t)COIN / (__int128_t)thirdprice;//Fee in BitCash to Fee in Gold
+                            if (fee_needed_with_change < 1) fee_needed_with_change = 1;
+                        }
 
                         CAmount minimum_value_for_change = GetDustThreshold(change_prototype_txout, discard_rate);
                         if (nFeeRet >= fee_needed_with_change + minimum_value_for_change) {
@@ -5034,7 +5057,7 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
                             txNew.maxprice = secondprice * 103 / 100;
 //std::cout << "Converted to Dollars: " << FormatMoney(txNew.vout[i].nValue) << std::endl;
                         } else
-		        if (curr == 1 && txNew.vout[i].currency == 0) {
+                        if (curr == 1 && txNew.vout[i].currency == 0) {
 //std::cout << "Input Dollars: " << FormatMoney(txNew.vout[i].nValueBitCash) << std::endl;
                             //Convert Dollars into BitCash
                             txNew.vout[i].nValue = (__int128_t)txNew.vout[i].nValueBitCash * (__int128_t)COIN / (__int128_t)price;
@@ -5042,6 +5065,38 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
                             txNew.minprice = price * 97 / 100;
                             txNew.maxprice = price * 103 / 100;
 //std::cout << "Converted to BitCash: " << FormatMoney(txNew.vout[i].nValue) << std::endl;
+                        } else
+                        if (curr == 0 && txNew.vout[i].currency == 2) {
+//std::cout << "Input BitCash: " << FormatMoney(txNew.vout[i].nValueBitCash) << std::endl;
+                            //Convert BitCash into Gold
+                            txNew.vout[i].nValue = ((__int128_t)txNew.vout[i].nValueBitCash * (__int128_t)secondprice / (__int128_t)COIN) * (__int128_t)COIN / (__int128_t)thirdprice;
+                            txNew.haspricerange = 1;
+                            txNew.minprice = secondprice * 97 / 100;
+                            txNew.maxprice = secondprice * 103 / 100;
+//std::cout << "Converted to Gold: " << FormatMoney(txNew.vout[i].nValue) << std::endl;
+                        } else
+                        if (curr == 2 && txNew.vout[i].currency == 0) {
+//std::cout << "Input Gold: " << FormatMoney(txNew.vout[i].nValueBitCash) << std::endl;
+                            //Convert Gold into BitCash
+                            txNew.vout[i].nValue = ((__int128_t)txNew.vout[i].nValueBitCash * (__int128_t)COIN / (__int128_t)price) * (__int128_t)thirdprice / (__int128_t)COIN;
+                            txNew.haspricerange = 2;
+                            txNew.minprice = price * 97 / 100;
+                            txNew.maxprice = price * 103 / 100;
+//std::cout << "Converted to BitCash: " << FormatMoney(txNew.vout[i].nValue) << std::endl;
+                        } else
+                        if (curr == 1 && txNew.vout[i].currency == 2) {
+//std::cout << "Input Dollars: " << FormatMoney(txNew.vout[i].nValueBitCash) << std::endl;
+                            //Convert Dollars into Gold
+                            txNew.vout[i].nValue = (__int128_t)txNew.vout[i].nValueBitCash * (__int128_t)COIN / (__int128_t)thirdprice;
+                            txNew.haspricerange = 0;
+//std::cout << "Converted to Gold: " << FormatMoney(txNew.vout[i].nValue) << std::endl;
+                        } else
+                        if (curr == 2 && txNew.vout[i].currency == 1) {
+//std::cout << "Input Gold: " << FormatMoney(txNew.vout[i].nValueBitCash) << std::endl;
+                            //Convert Gold into Dollars
+                            txNew.vout[i].nValue = (__int128_t)txNew.vout[i].nValueBitCash * (__int128_t)thirdprice / (__int128_t)COIN;
+                            txNew.haspricerange = 0;
+//std::cout << "Converted to Dollars: " << FormatMoney(txNew.vout[i].nValue) << std::endl;
                         }
 
                     }
@@ -5195,7 +5250,9 @@ bool CWallet::CreateTransactionToMe(uint256& txid,int outnr, CKey key, CAmount n
 
     CAmount price = COIN;
     CAmount secondprice = COIN;
-    price = GetCachedPriceInformation(30 * 60 * 1000, secondprice);
+    CAmount thirdprice = COIN;
+    price = GetCachedPriceInformation(30 * 60 * 1000, secondprice, thirdprice);
+
 
     CMutableTransaction txNew;
     txNew.nLockTime = chainActive.Height();
@@ -5286,11 +5343,16 @@ bool CWallet::CreateTransactionToMe(uint256& txid,int outnr, CKey key, CAmount n
                 nFeeNeeded = GetMinimumFee(*this, nBytes, coin_control, ::mempool, ::feeEstimator, &feeCalc);
                 nFeeNeededBitCash = nFeeNeeded;
                 //Calculate fee in from currency
+//std::cout << "fee old: " <<FormatMoney(nFeeNeeded) << std::endl;	
                 if (tocurrency == 1) {
-                    nFeeNeeded = (__int128_t)nFeeNeeded * (__int128_t)price / (__int128_t)COIN;
+                    nFeeNeeded = (__int128_t)nFeeNeeded * (__int128_t)price / (__int128_t)COIN;//Fee in BitCash to Fee in Dollar
 //std::cout << "fee new: " <<FormatMoney(nFeeNeeded) << std::endl;
 
 //std::cout << "Relay fee: " <<minRelayTxFee.GetFee(nBytes)<< std::endl;
+                } else
+                if (tocurrency == 2) {
+                    nFeeNeeded = ((__int128_t)nFeeNeeded * (__int128_t)price / (__int128_t)COIN) * (__int128_t)COIN / (__int128_t)thirdprice;//Fee in BitCash to Fee in Gold
+                    if (nFeeNeeded < 1) nFeeNeeded = 1;
                 }
                 if (feeCalc.reason == FeeReason::FALLBACK && !m_allow_fallback_fee) {
                     // eventually allow a fallback fee

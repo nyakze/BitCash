@@ -193,7 +193,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state, bool fChe
 
     for (const auto& txout : tx.vout)
     {
-        if (txout.currency>=2) return state.DoS(100, false, REJECT_INVALID, "bad-txns-vout-currency-not-supported");
+        if (txout.currency >= 3) return state.DoS(100, false, REJECT_INVALID, "bad-txns-vout-currency-not-supported");
 
         if (txout.referenceline.length()>1000)
             return state.DoS(100, false, REJECT_INVALID, "CTransaction::CheckTransaction() : txout.referenceline encrypted length>1000 characters");
@@ -386,7 +386,19 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
             } else 
             {
                 CAmount secondprice;
-                txfee_aux = (__int128_t)txfee_aux * (__int128_t)COIN / (__int128_t)GetCachedPriceInformation(30 * 60 * 1000, secondprice);
+                CAmount thirdprice;
+                txfee_aux = (__int128_t)txfee_aux * (__int128_t)COIN / (__int128_t)GetCachedPriceInformation(30 * 60 * 1000, secondprice, thirdprice);
+            }
+        } else
+        if (currency == 2) {
+            if (block != NULL) {
+                txfee_aux = ((__int128_t)txfee_aux * (__int128_t)block->GetPriceinCurrency(2) / (__int128_t)COIN ) * (__int128_t)COIN / (__int128_t)block->GetPriceinCurrency(0);
+            } else 
+            {
+                CAmount secondprice;
+                CAmount thirdprice;
+                CAmount firstprice = GetCachedPriceInformation(30 * 60 * 1000, secondprice, thirdprice);
+                txfee_aux = ((__int128_t)txfee_aux * (__int128_t)thirdprice / (__int128_t)COIN ) * (__int128_t)COIN / (__int128_t)firstprice;
             }
         }
     }

@@ -507,7 +507,7 @@ public:
 
     // Return sum of txouts.
     CAmount GetValueOut() const;
-    CAmount GetValueOutInCurrency(unsigned char currency, CAmount price) const;
+    CAmount GetValueOutInCurrency(unsigned char currency, CAmount price, CAmount pricegold) const;
 
     // GetValueIn() is a method on CCoinsViewCache, because
     // inputs must be known to compute value in.

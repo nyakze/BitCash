@@ -139,6 +139,7 @@ public:
         consensus.MASTERKEYDUMMY = 1563876000;//Time of removal of Master key
         consensus.X16RV2TIME = 1569664800;//Time of X16RV2 fork
         consensus.GPUMINERTIME = 1570356000;//Time of fork which activates the GPU miner again
+        consensus.GOLDTIME = 1573898400;//Time of BitCash gold activation
 
         // The best chain should have at least this much work.                                                
         consensus.nMinimumChainWork = uint256S("0x00");
@@ -361,6 +362,7 @@ public:
         consensus.MASTERKEYDUMMY = 1561992300;//Time of removal of Master key
         consensus.X16RV2TIME = 1567776051;//Time of X16RV2 fork
         consensus.GPUMINERTIME = 1569872820;//Time of fork which activates the GPU miner again
+        consensus.GOLDTIME = 1570998393;//Time of BitCash gold activation
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");
@@ -534,6 +536,7 @@ public:
         consensus.MASTERKEYDUMMY = 1561992300;//Time of removal of Master key
         consensus.X16RV2TIME = 1567776051;//Time of X16RV2 fork
         consensus.GPUMINERTIME = 1569872820;//Time of fork which activates the GPU miner again
+        consensus.GOLDTIME = 1570998393;//Time of BitCash gold activation
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");

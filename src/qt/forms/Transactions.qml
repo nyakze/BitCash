@@ -13,6 +13,7 @@ Item {
     property int  addresswidth : 150
     property int  amountwidth : 220
     property int  amountusdwidth : 220
+    property int  amountgoldwidth : 220
     property alias listView: listView
     property alias listViewlinks: listViewlinks
 
@@ -273,7 +274,7 @@ Item {
                     background: Rectangle { color: "#ebebeb" }
                 }
                 Label {
-                    width: transactionsForm.width-datewidth-typewidth-addresswidth-amountwidth-amountusdwidth-30-30
+                    width: transactionsForm.width-datewidth-typewidth-addresswidth-amountwidth-amountusdwidth-amountgoldwidth-30-30
                     height: 44
                     text: qsTr("Description")
                     verticalAlignment: Text.AlignVCenter
@@ -307,6 +308,22 @@ Item {
                     width: amountusdwidth
                     height: 44
                     text: qsTr("USD")
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    rightPadding: 20
+                    leftPadding: 20
+                    font.family: "Montserrat SemiBold"
+                    font.weight: Font.DemiBold
+                    horizontalAlignment: Text.AlignRight
+                    font.pixelSize: 13
+                    color:"#202124"
+                    padding: 10
+                    background: Rectangle { color: "#ebebeb" }
+                }
+                Label {
+                    width: amountgoldwidth
+                    height: 44
+                    text: qsTr("Gold")
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     rightPadding: 20
@@ -524,7 +541,7 @@ Item {
                                 }
                                 ItemDelegate {
                                     property int column: 3
-                                    width: transactionsForm.width-datewidth-typewidth-addresswidth-amountwidth-amountusdwidth-30-30
+                                    width: transactionsForm.width-datewidth-typewidth-addresswidth-amountwidth-amountusdwidth-amountgoldwidth-30-30
                                     text: ""
                                     Label {
                                         text: transactionreferenceline
@@ -673,7 +690,62 @@ Item {
                                         MenuItem {
                                             text: qsTr("Copy amount USD")
                                             onTriggered: {
-                                                copytextfield.text=transactionamountusd
+                                                copytextfield.text = transactionamountusd
+                                                copytextfield.selectAll()
+                                                copytextfield.copy()
+                                            }
+                                        }
+                                    }
+                                    onDoubleClicked: {
+                                        showtxdetailsintern(index)
+                                    }
+                                }
+
+                                ItemDelegate {
+                                    property int column: 6
+                                    width: amountgoldwidth
+                                    text: ""
+                                    Label {
+                                        text: transactionamountgold
+                                        anchors.leftMargin: 8
+                                        anchors.rightMargin: 20
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        horizontalAlignment: Text.AlignRight
+                                        font.weight: Font.Bold
+                                        font.family: "Montserrat"
+                                        font.pixelSize: 14
+                                        color: "#202124"
+                                    }
+                                    clip: true
+                                    ToolTip.delay: 1000
+                                    ToolTip.timeout: 5000
+                                    ToolTip.visible: hovered
+                                    ToolTip.text: transactionamountgold+"\n"+tooltip
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        acceptedButtons: Qt.RightButton
+                                        hoverEnabled: true
+                                        onClicked: {
+                                            contextMenuamountusd.x = mouse.x;
+                                            contextMenuamountusd.y = mouse.y;
+                                            contextMenuamountusd.open();
+                                        }
+                                        onPressAndHold: {
+                                            if (mouse.source === Qt.MouseEventNotSynthesized) {
+                                                contextMenuamountusd.x = mouse.x;
+                                                contextMenuamountusd.y = mouse.y;
+                                                contextMenuamountusd.open();
+                                            }
+                                        }
+                                    }
+                                    Menu {
+                                        id: contextMenuamountgold
+                                        MenuItem {
+                                            text: qsTr("Copy amount Gold")
+                                            onTriggered: {
+                                                copytextfield.text = transactionamountgold
                                                 copytextfield.selectAll()
                                                 copytextfield.copy()
                                             }

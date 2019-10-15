@@ -350,5 +350,9 @@
         <file>res/assets/Miscellaneous/converttobitcashblack.png</file>
         <file>res/assets/Miscellaneous/converttodollarblack.png</file>
         <file>forms/PaperbillselectBitCash.qml</file>
+        <file>res/assets/Miscellaneous/converdollartogoldblack.png</file>
+        <file>res/assets/Miscellaneous/convertgoldtodollarblack.png</file>
+        <file>res/assets/Miscellaneous/convergoldttodollar.png</file>
+        <file>res/assets/Miscellaneous/convertdollartogold.png</file>
     </qresource>
 </RCC>

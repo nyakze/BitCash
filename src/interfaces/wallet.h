@@ -349,6 +349,10 @@ struct WalletBalances
     CAmount unconfirmed_balanceDo = 0;
     CAmount immature_balanceDo = 0;
 
+    CAmount balanceGo = 0;
+    CAmount unconfirmed_balanceGo = 0;
+    CAmount immature_balanceGo = 0;
+
     bool balanceChanged(const WalletBalances& prev) const
     {
         return balance != prev.balance || unconfirmed_balance != prev.unconfirmed_balance ||
@@ -357,7 +361,11 @@ struct WalletBalances
                immature_watch_only_balance != prev.immature_watch_only_balance ||
 
                balanceDo != prev.balanceDo || unconfirmed_balanceDo != prev.unconfirmed_balanceDo ||
-               immature_balanceDo != prev.immature_balanceDo;
+               immature_balanceDo != prev.immature_balanceDo ||
+
+               balanceGo != prev.balanceGo || unconfirmed_balanceGo != prev.unconfirmed_balanceGo ||
+               immature_balanceGo != prev.immature_balanceGo;
+
     }
 };
 
@@ -375,6 +383,8 @@ struct WalletTx
     CAmount debitbitc;
     CAmount creditusd;
     CAmount debitusd;
+    CAmount creditgold;
+    CAmount debitgold;
     CAmount change;
     unsigned char inputcurrency;
     int64_t time;

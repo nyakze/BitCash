@@ -30,19 +30,24 @@ Item {
     property alias pasteaddress: pasteaddress
     property alias leftamountlabel: leftamountlabel
     property alias dollarlabel: dollarlabel
+    property alias printBtnDo: printBtnDo
+    property alias currencytextan: currencytextan
 
-    property alias paytoEditDo: paytoEditDo
+    /*property alias paytoEditDo: paytoEditDo
     property alias labelEditDo: labelEditDo
     property alias descriptionEditDo: descriptionEditDo
     property alias amountEditDo: amountEditDo
     property alias subtractfeeCheckDo: subtractfeeCheckDo
     property alias sendBtnDo: sendBtnDo
-    property alias printBtnDo: printBtnDo
     property alias availableBalanceBtnDo: availableBalanceBtnDo
     property alias maxbalanceDo: maxbalanceDo
     property alias pasteaddressDo: pasteaddressDo
     property alias leftamountlabelDo: leftamountlabelDo
-    property alias bitcashlabel: bitcashlabel
+    property alias bitcashlabel: bitcashlabel*/
+
+    property alias radioButton1: radioButton1
+    property alias radioButton2: radioButton2
+    property alias radioButton3: radioButton3
 
     /*********************************/
     property alias paytoEdittw: paytoEdittw
@@ -85,8 +90,11 @@ Item {
     property alias amountEditan: amountEditan
     property alias sendBtnan: sendBtnan
     property alias bitcashiconan: bitcashiconan
-    property alias senddollarCheckan: senddollarCheckan
     property alias leftamountlabelan: leftamountlabelan
+
+    property alias radioButton1an: radioButton1an
+    property alias radioButton2an: radioButton2an
+    property alias radioButton3an: radioButton3an
 
     property alias changetwbtn: changetwbtn
     property alias sendconfirmtwBtn: sendconfirmtwBtn
@@ -96,6 +104,8 @@ Item {
     property alias profileimage: profileimage
     property alias badgeimage: badgeimage
     property alias tabBar: tabBar
+    property alias currencytext: currencytext
+    property alias bitcashicon: bitcashicon
 
     Rectangle {
         id: toolBar
@@ -272,7 +282,7 @@ Item {
         anchors.top: sendcap.bottom
         anchors.topMargin: 30
         //height: 590
-        height: 600
+        height: 628
 
         TabBar {
             id: tabBar
@@ -323,7 +333,7 @@ Item {
                 }
             }
 
-            TabButton {
+            /*TabButton {
                 id: tabButton6
                 y: 0
                 text: qsTr("Dollar")
@@ -334,11 +344,11 @@ Item {
                 contentItem: Text {
                     id: textdollar
                     x: 58
-                    text: parent.text
                     leftPadding: 0
                     font: parent.font
                     opacity: enabled ? 1.0 : 0.3
                     color: "#4d505e"
+                    text: "Dollar"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     elide: Text.ElideRight
@@ -351,7 +361,7 @@ Item {
                     fillMode: Image.PreserveAspectFit
                     source: "../res/assets/Miscellaneous/bitcashicon.png"
                 }
-            }
+            }*/
 
             /***************************************/
             TabButton {
@@ -478,7 +488,7 @@ Item {
             anchors.left: whitebox.left
             anchors.leftMargin: 6
             anchors.rightMargin: 6
-            anchors.bottomMargin: 6
+            anchors.bottomMargin: -21
             currentIndex: tabBar.currentIndex
             Component.onCompleted: contentItem.interactive = false
             Item {
@@ -601,6 +611,7 @@ Item {
                     border.color: "#eeeeef"
                     color: "#f7f7f7"
                     Text {
+                        id: currencytext
                         color: "#4d505e"
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.top: parent.top
@@ -650,8 +661,8 @@ Item {
                     leftPadding: 44
                     anchors.left: parent.left
                     anchors.leftMargin: 30
-                    anchors.top: subtractfeeCheck.bottom
-                    anchors.topMargin: 15
+                    anchors.top: radioButton1.bottom
+                    anchors.topMargin: 8
                     iconname: "../res/assets/Miscellaneous/button-send.png"
                     font.capitalization: Font.MixedCase
                     font.family: "Montserrat SemiBold"
@@ -668,6 +679,29 @@ Item {
                     leftPadding: 44
                     rightPadding: 20
                     anchors.left: sendBtn.right
+                    anchors.leftMargin: 20
+                    anchors.top: sendBtn.top
+                    anchors.topMargin: 0
+                    iconname: "../res/assets/Miscellaneous/print-icon.png"
+                    font.capitalization: Font.MixedCase
+                    font.family: "Montserrat SemiBold"
+                    btncolor: "white"
+                    txtcolor: "#3e45ac"
+                    btncolordown: "#eaeaea"
+                    txtcolordown: "#494ea7"
+                    btnbordercolor: "#3e45ac"
+                    borderwidth: 1
+                }
+
+                Mybutton {
+                    id: printBtnDo
+                    height: 44
+                    text: qsTr("Print Dollar paper bills")
+                    font.weight: Font.DemiBold
+                    font.pixelSize: 14
+                    leftPadding: 44
+                    rightPadding: 20
+                    anchors.left: printBtn.right
                     anchors.leftMargin: 20
                     anchors.top: sendBtn.top
                     anchors.topMargin: 0
@@ -791,12 +825,38 @@ Item {
                     anchors.left: leftamountlabel.right
                     anchors.top: infolabel.top
                 }
+
+                RadioButton {
+                    id: radioButton1
+                    text: qsTr("Send BitCash")
+                    checked: true
+                    anchors.left: parent.left
+                    anchors.leftMargin: 30
+                    anchors.top: subtractfeeCheck.bottom
+                    anchors.topMargin: 0
+                }
+                RadioButton {
+                    id: radioButton2
+                    text: qsTr("Send Dollar")
+                    anchors.left: radioButton1.right
+                    anchors.leftMargin: 8
+                    anchors.top: subtractfeeCheck.bottom
+                    anchors.topMargin: 0
+                }
+                RadioButton {
+                    id: radioButton3
+                    text: qsTr("Send Gold")
+                    anchors.left: radioButton2.right
+                    anchors.leftMargin: 8
+                    anchors.top: subtractfeeCheck.bottom
+                    anchors.topMargin: 2
+                }
             }
 
             /////////////////////////////////////////////
             // Dollar
             /////////////////////////////////////////////
-            Item {
+            /*Item {
                 id: dollar
 
                 Label {
@@ -1104,7 +1164,7 @@ Item {
                     anchors.left: leftamountlabelDo.right
                     anchors.top: infolabelDo.top
                 }
-            }
+            }*/
 
             //Twitter
             /******************************************/
@@ -2125,6 +2185,7 @@ Item {
                     border.color: "#eeeeef"
                     color: "#f7f7f7"
                     Text {
+                        id: currencytextan
                         color: "#4d505e"
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.top: parent.top
@@ -2150,19 +2211,30 @@ Item {
                     font.family: "Montserrat SemiBold"
                 }
 
-                CheckBox {
-                    id: senddollarCheckan
-                    text: qsTr("Send Dollar instead of BitCash")
-                    visible: true
-                    font.weight: Font.DemiBold
-                    font.pixelSize: 14
-                    font.family: "Montserrat SemiBold"
-                    topPadding: 30
-                    anchors.top: infolabelan.bottom
-                    anchors.topMargin: 0
-                    leftPadding: 0
+                RadioButton {
+                    id: radioButton1an
+                    text: qsTr("Send BitCash")
+                    checked: true
                     anchors.left: parent.left
                     anchors.leftMargin: 30
+                    anchors.top: infolabelan.bottom
+                    anchors.topMargin: 0
+                }
+                RadioButton {
+                    id: radioButton2an
+                    text: qsTr("Send Dollar")
+                    anchors.left: radioButton1an.right
+                    anchors.leftMargin: 8
+                    anchors.top: infolabelan.bottom
+                    anchors.topMargin: 0
+                }
+                RadioButton {
+                    id: radioButton3an
+                    text: qsTr("Send Gold")
+                    anchors.left: radioButton2an.right
+                    anchors.leftMargin: 8
+                    anchors.top: infolabelan.bottom
+                    anchors.topMargin: 2
                 }
 
                 Mybutton {
@@ -2174,7 +2246,7 @@ Item {
                     leftPadding: 44
                     anchors.left: parent.left
                     anchors.leftMargin: 30
-                    anchors.top: senddollarCheckan.bottom
+                    anchors.top: radioButton1an.bottom
                     anchors.topMargin: 15
                     iconname: "../res/assets/Miscellaneous/button-send.png"
                     font.capitalization: Font.MixedCase

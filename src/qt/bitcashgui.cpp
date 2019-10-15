@@ -1522,11 +1522,13 @@ void BitcashGUI::ExecuteOrders(double price, double price2)
 void BitcashGUI::updateprice()
 {
     QVariant returnedValue;
-    QVariant price, price2;
+    QVariant price, price2, price3;
     double pri = GetBlockPrice(0);
     double pri2 = GetBlockPrice(1);
+    double pri3 = GetBlockPrice(2);
     bool found1 = false;
     bool found2 = false;
+    bool found3 = false;
     if (pri <= 1) price = "(No price available yet)";//1 = 0.000000001 which is the initial value of the price information and means no valid information available
     else {
         price = QString::fromStdString(FormatMoney(pri));
@@ -1537,6 +1539,12 @@ void BitcashGUI::updateprice()
         found2 = true;
         price2 = QString::fromStdString(FormatMoney(pri2));
     }
+    if (pri3 <= 1) price3 = "(No price available yet)";//1 = 0.000000001 which is the initial value of the price information and means no valid information available
+    else {
+        found3 = true;
+        price3 = QString::fromStdString(FormatMoney(pri3));
+    }
+
     if (found1 && found2)
     {
         ExecuteOrders(pri, pri2);
@@ -1545,21 +1553,23 @@ void BitcashGUI::updateprice()
         ExecuteOrders(pri, pri);
     }
 
-    QMetaObject::invokeMethod(qmlrootitem, "setpriceDo",  Q_RETURN_ARG(QVariant, returnedValue), Q_RETURN_ARG(QVariant, price), Q_RETURN_ARG(QVariant, price2));
+    QMetaObject::invokeMethod(qmlrootitem, "setpriceDo",  Q_RETURN_ARG(QVariant, returnedValue), Q_RETURN_ARG(QVariant, price), Q_RETURN_ARG(QVariant, price2), Q_RETURN_ARG(QVariant, price3));
 
-    QVariant supplybitcash, supplydollar, blockheight;
-    CAmount bitcash, dollar;
+    QVariant supplybitcash, supplydollar, supplygold, blockheight;
+    CAmount bitcash, dollar, gold;
     int64_t height;
 
     if (pri > 1) {
-        getsupplyinfo(bitcash, dollar, height);
+        getsupplyinfo(bitcash, dollar, gold, height);
 
         supplybitcash = QString::fromStdString(FormatMoney(bitcash));
         supplydollar = QString::fromStdString(FormatMoney(dollar));
+        supplygold = QString::fromStdString(FormatMoney(gold));
         blockheight = (qlonglong)height;   
 
         QMetaObject::invokeMethod(qmlrootitem, "setsupply",  Q_RETURN_ARG(QVariant, returnedValue), Q_RETURN_ARG(QVariant, supplybitcash), 
                                                                                                     Q_RETURN_ARG(QVariant, supplydollar), 
+                                                                                                    Q_RETURN_ARG(QVariant, supplygold),
                                                                                                     Q_RETURN_ARG(QVariant, blockheight));
     }
 }
@@ -1720,7 +1730,7 @@ void BitcashGUI::ClaimLinksBtnClicked(const QString &strlinkqt)
     }
 }
 
-void BitcashGUI::SendLinksBtnClicked(const QString &description, double amount, bool senddollar) 
+void BitcashGUI::SendLinksBtnClicked(const QString &description, double amount, int curr) 
 {
     if (!UserKnowsPassword()) return;
     WalletModel * const walletModel = getCurrentWalletModel();
@@ -1730,9 +1740,6 @@ void BitcashGUI::SendLinksBtnClicked(const QString &description, double amount, 
     std::string referenceline = description.toStdString(); 
     std::string strlink, strerr;
    
-    int curr = 0;
-    if (senddollar) curr = 1;
-
     if (!walletModel->wallet().SendAsLink(nAmount, referenceline, strlink, strerr, curr, curr))
     {
 //        QMessageBox::critical(this, tr("Could not create link"),QString::fromStdString(strerr));
@@ -1754,7 +1761,8 @@ void BitcashGUI::SendLinksBtnClicked(const QString &description, double amount, 
         qtimestamp.setMSecsSinceEpoch(timestamp);
         QVariant datestr=GUIUtil::dateTimeStr(qtimestamp);
         QVariant currencystr = tr("BITC");
-        if (senddollar) currencystr = tr("USD");
+        if (curr == 1) currencystr = tr("USD");else
+        if (curr == 2) currencystr = tr("GOLD");
 
         QMetaObject::invokeMethod(qmlrootitem, "addbitcashexpresslink", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, s), Q_ARG(QVariant, description), Q_ARG(QVariant, amountstr), Q_ARG(QVariant, datestr), Q_ARG(QVariant, currencystr));
 
@@ -2664,6 +2672,10 @@ void BitcashGUI::SendBtnDoClicked(const QString &destination, const QString &lab
     SendBtnClickedIntern(destination, label, description, amount, substractfee, true, 1, false);
 }
 
+void BitcashGUI::SendBtnGoClicked(const QString &destination, const QString &label, const QString &description, double amount, bool substractfee) 
+{
+    SendBtnClickedIntern(destination, label, description, amount, substractfee, true, 2, false);
+}
 
 void BitcashGUI::RegisterNickBtnClicked(const QString &nickname, const QString &address) 
 {
@@ -2979,10 +2991,12 @@ BitcashGUI::BitcashGUI(interfaces::Node& node, const PlatformStyle *_platformSty
                       this, SLOT(SendBtnClicked(QString, QString, QString, double, bool)));
     QObject::connect(qmlrootitem, SIGNAL(sendBtnDoSignal(QString, QString, QString, double, bool)),
                       this, SLOT(SendBtnDoClicked(QString, QString, QString, double, bool)));
+    QObject::connect(qmlrootitem, SIGNAL(sendBtnGoSignal(QString, QString, QString, double, bool)),
+                      this, SLOT(SendBtnGoClicked(QString, QString, QString, double, bool)));
     QObject::connect(qmlrootitem, SIGNAL(registerNickSignal(QString, QString)),
                       this, SLOT(RegisterNickBtnClicked(QString, QString)));
-    QObject::connect(qmlrootitem, SIGNAL(sendlinkBtnSignal(QString, double, bool)),
-                      this, SLOT(SendLinksBtnClicked(QString, double, bool)));
+    QObject::connect(qmlrootitem, SIGNAL(sendlinkBtnSignal(QString, double, int)),
+                      this, SLOT(SendLinksBtnClicked(QString, double, int)));
     QObject::connect(qmlrootitem, SIGNAL(claimlinkBtnSignal(QString)),
                       this, SLOT(ClaimLinksBtnClicked(QString)));
     QObject::connect(qmlrootitem, SIGNAL(helpSignal()),

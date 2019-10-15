@@ -20,7 +20,7 @@ class UniValue;
 double GetDifficulty(const CBlockIndex* blockindex = nullptr);
 double GetNextDifficulty(const CBlockIndex* blockindex = nullptr);
 double GetBlockPrice(unsigned char currency, const CBlockIndex* blockindex = nullptr);
-void getsupplyinfo(CAmount &bitcash, CAmount &dollar, int64_t &blockheight);
+void getsupplyinfo(CAmount &bitcash, CAmount &dollar, CAmount &gold, int64_t &blockheight);
 
 /** Callback for when block tip changed. */
 void RPCNotifyBlockChange(bool ibd, const CBlockIndex *);

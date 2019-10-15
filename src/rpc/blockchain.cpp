@@ -57,7 +57,7 @@ double GetBlockPrice(unsigned char currency, const CBlockIndex* blockindex)
         else
             blockindex = chainActive.Tip();
     }
-    if (currency > blockindex->nPriceInfo.priceCount - 1) currency = blockindex->nPriceInfo.priceCount - 1;
+    if (currency > blockindex->nPriceInfo.priceCount - 1) return 0;
     if (blockindex->nPriceInfo.priceCount <= 0) return 0;
     else
       return blockindex->GetPriceinCurrency(currency);
@@ -1110,7 +1110,7 @@ static UniValue pruneblockchain(const JSONRPCRequest& request)
     return uint64_t(height);
 }
 
-void getsupplyinfo(CAmount &bitcash, CAmount &dollar, int64_t &blockheight)
+void getsupplyinfo(CAmount &bitcash, CAmount &dollar, CAmount &gold, int64_t &blockheight)
 {
     bitcash = 0;
     dollar = 0;
@@ -1123,6 +1123,7 @@ void getsupplyinfo(CAmount &bitcash, CAmount &dollar, int64_t &blockheight)
         blockheight = (int64_t)stats.nHeight;
         bitcash = stats.nTotalAmount[0];
         dollar = stats.nTotalAmount[1];
+        gold = stats.nTotalAmount[2];
     }
 }
 

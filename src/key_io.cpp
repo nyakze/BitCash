@@ -289,6 +289,9 @@ std::string encodecurrency(const CTxDestination& dest,std::string str)
 {
     unsigned char currency = LocalGetCurrencyForDestination(dest);
     bool isdeposit = LocalGetDepositForDestination(dest);
+    if (currency == 2) {
+        return "gold@"+str;
+    } else
     if (currency == 1) {
         return "dollar@"+str;
     } else
@@ -356,6 +359,10 @@ CTxDestination DecodeDestination(const std::string& strinput, const CChainParams
     bool isdeposit = false;
     std::string str = strinput;
 
+    if (str.length()>=7 && str[0]=='g' && str[1]=='o' && str[2]=='l' && str[3]=='d' && str[4]=='@') {
+        currency = 2;
+        str.erase(0, 5);
+    } else
     if (str.length()>=7 && str[0]=='d' && str[1]=='o' && str[2]=='l' && str[3]=='l' && str[4]=='a' && str[5]=='r' && str[6]=='@') {
         currency = 1;
         str.erase(0, 7);

@@ -137,7 +137,7 @@ CTransaction::CTransaction() : vin(), vout(), nVersion(CTransaction::CURRENT_VER
 CTransaction::CTransaction(const CMutableTransaction &tx) : vin(tx.vin), vout(tx.vout), nVersion(tx.nVersion), nLockTime(tx.nLockTime), hash(ComputeHash()), haspricerange(tx.haspricerange), minprice(tx.minprice), maxprice(tx.maxprice), hashashinfo(tx.hashashinfo), hashforpriceinfo(tx.hashforpriceinfo) {}
 CTransaction::CTransaction(CMutableTransaction &&tx) : vin(std::move(tx.vin)), vout(std::move(tx.vout)), nVersion(tx.nVersion), nLockTime(tx.nLockTime), hash(ComputeHash()), haspricerange(tx.haspricerange), minprice(tx.minprice), maxprice(tx.maxprice), hashashinfo(tx.hashashinfo), hashforpriceinfo(tx.hashforpriceinfo)  {}
 
-CAmount CTransaction::GetValueOutInCurrency(unsigned char currency, CAmount price) const
+CAmount CTransaction::GetValueOutInCurrency(unsigned char currency, CAmount price, CAmount pricegold) const
 {
 //std::cout << "INPUT Currency: " << (int)currency << std::endl;
     CAmount nValueOut = 0;
@@ -154,10 +154,16 @@ CAmount CTransaction::GetValueOutInCurrency(unsigned char currency, CAmount pric
                     value = (__int128_t)tx_out.nValue * (__int128_t)price / (__int128_t)COIN;
 //std::cout << "Conv Dollars: " << FormatMoney(value) << std::endl;
                 } else
-		if (currency == 0 && tx_out.currency == 1) {
+                if (currency == 0 && tx_out.currency == 1) {
                     //Convert Dollars into BitCash
 //std::cout << "Input Dollars: " << FormatMoney(tx_out.nValue) << std::endl;
                     value = (__int128_t)tx_out.nValue * (__int128_t)COIN / (__int128_t)price;
+//std::cout << "Conv BitCash: " << FormatMoney(value) << std::endl;
+                } else
+                if (currency == 0 && tx_out.currency == 2) {
+                    //Convert Gold into BitCash
+//std::cout << "Input Dollars: " << FormatMoney(tx_out.nValue) << std::endl;
+                    value = ((__int128_t)tx_out.nValue * (__int128_t)COIN / (__int128_t)price) * (__int128_t)pricegold / (__int128_t)COIN;
 //std::cout << "Conv BitCash: " << FormatMoney(value) << std::endl;
                 }
         }

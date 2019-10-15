@@ -42,7 +42,8 @@ public:
         Amountusd = 7,
         Amount = 8,
         Currency = 9,
-        Ismined = 10
+        Ismined = 10,
+        Amountgold = 11
     };
 
     /** Roles to get specific information from a transaction row.
@@ -73,6 +74,8 @@ public:
         AmountRolebitc,
         /** Net amount of transaction */
         AmountRoleusd,
+        /** Net amount of transaction */
+        AmountRolegold,
         /** Transaction hash */
         TxHashRole,
         /** Transaction data, hex-encoded */
@@ -87,6 +90,8 @@ public:
         FormattedAmountRolebitc,
         /** Formatted amount, without brackets when unconfirmed */
         FormattedAmountRoleusd,
+        /** Formatted amount, without brackets when unconfirmed */
+        FormattedAmountRolegold,
         /** Transaction status (TransactionRecord::Status) */
         StatusRole,
         /** Unprocessed icon */
@@ -107,6 +112,8 @@ public:
         TableAmountRolebitc,
         //Amount for Table
         TableAmountRoleusd,
+        //Amount for Table
+        TableAmountRolegold,
         //transaction type icon index
         TableTypeAsNumberRole
     };
@@ -141,6 +148,7 @@ private:
     QString formatTxAmount(const TransactionRecord *wtx, bool showUnconfirmed=true, BitcashUnits::SeparatorStyle separators=BitcashUnits::separatorStandard) const;
     QString formatTxAmountbitc(const TransactionRecord *wtx, bool showUnconfirmed=true, BitcashUnits::SeparatorStyle separators=BitcashUnits::separatorStandard) const;
     QString formatTxAmountusd(const TransactionRecord *wtx, bool showUnconfirmed=true, BitcashUnits::SeparatorStyle separators=BitcashUnits::separatorStandard) const;
+    QString formatTxAmountgold(const TransactionRecord *wtx, bool showUnconfirmed=true, BitcashUnits::SeparatorStyle separators=BitcashUnits::separatorStandard) const;
     QString formatTxReferenceline(const TransactionRecord *wtx) const;
     QString formatTxCurrency(const TransactionRecord *wtx) const;
     QString formatTooltip(const TransactionRecord *rec) const;

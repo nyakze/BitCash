@@ -433,6 +433,7 @@ QT_TRANSLATE_NOOP("bitcash-core", "Transaction must have at least one recipient"
 QT_TRANSLATE_NOOP("bitcash-core", "Transaction too large for fee policy"),
 QT_TRANSLATE_NOOP("bitcash-core", "Transaction too large"),
 QT_TRANSLATE_NOOP("bitcash-core", "Transactions from a Dollar account are not yet allowed."),
+QT_TRANSLATE_NOOP("bitcash-core", "Transactions from a Gold account are not yet allowed."),
 QT_TRANSLATE_NOOP("bitcash-core", "Transactions to a Dollar account are not yet allowed."),
 QT_TRANSLATE_NOOP("bitcash-core", "Unable to bind to %s on this computer (bind returned error %s)"),
 QT_TRANSLATE_NOOP("bitcash-core", "Unable to bind to %s on this computer. %s is probably already running."),

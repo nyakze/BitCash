@@ -629,7 +629,8 @@ public:
         WriteOrderPos(nOrderPos, mapValueCopy);
 
         std::string strCommentCopy = strComment;
-        if (currency == 1) strCommentCopy = "dollar@" + strCommentCopy;
+        if (currency == 1) strCommentCopy = "dollar@" + strCommentCopy;else
+        if (currency == 2) strCommentCopy = "gold@" + strCommentCopy;
         if (!mapValueCopy.empty() || !_ssExtra.empty()) {
             CDataStream ss(s.GetType(), s.GetVersion());
             ss.insert(ss.begin(), '\0');
@@ -667,6 +668,12 @@ public:
         if (nSepPos2 == 0) {
             currency = 1;
             strComment.erase(0, 7);
+        }
+
+        size_t nSepPos3 = strComment.find("gold@");
+        if (nSepPos3 == 0) {
+            currency = 2;
+            strComment.erase(0, 5);
         }
 
         mapValue.erase("n");

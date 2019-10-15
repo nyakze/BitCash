@@ -2300,10 +2300,10 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
 
     CAmount blockReward = nFees + GetBlockSubsidy(pindex->nHeight, chainparams.GetConsensus()) + GetBlockSubsidyDevs(pindex->nHeight, chainparams.GetConsensus());
 
-    if (block.vtx[0]->GetValueOutInCurrency(0, block.GetPriceinCurrency(0)) > blockReward)//Get value in currency 0
+    if (block.vtx[0]->GetValueOutInCurrency(0, block.GetPriceinCurrency(0), block.GetPriceinCurrency(2)) > blockReward)//Get value in currency 0
         return state.DoS(100,
                          error("ConnectBlock(): coinbase pays too much (actual=%d vs limit=%d)",
-                               block.vtx[0]->GetValueOutInCurrency(0, block.GetPriceinCurrency(0)), blockReward),
+                               block.vtx[0]->GetValueOutInCurrency(0, block.GetPriceinCurrency(0), block.GetPriceinCurrency(2)), blockReward),
                                REJECT_INVALID, "bad-cb-amount");
 
     if (!control.Wait())
@@ -2342,6 +2342,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
 
     CAmount pricerate = block.GetPriceinCurrency(0);//dollar->bitcash /
     CAmount pricerate2 = block.GetPriceinCurrency(1);//bitcash->dollar *
+    CAmount pricerate3 = block.GetPriceinCurrency(2);//Gold->dollar *
 
 
     for (int i = 0; i < block.vtx.size(); i++) {
@@ -2381,6 +2382,36 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
                     if (tx.haspricerange == 2 && (pricerate < tx.minprice || pricerate > tx.maxprice)) {
                         return state.DoS(100, false, REJECT_INVALID, "price-not-in-range", false, "The block price is not in the range specified for the transaction.");
                     }
+                } else
+                if (inputcurrency == 0 && tx.vout[j].currency == 2) {
+                    //Convert BitCash into Gold
+                    if (tx.vout[j].nValue != ((__int128_t)tx.vout[j].nValueBitCash * (__int128_t)pricerate2 / (__int128_t)COIN) * (__int128_t)COIN / (__int128_t)pricerate3) {
+                        return state.DoS(100, false, REJECT_INVALID, "bad-currency-conversion", false, "The currency conversion is not correct.");
+                    }
+                    if (tx.haspricerange == 1 && (pricerate2 < tx.minprice || pricerate2 > tx.maxprice)) {
+                        return state.DoS(100, false, REJECT_INVALID, "price-not-in-range", false, "The block price is not in the range specified for the transaction.");
+                    }
+                } else
+		        if (inputcurrency == 2 && tx.vout[j].currency == 0) {
+                    //Convert Gold into BitCash
+                    if (tx.vout[j].nValue != ((__int128_t)tx.vout[j].nValueBitCash * (__int128_t)COIN / (__int128_t)pricerate) * (__int128_t)pricerate3 / (__int128_t)COIN) {
+                        return state.DoS(100, false, REJECT_INVALID, "bad-currency-conversion", false, "The currency conversion is not correct.");
+                    }               
+                    if (tx.haspricerange == 2 && (pricerate < tx.minprice || pricerate > tx.maxprice)) {
+                        return state.DoS(100, false, REJECT_INVALID, "price-not-in-range", false, "The block price is not in the range specified for the transaction.");
+                    }
+                } else
+                if (inputcurrency == 1 && tx.vout[j].currency == 2) {
+                    //Convert Dollars into Gold
+                    if (tx.vout[j].nValue != (__int128_t)tx.vout[j].nValueBitCash * (__int128_t)COIN / (__int128_t)pricerate3) {
+                        return state.DoS(100, false, REJECT_INVALID, "bad-currency-conversion", false, "The currency conversion is not correct.");
+                    }
+                } else
+		        if (inputcurrency == 2 && tx.vout[j].currency == 1) {
+                    //Convert Gold into Dollars
+                    if (tx.vout[j].nValue != (__int128_t)tx.vout[j].nValueBitCash * (__int128_t)pricerate3 / (__int128_t)COIN) {
+                        return state.DoS(100, false, REJECT_INVALID, "bad-currency-conversion", false, "The currency conversion is not correct.");
+                    }               
                 }
             } else
             {
@@ -3401,14 +3432,20 @@ bool CheckPriceInfo(CPriceInfo &nPriceInfo, std::vector<unsigned char> &priceSig
 
     uint256 pricehash = ss.GetHash();
 
-    if  (nPriceInfo.priceCount != 2) {
-       return false;
+    if (nPriceInfo.priceTime > Params().GetConsensus().GOLDTIME) {
+        if  (nPriceInfo.priceCount != 3) {
+           return false;
+        }
+    } else {
+        if  (nPriceInfo.priceCount != 2) {
+           return false;
+        }
     }
 
     for (int i = 0; i < nPriceInfo.priceCount; i++) {
         if (nPriceInfo.priceCount >= 2)
         {
-            if (nPriceInfo.prices[0] < nPriceInfo.prices[1])    {
+            if (nPriceInfo.prices[0] < nPriceInfo.prices[1]) {
                 return false;
             }
         }
@@ -3445,7 +3482,7 @@ bool CheckPriceInfo(CPriceInfo &nPriceInfo, std::vector<unsigned char> &priceSig
     }
 
     for (int i = 0; i < nPriceInfo.priceCount; i++) {
-        if (nPriceInfo.prices[i]<=0)
+        if (nPriceInfo.prices[i] <= 0)
         return false;
     }
 
@@ -3538,6 +3575,19 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
 
     uint256 pricehash3 = ss3.GetHash();
 
+    if (block.nTime > consensusParams.GOLDTIME)
+    {
+        if  (block.nPriceInfo.priceCount != 3) {
+            return state.DoS(100, false, REJECT_INVALID, "bad-price-count", false, "Invalid number of price information.");
+        }
+        if  (block.nPriceInfo2.priceCount != 3) {
+            return state.DoS(100, false, REJECT_INVALID, "bad-price-count2", false, "Invalid number of price information.");
+        }
+        if  (block.nPriceInfo3.priceCount != 3) {
+            return state.DoS(100, false, REJECT_INVALID, "bad-price-count3", false, "Invalid number of price information.");
+        }
+
+    } else
     if (block.nTime > consensusParams.MASTERKEYDUMMY)
     {
         if  (block.nPriceInfo.priceCount != 2) {
@@ -4257,6 +4307,7 @@ bool ProcessNewBlock(
 
     CAmount pricerate = pblocknew->GetPriceinCurrency(0);//dollar->bitcash /
     CAmount pricerate2 = pblocknew->GetPriceinCurrency(1);//bitcash->dollar *
+    CAmount pricerate3 = pblocknew->GetPriceinCurrency(2);//Gold->dollar *
 
 
     for (int i = 0; i < pblocknew->vtx.size(); i++) {
@@ -4308,6 +4359,50 @@ bool ProcessNewBlock(
         		if (inputcurrency == 1 && tx.vout[j].currency == 0) {
                     //Convert Dollars into BitCash
                     CAmount amount = (__int128_t)tx.vout[j].nValueBitCash * (__int128_t)COIN / (__int128_t)pricerate;
+                    if (tx.vout[j].nValue != amount ) {
+                        LogPrintf("Inputcurrency: %i \n",inputcurrency);
+                        LogPrintf("Tx to change in ProcessNewBlock: %s \n",tx.GetHash().ToString());
+                        LogPrintf("Convert Dollars into BitCash: %s new: %s \n",FormatMoney(tx.vout[j].nValue),FormatMoney(amount));
+                        tx.vout[j].nValue = amount;
+                        pblocknew->vtx[i] = MakeTransactionRef(std::move(tx));
+                    }               
+                } else
+                if (inputcurrency == 0 && tx.vout[j].currency == 2) {
+                    //Convert BitCash into Gold
+                    CAmount amount = ((__int128_t)tx.vout[j].nValueBitCash * (__int128_t)pricerate2 / (__int128_t)COIN) * (__int128_t)COIN / (__int128_t)pricerate3;
+                    if (tx.vout[j].nValue != amount ) {
+                        LogPrintf("Inputcurrency: %i \n",inputcurrency);
+                        LogPrintf("Tx to change in ProcessNewBlock: %s \n",tx.GetHash().ToString());
+                        LogPrintf("Convert BitCash into Dollars: %s new: %s \n",FormatMoney(tx.vout[j].nValue),FormatMoney(amount));
+                        tx.vout[j].nValue = amount;
+                        pblocknew->vtx[i] = MakeTransactionRef(std::move(tx));
+                    }
+                } else
+        		if (inputcurrency == 2 && tx.vout[j].currency == 0) {
+                    //Convert Gold into BitCash
+                    CAmount amount = ((__int128_t)tx.vout[j].nValueBitCash * (__int128_t)COIN / (__int128_t)pricerate) * (__int128_t)pricerate3 / (__int128_t)COIN;
+                    if (tx.vout[j].nValue != amount ) {
+                        LogPrintf("Inputcurrency: %i \n",inputcurrency);
+                        LogPrintf("Tx to change in ProcessNewBlock: %s \n",tx.GetHash().ToString());
+                        LogPrintf("Convert Dollars into BitCash: %s new: %s \n",FormatMoney(tx.vout[j].nValue),FormatMoney(amount));
+                        tx.vout[j].nValue = amount;
+                        pblocknew->vtx[i] = MakeTransactionRef(std::move(tx));
+                    }               
+                } else
+                if (inputcurrency == 1 && tx.vout[j].currency == 2) {
+                    //Convert Dollar into Gold
+                    CAmount amount = (__int128_t)tx.vout[j].nValueBitCash * (__int128_t)COIN / (__int128_t)pricerate3;
+                    if (tx.vout[j].nValue != amount ) {
+                        LogPrintf("Inputcurrency: %i \n",inputcurrency);
+                        LogPrintf("Tx to change in ProcessNewBlock: %s \n",tx.GetHash().ToString());
+                        LogPrintf("Convert BitCash into Dollars: %s new: %s \n",FormatMoney(tx.vout[j].nValue),FormatMoney(amount));
+                        tx.vout[j].nValue = amount;
+                        pblocknew->vtx[i] = MakeTransactionRef(std::move(tx));
+                    }
+                } else
+        		if (inputcurrency == 2 && tx.vout[j].currency == 1) {
+                    //Convert Gold into Dollar
+                    CAmount amount = (__int128_t)tx.vout[j].nValueBitCash * (__int128_t)pricerate3 / (__int128_t)COIN;
                     if (tx.vout[j].nValue != amount ) {
                         LogPrintf("Inputcurrency: %i \n",inputcurrency);
                         LogPrintf("Tx to change in ProcessNewBlock: %s \n",tx.GetHash().ToString());

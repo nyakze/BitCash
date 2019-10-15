@@ -461,7 +461,7 @@ QString TransactionTableModel::formatTxAmount(const TransactionRecord *wtx, bool
 
 QString TransactionTableModel::formatTxAmountbitc(const TransactionRecord *wtx, bool showUnconfirmed, BitcashUnits::SeparatorStyle separators) const
 {
-    if (wtx->creditbitc - wtx->debitbitc == 0 && wtx->creditusd - wtx->debitusd != 0) return QString("");
+    if (wtx->creditbitc - wtx->debitbitc == 0 && (wtx->creditusd - wtx->debitusd != 0 || wtx->creditgold - wtx->debitgold != 0)) return QString("");
 
     QString str = BitcashUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), wtx->creditbitc + wtx->debitbitc, false, separators);
     if(showUnconfirmed)
@@ -476,9 +476,24 @@ QString TransactionTableModel::formatTxAmountbitc(const TransactionRecord *wtx, 
 
 QString TransactionTableModel::formatTxAmountusd(const TransactionRecord *wtx, bool showUnconfirmed, BitcashUnits::SeparatorStyle separators) const
 {
-    if (wtx->creditbitc - wtx->debitbitc != 0 && wtx->creditusd - wtx->debitusd == 0) return QString("");
+    if ((wtx->creditbitc - wtx->debitbitc != 0 || wtx->creditgold - wtx->debitgold != 0) && wtx->creditusd - wtx->debitusd == 0) return QString("");
 
     QString str = BitcashUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), wtx->creditusd + wtx->debitusd, false, separators);
+    if(showUnconfirmed)
+    {
+        if(!wtx->status.countsForBalance)
+        {
+            str = QString("[") + str + QString("]");
+        }
+    }
+    return QString(str);
+}
+
+QString TransactionTableModel::formatTxAmountgold(const TransactionRecord *wtx, bool showUnconfirmed, BitcashUnits::SeparatorStyle separators) const
+{
+    if ((wtx->creditbitc - wtx->debitbitc != 0 || wtx->creditusd - wtx->debitusd != 0) && wtx->creditgold - wtx->debitgold == 0) return QString("");
+
+    QString str = BitcashUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), wtx->creditgold + wtx->debitgold, false, separators);
     if(showUnconfirmed)
     {
         if(!wtx->status.countsForBalance)
@@ -499,6 +514,7 @@ QString TransactionTableModel::formatTxCurrency(const TransactionRecord *wtx) co
     switch(wtx->currency)
     {
     case 1: return "USD";
+    case 2: return "GOLD";
     default: return "BITC";
     }
 }
@@ -632,6 +648,8 @@ QVariant TransactionTableModel::data(const QModelIndex &index, int role) const
             return qint64(rec->credit + rec->debit);
         case Amountusd:
             return qint64(rec->creditusd + rec->debitusd);
+        case Amountgold:
+            return qint64(rec->creditgold + rec->debitgold);
         case Amountbitc:
             return qint64(rec->creditbitc + rec->debitbitc);
         }
@@ -680,6 +698,8 @@ QVariant TransactionTableModel::data(const QModelIndex &index, int role) const
             return formatTxAmountbitc(rec, true, BitcashUnits::separatorAlways);
     case TableAmountRoleusd:
             return formatTxAmountusd(rec, true, BitcashUnits::separatorAlways);
+    case TableAmountRolegold:
+            return formatTxAmountgold(rec, true, BitcashUnits::separatorAlways);
     case TypeRole:
         return rec->type;
     case DateRole:
@@ -699,6 +719,7 @@ QVariant TransactionTableModel::data(const QModelIndex &index, int role) const
     case CurrencyRole: 
         switch (rec->currency) {
             case 1: return "USD";
+            case 2: return "GOLD";
             default: return "BITC";
         }
     case AmountRole:
@@ -707,6 +728,8 @@ QVariant TransactionTableModel::data(const QModelIndex &index, int role) const
         return qint64(rec->creditbitc + rec->debitbitc);
     case AmountRoleusd:
         return qint64(rec->creditusd + rec->debitusd);
+    case AmountRolegold:
+        return qint64(rec->creditgold + rec->debitgold);
     case TxHashRole:
         return rec->getTxHash();
     case TxHexRole:
@@ -750,6 +773,10 @@ QVariant TransactionTableModel::data(const QModelIndex &index, int role) const
     case FormattedAmountRoleusd:
         // Used for copy/export, so don't include separators
         return formatTxAmountusd(rec, false, BitcashUnits::separatorNever);
+    case FormattedAmountRolegold:
+        // Used for copy/export, so don't include separators
+        return formatTxAmountgold(rec, false, BitcashUnits::separatorNever);
+
     case StatusRole:
         return rec->status.status;
     }
@@ -767,6 +794,7 @@ QHash<int, QByteArray> TransactionTableModel::roleNames() const {
     roles[Qt::ToolTipRole] = "tooltip";
     roles[TableTypeAsNumberRole] = "transactiontypeno";
     roles[TableAmountRoleusd] = "transactionamountusd";
+    roles[TableAmountRolegold] = "transactionamountgold";
     roles[TableAmountRole] = "transactionamount";
     roles[TableCurrencyRole] = "transactioncurrency";
 

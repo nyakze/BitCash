@@ -143,7 +143,7 @@ Item {
         color: "white"
         radius: 3
         anchors.bottom: whitebox3.bottom
-        anchors.bottomMargin: -6
+        anchors.bottomMargin: -31
         anchors.rightMargin: 0
         anchors.leftMargin: 0
         anchors.top: whitebox.top
@@ -164,7 +164,7 @@ Item {
         anchors.topMargin: 26
         border.width: 0
         width: 632
-        height: 290
+        height: 407
     }
 
     Rectangle {
@@ -180,7 +180,7 @@ Item {
         anchors.rightMargin: 6
         visible: true
         border.width: 0
-        height: 181
+        height: 410
     }
 
     Label {
@@ -237,6 +237,28 @@ Item {
 
     MenuTextField {
         id: receivingaddressEditDo
+        visible: false
+        height: 52
+        text: "TESThyhwTyjkPPKkQ27T4B3vAuU6iMgwmHWuvNHjGTB8cmdwxExm"
+        bottomPadding: 16
+        font.pixelSize: 16
+        font.family: "Montserrat"
+        padding: 16
+        rightPadding: 16
+        leftPadding: 16
+        topPadding: 16
+        anchors.top: label.bottom
+        anchors.topMargin: 10
+        anchors.left: label.left
+        anchors.leftMargin: 0
+        anchors.right: whitebox.right
+        anchors.rightMargin: 30
+        selectByMouse: true
+        readOnly: true
+    }
+
+    MenuTextField {
+        id: receivingaddressEditGo
         visible: false
         height: 52
         text: "TESThyhwTyjkPPKkQ27T4B3vAuU6iMgwmHWuvNHjGTB8cmdwxExm"
@@ -368,6 +390,62 @@ Item {
         readOnly: true
     }
 
+    Label {
+        id: label4
+        color: "#202124"
+        text: qsTr("Your nickname to receive Gold")
+        font.pixelSize: 14
+        font.weight: Font.DemiBold
+        font.family: "Montserrat SemiBold"
+        anchors.top: copynicknameDo.bottom
+        anchors.topMargin: 20
+        anchors.left: whitebox.left
+        anchors.leftMargin: 36
+    }
+
+    property alias receivingnicknameGo: receivingnicknameGo
+    property alias receivingnicknameEditGo: receivingnicknameEditGo
+
+    Label {
+        id: receivingnicknameGo
+        color: "#3e45ac"
+        text: "@test"
+        font.letterSpacing: 0
+        font.family: "Montserrat"
+        font.pixelSize: 18
+        anchors.top: label4.bottom
+        anchors.topMargin: 5
+        anchors.right: whitebox2.right
+        anchors.rightMargin: 30
+        anchors.left: whitebox2.left
+        anchors.leftMargin: 30
+    }
+
+    MenuTextField {
+        id: receivingnicknameEditGo
+        visible: false
+        height: 52
+        text: ""
+        font.letterSpacing: 0
+        font.family: "Montserrat"
+        horizontalAlignment: Text.AlignLeft
+        curPos: 0
+        renderType: Text.QtRendering
+        font.pixelSize: 16
+        padding: 16
+        rightPadding: 16
+        leftPadding: 16
+        topPadding: 16
+        anchors.top: label3.bottom
+        anchors.topMargin: 10
+        anchors.right: whitebox2.right
+        anchors.rightMargin: 36
+        anchors.left: whitebox2.left
+        anchors.leftMargin: 36
+        selectByMouse: true
+        readOnly: true
+    }
+
     property alias copyaddress: copyaddress
     Mybutton {
         id: copyaddress
@@ -403,7 +481,7 @@ Item {
     }
 
     Label {
-        id: label4
+        id: label8
         color: "#202124"
         text: qsTr("Your Dollar address")
         font.pixelSize: 14
@@ -423,12 +501,58 @@ Item {
         text: "dollar@TESThyhwTyjkPPKkQ27T4B3vAuU6iMgwmHWuvNHjGTB8cmdwxExm"
         font.pixelSize: 16
         font.family: "Montserrat"
-        anchors.top: label4.bottom
+        anchors.top: label8.bottom
         anchors.topMargin: 5
-        anchors.left: label4.left
+        anchors.left: label8.left
         anchors.leftMargin: 0
         anchors.right: whitebox.right
         anchors.rightMargin: 30
+    }
+
+    Label {
+        id: label5
+        color: "#202124"
+        text: qsTr("Your Gold address")
+        font.pixelSize: 14
+        font.weight: Font.DemiBold
+        font.family: "Montserrat SemiBold"
+        anchors.top: copyaddressDo.bottom
+        anchors.topMargin: 20
+        anchors.left: whitebox.left
+        anchors.leftMargin: 30
+    }
+
+    property alias receivingaddressGo: receivingaddressGo
+    property alias receivingaddressEditGo: receivingaddressEditGo
+    Label {
+        id: receivingaddressGo
+        color: "#3e45ac"
+        text: "gold@TESThyhwTyjkPPKkQ27T4B3vAuU6iMgwmHWuvNHjGTB8cmdwxExm"
+        font.pixelSize: 16
+        font.family: "Montserrat"
+        anchors.top: label5.bottom
+        anchors.topMargin: 5
+        anchors.left: label5.left
+        anchors.leftMargin: 0
+        anchors.right: whitebox.right
+        anchors.rightMargin: 30
+    }
+
+    property alias copyaddressGo: copyaddressGo
+    Mybutton {
+        id: copyaddressGo
+        height: 44
+        text: qsTr("Copy ⅁ address to clipboard")
+        font.weight: Font.DemiBold
+        font.pixelSize: 14
+        font.family: "Montserrat SemiBold"
+        rightPadding: 20
+        leftPadding: 20
+        anchors.top: receivingaddressGo.bottom
+        anchors.topMargin: 20
+        anchors.left: whitebox.left
+        anchors.leftMargin: 30
+        font.capitalization: Font.MixedCase
     }
 
     property alias copynickname: copynickname
@@ -465,13 +589,30 @@ Item {
         font.capitalization: Font.MixedCase
     }
 
+    property alias copynicknameGo: copynicknameGo
+    Mybutton {
+        id: copynicknameGo
+        height: 44
+        text: qsTr("Copy ⅁ nickname to clipboard")
+        font.weight: Font.DemiBold
+        font.pixelSize: 14
+        font.family: "Montserrat SemiBold"
+        rightPadding: 20
+        leftPadding: 20
+        anchors.top: receivingnicknameGo.bottom
+        anchors.topMargin: 20
+        anchors.left: whitebox.left
+        anchors.leftMargin: 30
+        font.capitalization: Font.MixedCase
+    }
+
     property alias whitebox3: whitebox3
     Rectangle {
         id: whitebox3
         x: -3
         y: -1
         width: 632
-        height: 290
+        height: 410
         color: "#ffffff"
         radius: 1
         anchors.rightMargin: 6

@@ -214,17 +214,38 @@ void OverviewPage::setBalance(const interfaces::WalletBalances& balances)
 
     QMetaObject::invokeMethod(qmlrootitem, "setbalancesDo", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, availDo), Q_ARG(QVariant, pendingDo), Q_ARG(QVariant, immatureDo), Q_ARG(QVariant, totalDo), Q_ARG(QVariant, availnumDo));
 
+    QVariant availGo, pendingGo, immatureGo, totalGo, availnumGo, totalvalueGo;
+
+    availGo=BitcashUnits::format(unit, balances.balanceGo, false, BitcashUnits::separatorAlways); 
+    availnumGo=BitcashUnits::format(unit, balances.balanceGo, false, BitcashUnits::separatorNever); 
+
+    pendingGo=BitcashUnits::format(unit, balances.unconfirmed_balanceGo, false, BitcashUnits::separatorAlways);
+
+    immatureGo=BitcashUnits::format(unit, balances.immature_balanceGo, false, BitcashUnits::separatorAlways);
+
+    totalGo=BitcashUnits::format(unit, balances.balanceGo + balances.unconfirmed_balanceGo + balances.immature_balanceGo, false, BitcashUnits::separatorAlways);
+
+    QMetaObject::invokeMethod(qmlrootitem, "setbalancesGo", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, availGo), Q_ARG(QVariant, pendingGo), Q_ARG(QVariant, immatureGo), Q_ARG(QVariant, totalGo), Q_ARG(QVariant, availnumGo));
+
+
     double pri = GetBlockPrice(1);
     if (pri == 0) pri = GetBlockPrice(0);
     if (pri <= 1) {
         totalvalueDo = "Not available";
     } else {
+
         CAmount totalbalance = balances.balance + balances.unconfirmed_balance + balances.immature_balance;
-        double totalbalancedouble = totalbalance / COIN * pri + balances.balanceDo + balances.unconfirmed_balanceDo + balances.immature_balanceDo;
+
+        double priGo = GetBlockPrice(2);
+        double totalbalancedouble;
+        if (priGo <= 1) {
+            totalbalancedouble = totalbalance / COIN * pri + balances.balanceDo + balances.unconfirmed_balanceDo + balances.immature_balanceDo;           
+        } else {
+            totalbalancedouble = totalbalance / COIN * pri + balances.balanceDo + balances.unconfirmed_balanceDo + balances.immature_balanceDo + 
+                                        (balances.balanceGo + balances.unconfirmed_balanceGo + balances.immature_balanceGo) * priGo / COIN;
+        }
         totalvalueDo = BitcashUnits::format(unit,totalbalancedouble , false, BitcashUnits::separatorAlways);        
     }
-
-
 
     QMetaObject::invokeMethod(qmlrootitem, "setwalletvalue", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, totalvalueDo));
 

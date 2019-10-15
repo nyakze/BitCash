@@ -96,6 +96,7 @@ struct Params {
     uint64_t MASTERKEYDUMMY;
     uint64_t X16RV2TIME;
     uint64_t GPUMINERTIME;
+    uint64_t GOLDTIME;
 };
 } // namespace Consensus
 

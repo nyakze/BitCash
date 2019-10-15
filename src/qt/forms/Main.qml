@@ -31,6 +31,20 @@ Item {
         send.sendtobitcashintern(receive.getmybitcashaddress())
     }
 
+    function sendtogold()
+    {
+        //jump to send tab
+        tabBar.currentIndex = tabBar.currentIndex+2
+        send.sendtogoldintern(receive.getmygoldaddress())
+    }
+
+    function sendtodollarfromgold()
+    {
+        //jump to send tab
+        tabBar.currentIndex = tabBar.currentIndex+2
+        send.sendtodollarfromgoldintern(receive.getmydollaraddress())
+    }
+
     function getminingpool()
     {
         return mining.getminingpoolintern()
@@ -62,8 +76,8 @@ Item {
         overview.progressinfolabel2.text=infotext
     }
 
-    function setsupply(bitcash, dollar, blockheight) {
-        overview.setsupplyintern(bitcash, dollar, blockheight)
+    function setsupply(bitcash, dollar, gold, blockheight) {
+        overview.setsupplyintern(bitcash, dollar, gold, blockheight)
     }
 
     function setprogressbarpercent(show,percent) {
@@ -292,9 +306,14 @@ Item {
         send.setmaxbalanceinternDo(avail, availnum)
     }
 
-    function setpriceDo(price, price2) {
-        overview.setpriceDointern(price, price2)
-        send.setpriceDointern(price, price2)
+    function setbalancesGo(avail, pending, immature, total, availnum) {
+        overview.setbalancesinternGo(avail, pending, immature, total)
+        send.setmaxbalanceinternGo(avail, availnum)
+    }
+
+    function setpriceDo(price, price2, pricegold) {
+        overview.setpriceDointern(price, price2, pricegold)
+        send.setpriceDointern(price, price2, pricegold)
     }
 
     function setwalletvalue(value)
@@ -381,6 +400,7 @@ Item {
     signal showtxdetails(int index)
     signal sendBtnSignal(string destination, string label, string description, double amount, bool substractfee)    
     signal sendBtnDoSignal(string destination, string label, string description, double amount, bool substractfee)
+    signal sendBtnGoSignal(string destination, string label, string description, double amount, bool substractfee)
     signal sendBtntwSignal(string destination, string description, double amount, bool senddollar)
     signal sendBtninSignal(string destination, string description, double amount, bool senddollar)
     signal sendBtnreSignal(string destination, string description, double amount, bool senddollar)
@@ -389,7 +409,7 @@ Item {
     signal sendconfirmedBtnreSignal(string destination, string description, double amount, bool senddollar)
     signal generateBillSignal(int denomination)
     signal generateBillBitCashSignal(int denomination)
-    signal sendlinkBtnSignal(string description, double amount, bool senddollar)
+    signal sendlinkBtnSignal(string description, double amount, int currency)
     signal claimlinkBtnSignal(string link)
     signal datefiltersignal(int index)
     signal downloadtransactionsSignal()
@@ -446,6 +466,8 @@ Item {
             onStartTradingSignalInternoverview: tradingBtnSignal();
             onSendtobitcashsignalintern: sendtobitcash()
             onSendtodollarsignalintern: sendtodollar()
+            onSendtogoldsignalintern: sendtogold()
+            onSendtodollarfromgoldsignalintern: sendtodollarfromgold()
         }
         Mining{
             id: mining
@@ -471,6 +493,7 @@ Item {
                 onSendBtnSignalIntern: sendBtnSignal(destination,label,description,amount,substractfee)
                 onPrintBtnSignalIntern: openbillselectwindow2()
                 onSendBtnDoSignalIntern: sendBtnDoSignal(destination,label,description,amount,substractfee)
+                onSendBtnGoSignalIntern: sendBtnGoSignal(destination,label,description,amount,substractfee)
                 onPrintBtnDoSignalIntern: openbillselectwindow()
                 onSendBtntwSignalIntern: sendBtntwSignal(destination,description,amount, senddollar)
                 onSendconfirmedBtntwSignalIntern: sendconfirmedBtntwSignal(destination,description,amount,senddollar)
@@ -478,7 +501,7 @@ Item {
                 onSendconfirmedBtninSignalIntern: sendconfirmedBtninSignal(destination, description, amount, senddollar)
                 onSendBtnreSignalIntern: sendBtnreSignal(destination,description,amount, senddollar)
                 onSendconfirmedBtnreSignalIntern: sendconfirmedBtnreSignal(destination,description,amount, senddollar)
-                onSendlinkBtnSignalIntern: sendlinkBtnSignal(description, amount, senddollar)
+                onSendlinkBtnSignalIntern: sendlinkBtnSignal(description, amount, currency)
                 onSendtoanyoneSignalIntern: gotosendtoanyone()
                 onViewaccounthistorysignal:{
                     tabBar.currentIndex=tabBar.currentIndex+2
@@ -494,7 +517,7 @@ Item {
             width: parent
             height: parent
             contentWidth: width
-            contentHeight: 1024
+            contentHeight: 1300
             ScrollBar.vertical: ScrollBar {
                 active: true;
                 width: 10
