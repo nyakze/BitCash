@@ -325,6 +325,7 @@ static UniValue getprice(const JSONRPCRequest& request)
     UniValue result(UniValue::VOBJ);
     result.pushKV("pricedollarintobitcash", ValueFromAmount(GetBlockPrice(0)));
     result.pushKV("pricebitcashintodollar", ValueFromAmount(GetBlockPrice(1)));
+    result.pushKV("priceofgold", ValueFromAmount(GetBlockPrice(2)));
     return result;
 }
 
@@ -1164,6 +1165,7 @@ static UniValue gettxoutsetinfo(const JSONRPCRequest& request)
         ret.pushKV("disk_size", stats.nDiskSize);
         ret.pushKV("total_amount", ValueFromAmount(stats.nTotalAmount[0]));
         ret.pushKV("total_amount_usd", ValueFromAmount(stats.nTotalAmount[1]));
+        ret.pushKV("total_amount_gold", ValueFromAmount(stats.nTotalAmount[2]));
     } else {
         throw JSONRPCError(RPC_INTERNAL_ERROR, "Unable to read UTXO set");
     }
