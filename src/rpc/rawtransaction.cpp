@@ -93,6 +93,32 @@ void TxToUnivWithWallet(const CWallet* pwallet,const CTransaction& tx, const uin
         else {
             in.pushKV("txid", txin.prevout.hash.GetHex());
             in.pushKV("vout", (int64_t)txin.prevout.n);
+
+            CCoinsViewCache theview(pcoinsTip.get());
+
+            if (!theview.HaveCoin(txin.prevout)) {
+                CTransactionRef txfound;
+                uint256 hash_block;
+                CBlockIndex* blockindex = nullptr;
+                //does fail if we referring to a tx input in the same block, but this is no longer allows since the stable coin fork
+                if (GetTransaction(txin.prevout.hash, txfound, Params().GetConsensus(), hash_block, true, blockindex)) {
+
+                    in.pushKV("input:value", ValueFromAmount(txfound->vout[txin.prevout.n].nValue));        
+                    in.pushKV("input:valueBitCash", ValueFromAmount(txfound->vout[txin.prevout.n].nValueBitCash));
+                    in.pushKV("input:currency", txfound->vout[txin.prevout.n].currency);
+                }
+            } else {
+                const Coin& coin = theview.AccessCoin(txin.prevout);
+                if (coin.IsCoinBase()) {
+                    in.pushKV("input", "coinbase");        
+                } else {
+                    in.pushKV("input:value", ValueFromAmount(coin.out.nValue));        
+                    in.pushKV("input:valueBitCash", ValueFromAmount(coin.out.nValueBitCash));
+                    in.pushKV("input:currency", coin.out.currency);
+                }
+                break;
+            }
+
             UniValue o(UniValue::VOBJ);
             o.pushKV("asm", ScriptToAsmStr(txin.scriptSig, true));
             o.pushKV("hex", HexStr(txin.scriptSig.begin(), txin.scriptSig.end()));
