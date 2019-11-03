@@ -160,18 +160,19 @@ void TxToUnivWithWallet(const CWallet* pwallet,const CTransaction& tx, const uin
         CKey viewkey;
         if (pwallet->GetViewKeyForAddressAsSender(txout, viewkey))
         {
-            out.pushKV("viewkey", EncodeSecret(viewkey));
-        }
-        if (pwallet->GetRealAddressAndRefline(txout, recipientpubkey, referenceline, "", false, tx.nVersion >= 7))
-        {         
-            if (txout.isnonprivate) {
-                out.pushKV("address", EncodeDestinationHasSecondKey(GetDestinationForKey(recipientpubkey, OutputType::NONPRIVATE)));
-            } else
-            {
-                out.pushKV("address", EncodeDestinationHasSecondKey(GetDestinationForKey(recipientpubkey, OutputType::LEGACY)));
+            out.pushKV("viewkey", EncodeSecret(viewkey));        
+            if (pwallet->GetRealAddressAndReflineWithViewkey(txout, recipientpubkey, referenceline, viewkey, tx.nVersion >= 7))
+            {         
+                if (txout.isnonprivate) {
+                    out.pushKV("address", EncodeDestinationHasSecondKey(GetDestinationForKey(recipientpubkey, OutputType::NONPRIVATE)));
+                } else
+                {
+                    out.pushKV("address", EncodeDestinationHasSecondKey(GetDestinationForKey(recipientpubkey, OutputType::LEGACY)));
+                }
+                out.pushKV("referenceline", referenceline);
             }
-            out.pushKV("referenceline", referenceline);
         }
+
 #endif
         vout.push_back(out);
     }
