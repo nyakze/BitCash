@@ -15,6 +15,7 @@
 #include <consensus/tx_verify.h>
 #include <consensus/merkle.h>
 #include <consensus/validation.h>
+#include <rpc/blockchain.h>
 #include "cuckoo/miner.h"
 #include <hash.h>
 #include <validation.h>
@@ -1143,6 +1144,11 @@ CAmount GetCachedPriceInformation(uint64_t cachetime, CAmount &secondpricereturn
             pricetime = GetTimeMillis();        
             haspriceinfo = true;
         }
+    }
+    if (!haspriceinfo) {
+        pricecache = GetBlockPrice(0);
+        secondpricereturn = GetBlockPrice(1);
+        thirdpricereturn = GetBlockPrice(2);
     }
     secondpricereturn = pricecache2;
     thirdpricereturn = pricecache3;
