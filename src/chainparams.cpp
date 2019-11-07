@@ -139,7 +139,7 @@ public:
         consensus.MASTERKEYDUMMY = 1563876000;//Time of removal of Master key
         consensus.X16RV2TIME = 1569664800;//Time of X16RV2 fork
         consensus.GPUMINERTIME = 1570356000;//Time of fork which activates the GPU miner again
-        consensus.GOLDTIME = 1573898400;//Time of BitCash gold activation
+        consensus.GOLDTIME = 1573984800;//Time of BitCash gold activation
 
         // The best chain should have at least this much work.                                                
         consensus.nMinimumChainWork = uint256S("0x00");
@@ -305,6 +305,7 @@ copy merkle root
                 { 300000, uint256S("0x6fc9ac59a21b8722df1bd650c05cff490d8e2d39814b1ea0bc9bc4892f3e99c8")},
                 { 400000, uint256S("0xb4073b529c85feef2c7ba96eeaa33e06762944fb03b8eff7271df3370be1c651")},
                 { 460000, uint256S("0xfccfad82c82e174d6ba6b384ee867883d52e2cc99a59a62f538139cee5df6af4")},
+                { 600000, uint256S("0x270e3019eaf69f2dd266951394462c74f8ab8d23f661708771ae75ce76d80000")},
             }
         };
 
@@ -362,7 +363,7 @@ public:
         consensus.MASTERKEYDUMMY = 1561992300;//Time of removal of Master key
         consensus.X16RV2TIME = 1567776051;//Time of X16RV2 fork
         consensus.GPUMINERTIME = 1569872820;//Time of fork which activates the GPU miner again
-        consensus.GOLDTIME = 1570998393;//Time of BitCash gold activation
+        consensus.GOLDTIME = 1573984800;//Time of BitCash gold activation
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");
@@ -536,7 +537,7 @@ public:
         consensus.MASTERKEYDUMMY = 1561992300;//Time of removal of Master key
         consensus.X16RV2TIME = 1567776051;//Time of X16RV2 fork
         consensus.GPUMINERTIME = 1569872820;//Time of fork which activates the GPU miner again
-        consensus.GOLDTIME = 1570998393;//Time of BitCash gold activation
+        consensus.GOLDTIME = 1573984800;//Time of BitCash gold activation
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");

