@@ -549,37 +549,9 @@ static UniValue signtriplepricewithprivkey(const JSONRPCRequest& request)
     if (!key.Sign(hash, vchSig))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Sign failed");
 
-    CPriceInfo pinfo2;
-    pinfo2.priceTime = GetAdjustedTime();
-    pinfo2.priceCount = 2;
-    if (priceusd > priceusd2) {
-        pinfo2.prices[0] = priceusd;
-        pinfo2.prices[1] = priceusd2;
-    } else
-    {
-        pinfo2.prices[0] = priceusd2;
-        pinfo2.prices[1] = priceusd;
-    }
-
-    CDataStream ssPriceold(SER_NETWORK, PROTOCOL_VERSION);
-    ssPriceold << pinfo2;
-
-    CHashWriter ss2(SER_GETHASH, 0);
-    ss2 << pinfo2;
-
-    uint256 hash2 = ss2.GetHash();
-//        std::cout << std::endl<< "hash when signing: " << hash.ToString() << std::endl;
-
-    std::vector<unsigned char> vchSigold;
-    if (!key.Sign(hash2, vchSigold))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Sign failed");
-
     UniValue obj(UniValue::VOBJ);
     obj.pushKV("priceinfo3", HexStr(ssPrice.begin(), ssPrice.end()));
     obj.pushKV("signature3", HexStr(vchSig.begin(), vchSig.end()));
-
-    obj.pushKV("priceinfo2", HexStr(ssPriceold.begin(), ssPriceold.end()));
-    obj.pushKV("signature2", HexStr(vchSigold.begin(), vchSigold.end()));
 
     return obj;
 }
