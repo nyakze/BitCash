@@ -246,6 +246,12 @@ static UniValue checkpriceservers(const JSONRPCRequest& request)
         obj.push_back(Pair(GetPriceServerName(i),             CheckPriceServer(i)));
     }
 
+    count = GetPriceServerAllCount(); 
+    for (int i = 0; i < count; i++)
+    {
+        obj.push_back(Pair(GetPriceServerAllName(i),             CheckPriceServerAll(i)));
+    }
+
     return obj;
 }
 

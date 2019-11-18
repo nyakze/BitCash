@@ -791,6 +791,28 @@ std::string GetPriceServerName(int i)
     return outstr;   
 }
 
+int GetPriceServerAllCount()
+{
+    return exchangesall.size();
+}
+
+std::string GetPriceServerAllName(int i)
+{   
+    std::string outstr = "";
+    
+    if (i >= 0 && i < exchangesall.size())
+    {
+        //get the i. element of exchanges
+	    std::set<std::string>::iterator it = exchangesall.begin();
+	    std::advance(it, i);
+
+        outstr = *it;
+
+    } else outstr = "FAILED.";
+
+    return outstr;   
+}
+
 std::string CheckPriceServer(int i)
 {   
     std::string outstr = "";
@@ -809,6 +831,61 @@ std::string CheckPriceServer(int i)
         CAmount secondprice;
         CAmount thirdprice;
         GetPriceInformationFromWebserver(ex, price, signature, secondprice, thirdprice);
+
+        bool found = false;
+        CAmount price1, price2;
+        if (IsHex(price) && IsHex(signature)) { 
+            std::vector<unsigned char> txData(ParseHex(price));
+            CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
+            try {
+                CPriceInfo nPriceInfo;
+                ssData >> nPriceInfo;
+
+                std::vector<unsigned char> priceSig;//Signature for nPriceInfo
+                priceSig = ParseHex(signature);
+                int privkeyusednr;
+
+                if (CheckPriceInfo(nPriceInfo, priceSig, privkeyusednr)) {
+                    price1 = nPriceInfo.prices[0];
+                    price2 = nPriceInfo.prices[1];
+                    found = true;
+                }
+            } catch (const std::exception&) {
+                // Fall through.
+            }    
+        } 
+
+
+        if (!found)
+        {
+            outstr += "FAILED ( " + std::to_string( ( GetTimeMicros()- nTime1 ) / 1000 ) + "ms ).";
+        } else
+        {
+            outstr += "SUCCESSFUL ( " + FormatMoney(price1) + "; " + FormatMoney(price2) + "; " + std::to_string( ( GetTimeMicros()- nTime1 ) / 1000 ) + "ms ).";
+        }
+    } else outstr = "FAILED.";
+
+    return outstr;   
+}
+
+std::string CheckPriceServerAll(int i)
+{   
+    std::string outstr = "";
+    std::string price;
+    std::string signature;
+    
+    if (i >= 0 && i < exchangesall.size())
+    {
+        //get the i. element of exchanges
+	    std::set<std::string>::iterator it = exchangesall.begin();
+	    std::advance(it, i);
+        std::string ex = *it;
+
+        int64_t nTime1 = GetTimeMicros();
+        std::string price, signature, signature2, signature3;
+        std::string secondprice;
+        std::string thirdprice;
+        GetAllPriceInformationFromWebserver(ex, price, signature, secondprice, signature2, thirdprice, signature3);
 
         bool found = false;
         CAmount price1, price2;
