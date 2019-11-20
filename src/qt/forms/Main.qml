@@ -17,6 +17,12 @@ Item {
         color: "#f7f7f7"
     }
 
+    function sendforinstaswap(amount, address)
+    {
+        send.sendforinstaswapintern(amount, address)
+    }
+
+
     function sendtodollar()
     {
         //jump to send tab
@@ -188,6 +194,11 @@ Item {
         receive.displayerrormessageintern(msg)
         payments.displayerrormessageintern(msg)
         trading.displayerrormessageintern(msg)
+        instaswap.displayerrormessageintern(msg)
+    }
+
+    function sendinstaswapinfo(msg) {
+        instaswap.sendinstaswapinfointern(msg)
     }
 
     function displayerrormessageimportkey(msg) {        
@@ -395,6 +406,8 @@ Item {
         transactions.setactualmonthandyearintern(month, year)
     }
 
+    signal instaSwapCheckAmountSignal(bool buybitcash, double amount)
+    signal instaSwapSendBtnSignal(bool buybitcash, double amount, string bitcoinaddress)
     signal printTwitterBillSignal(string link, int denomination, int currency)
     signal filtereditchangedsignal(string text)
     signal showtxdetails(int index)
@@ -569,6 +582,11 @@ Item {
                 onDeletepaymentsignalintern: deletepaymentsignal(idstr)
                 onUndopaymentremovalSignalintern: undopaymentremovalSignal()
             }
+        }
+        InstaSwap {
+            id: instaswap
+            onInstaSwapCheckAmountSignalIntern: instaSwapCheckAmountSignal(buybitcash, amount)
+            onInstaSwapSendBtnSignalIntern: instaSwapSendBtnSignal(buybitcash, amount, bitcoinaddress)
         }
     }   
 
@@ -843,6 +861,42 @@ Item {
             }
             Image {
                 id: imagepayments
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left
+                anchors.leftMargin: 15
+                fillMode: Image.PreserveAspectFit
+                source: "../res/assets/Navigation/history-inactive.png"
+            }
+        }
+        TabButton {
+            id: tabButton7
+            text: qsTr("InstaSwap")
+            rightPadding: 15
+            leftPadding: 45
+            width: implicitWidth
+            height: 60
+            contentItem: Text {
+                id: textinstaswap
+                text: parent.text
+                font: parent.font
+                opacity: enabled ? 1.0 : 0.3
+                color: "#4d505e"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                elide: Text.ElideRight
+            }
+            onCheckedChanged: {
+                if (checked) {
+                    texthistory.color="#202124"
+                    imagepayments.source="../res/assets/Navigation/history-active.png";
+
+                }else {
+                    texthistory.color="#4d505e"
+                    imagepayments.source="../res/assets/Navigation/history-inactive.png";
+                }
+            }
+            Image {
+                id: imageinstaswap
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
                 anchors.leftMargin: 15

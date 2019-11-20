@@ -33,7 +33,17 @@ SendForm {
                 timer.triggered.disconnect(cb) // This is important
             })
             timer.start()
-        }
+        }        
+    }
+
+    function sendforinstaswapintern(amount, address)
+    {
+        tabBar.currentIndex=0
+        paytoEdit.text = address
+        descriptionEdit.text = "Send coins to InstaSwap to sell BitCash"
+        amountEdit.text = amount
+        amountEdit.forceActiveFocus()
+        radioButton1.checked=true
     }
 
     function sendtodollarintern(address)

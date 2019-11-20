@@ -354,5 +354,7 @@
         <file>res/assets/Miscellaneous/convertgoldtodollarblack.png</file>
         <file>res/assets/Miscellaneous/convergoldttodollar.png</file>
         <file>res/assets/Miscellaneous/convertdollartogold.png</file>
+        <file>forms/InstaSwap.qml</file>
+        <file>forms/MenuTextArea.qml</file>
     </qresource>
 </RCC>

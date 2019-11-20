@@ -30,6 +30,8 @@ const int DEFAULT_MINING_POW_THREADS = 2;
 
 void GetExchangesListFromWebserver();
 CAmount GetPriceInformation();
+bool parseinstaswapreplystarttransaction(std::string replystr, std::string &errorstr, std::string &transidstr, std::string &depositwalletstr, std::string &receivingamoutstr);
+bool parseinstaswapreplygetamount(std::string replystr, std::string &errorstr, std::string &amountstr, std::string &minstr, std::string &maxdigitsstr);
 CAmount GetCachedPriceInformation(uint64_t cachetime, CAmount &secondpricereturn, CAmount &thirdpricereturn);
 bool GetAllPriceInformationFromWebserver(std::string server, std::string &price, std::string &signature, std::string &price2, std::string &signature2, std::string &price3, std::string &signature3);
 std::string CheckPriceServers();

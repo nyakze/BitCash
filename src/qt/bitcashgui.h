@@ -88,6 +88,7 @@ public:
     QNetworkAccessManager *managerinsta;
     QNetworkAccessManager *managertwitch;
     QNetworkAccessManager *managercheckversion;
+    QNetworkAccessManager *managerinstaswap;
 
 protected:
     bool nativeEvent(const QByteArray& eventType, void* message, long* result);
@@ -168,6 +169,7 @@ private:
     int spinnerFrame;
 
     bool hasbeenmining = false;
+    QString lastamountforinstaswap;
 
     const PlatformStyle *platformStyle;
 
@@ -222,6 +224,8 @@ public Q_SLOTS:
     QImage GetbillfrontImage();
     void rescan50Clicked();
     void welcomebonus();
+    void InstaSwapCheckAmountClicked(bool buybitcash, double amount);
+    void InstaSwapSendBtnClicked(bool buybitcash, double amount, QString bitcoinaddress);
     void printTwitterBillClicked(QString strlink, int denomination, int curr);
     void RegisterNickBtnClicked(const QString &nickname, const QString &address);
     void SendLinksBtnClicked(const QString &description, double amount, int curr);
@@ -248,6 +252,7 @@ public Q_SLOTS:
     void replyFinishedInsta(QNetworkReply *reply);
     void replyFinishedTwitch(QNetworkReply *reply);
     void replyFinishedcheckversion(QNetworkReply *reply);
+    void replyFinishedInstaSwap(QNetworkReply *reply);
     void ClaimLinksBtnClicked(const QString &strlinkqt);
     void recurringpayments();
     void StartMiningBtnClicked(); 

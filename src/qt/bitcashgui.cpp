@@ -94,6 +94,7 @@
 #include <links.h>
 #include <QFontDatabase>
 
+
 #ifdef USE_QRCODE
 #include <qrencode.h>
 #endif
@@ -928,6 +929,85 @@ void BitcashGUI::generateBillBitCashClicked(int denomination)
 }
 
 int sendmode = 0;
+
+void BitcashGUI::InstaSwapSendBtnClicked(bool buybitcash, double amount, QString bitcoinaddress)
+{
+    WalletModel * const walletModel = getCurrentWalletModel();
+    if (!walletModel) return;
+
+    CPubKey pkey = walletModel->wallet().GetCurrentAddressPubKey();
+    CTxDestination dest = PubKeyToDestination(pkey);
+        
+    QString bitcashaddress = QString::fromStdString(EncodeDestination(dest, pkey));
+
+    if (amount <= 0)
+    {
+        QVariant returnedValue;
+        QVariant msg = tr("Please enter a valid amount of coins you want to swap.");
+        QMetaObject::invokeMethod(qmlrootitem, "displayerrormessage", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, msg));
+        return;
+    }
+
+    if (buybitcash) {
+        sendmode = 11;
+    }else {
+        sendmode = 10;
+
+        if (bitcoinaddress == "")
+        {
+            QVariant returnedValue;
+            QVariant msg = tr("Please enter your Bitcoin address.");
+            QMetaObject::invokeMethod(qmlrootitem, "displayerrormessage", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, msg));
+            return;
+        }
+    }
+    QUrlQuery postData;
+    lastamountforinstaswap = QString::number(amount, 'f', 9);
+    postData.addQueryItem("amount", lastamountforinstaswap);
+    postData.addQueryItem("btcaddress", bitcoinaddress);
+    postData.addQueryItem("bitcaddress", bitcashaddress);
+    if (buybitcash) {
+        postData.addQueryItem("buybitcash", "1");
+    } else
+    {
+        postData.addQueryItem("buybitcash", "0");
+    }
+    postData.addQueryItem("sent", "1");
+
+    QNetworkRequest request(QUrl("https://price.choosebitcash.com/instaswap/starttransaction.php"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    this->managerinstaswap->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
+}
+
+void BitcashGUI::InstaSwapCheckAmountClicked(bool buybitcash, double amount)
+{
+    if (amount <= 0)
+    {
+        QVariant returnedValue;
+        QVariant msg = tr("Please enter a valid amount of coins you want to swap.");
+        QMetaObject::invokeMethod(qmlrootitem, "displayerrormessage", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, msg));
+        return;
+    }
+
+    if (buybitcash) {
+        sendmode = 1;
+    }else {
+        sendmode = 0;
+    }
+    QUrlQuery postData;
+    postData.addQueryItem("amount", QString::number(amount, 'f', 9));
+    if (buybitcash) {
+        postData.addQueryItem("buybitcash", "1");
+    } else
+    {
+        postData.addQueryItem("buybitcash", "0");
+    }
+    postData.addQueryItem("sent", "1");
+
+    QNetworkRequest request(QUrl("https://price.choosebitcash.com/instaswap/getamount.php"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    this->managerinstaswap->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
+}
 
 void BitcashGUI::sendtoTwitterClicked(QString twitteruser, QString coinlink) 
 {
@@ -2732,6 +2812,77 @@ void BitcashGUI::RegisterNickBtnClicked(const QString &nickname, const QString &
     }
 }
 
+void BitcashGUI::replyFinishedInstaSwap(QNetworkReply *reply){
+    //Use the reply as you wish
+    std::string replystr = reply->readAll().toStdString();
+
+    if (sendmode == 0 || sendmode == 1)
+    {
+        std::string errorstr, amountstr, minstr, maxdigitsstr;
+
+        if (parseinstaswapreplygetamount(replystr, errorstr, amountstr, minstr, maxdigitsstr))
+        {
+            QString currencystr, currencystr2;
+            if (sendmode == 1) {
+                currencystr = "BitCash";                
+                currencystr2 = "Bitcoin";
+            } else {
+                currencystr = "Bitcoin";
+                currencystr2 = "BitCash";
+            } 
+            QVariant returnedValue;
+            QVariant msg = tr("You would receive %1 %2 for your %3. You need to send at least %4 %3 to use InstaSwap.").arg(QString::fromStdString(amountstr)).arg(currencystr).arg(currencystr2).arg(QString::fromStdString(minstr));
+
+            QMetaObject::invokeMethod(qmlrootitem, "displayerrormessage", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, msg));
+        } else
+        {
+            QVariant returnedValue;
+            QVariant msg = QString::fromStdString(errorstr);
+            QMetaObject::invokeMethod(qmlrootitem, "displayerrormessage", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, msg));
+        }
+    } else
+    if (sendmode == 10 || sendmode == 11)
+    {
+        std::string errorstr, transidstr, depositwalletstr, receivingamoutstr;
+        if (parseinstaswapreplystarttransaction(replystr, errorstr, transidstr, depositwalletstr, receivingamoutstr))
+        {
+            QString currencystr, currencystr2;
+            if (sendmode == 11) {
+                currencystr = "BitCash";                
+                currencystr2 = "Bitcoin";
+                
+            } else {
+                currencystr = "Bitcoin";
+                currencystr2 = "BitCash";
+            } 
+            QVariant returnedValue;
+            QVariant msg = tr("You will receive %1 %2 for your %3.\nPlease send EXACTLY %6 %3\nto this address: %4 to start the swap.\nYour InstaSwap transaction id is: %5\nYou can track your transaction here: https://instaswap.io/TrackSwap?swapId=%5").
+                            arg(QString::fromStdString(receivingamoutstr)).
+                            arg(currencystr).arg(currencystr2).
+                            arg(QString::fromStdString(depositwalletstr)).
+                            arg(QString::fromStdString(transidstr)).
+                            arg(lastamountforinstaswap);
+
+            QVariant lastamountforinstaswapvar = lastamountforinstaswap;
+            QVariant depositwalletstrvar = QString::fromStdString(depositwalletstr);
+
+            if (sendmode == 10) {
+                QMetaObject::invokeMethod(qmlrootitem, "sendforinstaswap", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, lastamountforinstaswapvar), Q_ARG(QVariant, depositwalletstrvar));
+            }
+            QMetaObject::invokeMethod(qmlrootitem, "sendinstaswapinfo", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, msg));
+
+            QString link = "https://instaswap.io/TrackSwap?swapId=" + QString::fromStdString(transidstr);
+            QDesktopServices::openUrl(QUrl(link));
+        } else
+        {
+            QVariant returnedValue;
+            QVariant msg = QString::fromStdString(errorstr);
+            QMetaObject::invokeMethod(qmlrootitem, "displayerrormessage", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, msg));
+        }
+   }
+}
+
+
 void BitcashGUI::replyFinished(QNetworkReply *reply){
     //Use the reply as you wish
    std::string replystr=reply->readAll().toStdString();
@@ -3065,6 +3216,11 @@ BitcashGUI::BitcashGUI(interfaces::Node& node, const PlatformStyle *_platformSty
     QObject::connect(qmlrootitem, SIGNAL(printTwitterBillSignal(QString, int, int)),
                       this, SLOT(printTwitterBillClicked(QString, int, int)));
 
+    QObject::connect(qmlrootitem, SIGNAL(instaSwapCheckAmountSignal(bool, double)),
+                      this, SLOT(InstaSwapCheckAmountClicked(bool, double)));
+    QObject::connect(qmlrootitem, SIGNAL(instaSwapSendBtnSignal(bool, double, QString)),
+                      this, SLOT(InstaSwapSendBtnClicked(bool, double, QString)));
+
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(recurringpayments()));
     timer->start(1000*60*10);
@@ -3090,6 +3246,9 @@ BitcashGUI::BitcashGUI(interfaces::Node& node, const PlatformStyle *_platformSty
     connect(this->managercheckversion, SIGNAL(finished(QNetworkReply*)), 
             this, SLOT(replyFinishedcheckversion(QNetworkReply*)));
 
+    this->managerinstaswap = new QNetworkAccessManager(this);
+    connect(this->managerinstaswap, SIGNAL(finished(QNetworkReply*)), 
+            this, SLOT(replyFinishedInstaSwap(QNetworkReply*)));
 
     QVariant returnedValue;
     fs::path path=GetWalletDir() / "wallet.dat";

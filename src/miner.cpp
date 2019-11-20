@@ -692,6 +692,41 @@ void GetExchangesListFromWebserver()
 //std::cout << "count " << exchangesall.size() << std::endl;
 }
 
+bool parseinstaswapreplystarttransaction(std::string replystr, std::string &errorstr, std::string &transidstr, std::string &depositwalletstr, std::string &receivingamoutstr)
+{
+    RSJresource  json (replystr);
+
+    if (json["apiInfo"].as<std::string>("")=="OK")
+    {
+        transidstr = json["response"]["TransactionId"].as<std::string>("");
+        depositwalletstr = json["response"]["depositWallet"].as<std::string>("");
+        receivingamoutstr = json["response"]["receivingAmount"].as<std::string>("");
+        return true;
+    } else
+    {
+        errorstr = json["response"].as<std::string>("");
+        return false;
+    }    
+}
+
+
+bool parseinstaswapreplygetamount(std::string replystr, std::string &errorstr, std::string &amountstr, std::string &minstr, std::string &maxdigitsstr)
+{
+    RSJresource  json (replystr);
+
+    if (json["apiInfo"].as<std::string>("")=="OK")
+    {
+        amountstr = json["response"]["getAmount"].as<std::string>("");
+        minstr = json["response"]["min"].as<std::string>("");
+        maxdigitsstr = json["response"]["maxDigitsAfterDecimal"].as<std::string>("");
+        return true;
+    } else
+    {
+        errorstr = json["response"].as<std::string>("");
+        return false;
+    }    
+}
+
 CAmount GetPriceInformationFromWebserver(std::string server, std::string &price, std::string &signature, CAmount &secondprice, CAmount &thirdprice)
 {
     secondprice = 0;
