@@ -33,6 +33,7 @@ Item {
     property alias printBtnDo: printBtnDo
     property alias currencytextan: currencytextan
 
+
     /*property alias paytoEditDo: paytoEditDo
     property alias labelEditDo: labelEditDo
     property alias descriptionEditDo: descriptionEditDo
@@ -44,7 +45,6 @@ Item {
     property alias pasteaddressDo: pasteaddressDo
     property alias leftamountlabelDo: leftamountlabelDo
     property alias bitcashlabel: bitcashlabel*/
-
     property alias radioButton1: radioButton1
     property alias radioButton2: radioButton2
     property alias radioButton3: radioButton3
@@ -778,8 +778,12 @@ Item {
 
                 Label {
                     id: dollarlabel
+                    height: 49
                     color: "#3e45ac"
-                    text: qsTr("")
+                    text: qsTr("test")
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                    anchors.right: parent.right
+                    anchors.rightMargin: 20
                     anchors.verticalCenter: currencyrectangle.verticalCenter
                     font.weight: Font.DemiBold
                     font.pixelSize: 13

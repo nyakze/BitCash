@@ -242,12 +242,14 @@ SendForm {
     property real leftbalancean: 0
     property real priceindollar: 0
     property real priceindollar2: 0
+    property real priceingold: 0
 
     function setpriceDointern(price, price2, pricegold) {
         priceindollar = price
         if (price2 === 0)
         priceindollar2 = price; else
         priceindollar2 = price2
+        priceingold = pricegold
     }
 
     function calcleftbalance()
@@ -260,7 +262,10 @@ SendForm {
             if (leftbalance < 0) leftbalance = 0
             leftamountlabel.text = leftbalance.toFixed(9)
             if (paytoEdit.text.toUpperCase().indexOf("DOLLAR@") == 0 && priceindollar2 != 0) {
-                dollarlabel.text = amountEdit.text * priceindollar2 + " Dollar"
+                dollarlabel.text = amountEdit.text * priceindollar2 + " Dollar (price can change until tx is mined)"
+            } else
+            if (paytoEdit.text.toUpperCase().indexOf("GOLD@") == 0 && priceingold != 0 && priceindollar2 != 0) {
+                dollarlabel.text = amountEdit.text * priceindollar2 / priceingold + " ounces Gold (price can change until tx is mined)"
             } else {
                 dollarlabel.text = "";
             }
@@ -272,7 +277,17 @@ SendForm {
             leftbalance = maxbalancenumDo - amountEdit.text
             if (leftbalance < 0) leftbalance = 0
             leftamountlabel.text = leftbalance.toFixed(9)
-            dollarlabel.text = "";
+            if (paytoEdit.text.toUpperCase().indexOf("DOLLAR@") == 0) {
+                dollarlabel.text = "";
+            } else
+            if (paytoEdit.text.toUpperCase().indexOf("GOLD@") == 0 && priceingold != 0) {
+                dollarlabel.text = amountEdit.text / priceingold + " ounces Gold (price can change until tx is mined)"
+            } else
+            if (priceindollar != 0) {
+                dollarlabel.text = amountEdit.text / priceindollar + " BitCash (price can change until tx is mined)"
+            } else {
+                dollarlabel.text = "";
+            }
          } else
          if (radioButton3.checked)
          {
@@ -281,7 +296,17 @@ SendForm {
             leftbalance = maxbalancenumGo - amountEdit.text
             if (leftbalance < 0) leftbalance = 0
             leftamountlabel.text = leftbalance.toFixed(9)
-            dollarlabel.text = "";
+            if (paytoEdit.text.toUpperCase().indexOf("GOLD@") == 0) {
+                dollarlabel.text = "";
+            } else
+            if (paytoEdit.text.toUpperCase().indexOf("DOLLAR@") == 0 && priceingold != 0) {
+                dollarlabel.text = amountEdit.text * priceingold + " Dollar (price can change until tx is mined)"
+            } else
+            if (priceindollar != 0 && priceingold != 0) {
+                dollarlabel.text = amountEdit.text * priceingold / priceindollar + " BitCash (price can change until tx is mined)"
+            } else {
+                dollarlabel.text = "";
+            }
          }
     }
 
