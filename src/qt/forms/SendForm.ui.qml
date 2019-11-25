@@ -833,6 +833,9 @@ Item {
                 RadioButton {
                     id: radioButton1
                     text: qsTr("Send BitCash")
+                    font.pixelSize: 13
+                    font.weight: Font.Normal
+                    font.family: "Montserrat"
                     checked: true
                     anchors.left: parent.left
                     anchors.leftMargin: 30
@@ -842,6 +845,9 @@ Item {
                 RadioButton {
                     id: radioButton2
                     text: qsTr("Send Dollar")
+                    font.pixelSize: 13
+                    font.weight: Font.Normal
+                    font.family: "Montserrat"
                     anchors.left: radioButton1.right
                     anchors.leftMargin: 8
                     anchors.top: subtractfeeCheck.bottom
@@ -850,6 +856,9 @@ Item {
                 RadioButton {
                     id: radioButton3
                     text: qsTr("Send Gold")
+                    font.pixelSize: 13
+                    font.weight: Font.Normal
+                    font.family: "Montserrat"
                     anchors.left: radioButton2.right
                     anchors.leftMargin: 8
                     anchors.top: subtractfeeCheck.bottom
@@ -2217,6 +2226,9 @@ Item {
 
                 RadioButton {
                     id: radioButton1an
+                    font.pixelSize: 13
+                    font.weight: Font.Normal
+                    font.family: "Montserrat"
                     text: qsTr("Send BitCash")
                     checked: true
                     anchors.left: parent.left
@@ -2226,6 +2238,9 @@ Item {
                 }
                 RadioButton {
                     id: radioButton2an
+                    font.pixelSize: 13
+                    font.weight: Font.Normal
+                    font.family: "Montserrat"
                     text: qsTr("Send Dollar")
                     anchors.left: radioButton1an.right
                     anchors.leftMargin: 8
@@ -2234,6 +2249,9 @@ Item {
                 }
                 RadioButton {
                     id: radioButton3an
+                    font.pixelSize: 13
+                    font.weight: Font.Normal
+                    font.family: "Montserrat"
                     text: qsTr("Send Gold")
                     anchors.left: radioButton2an.right
                     anchors.leftMargin: 8

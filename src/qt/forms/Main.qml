@@ -584,6 +584,7 @@ Item {
             }
         }
         InstaSwap {
+            visible: false
             id: instaswap
             onInstaSwapCheckAmountSignalIntern: instaSwapCheckAmountSignal(buybitcash, amount)
             onInstaSwapSendBtnSignalIntern: instaSwapSendBtnSignal(buybitcash, amount, bitcoinaddress)
@@ -869,6 +870,7 @@ Item {
             }
         }
         TabButton {
+            visible: false
             id: tabButton7
             text: qsTr("InstaSwap")
             rightPadding: 15
