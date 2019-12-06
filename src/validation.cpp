@@ -766,7 +766,7 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
         }
     }
 
-    if (tx.haspricerange) {
+/*    if (tx.haspricerange) {
         double pri;
         if (tx.haspricerange == 1) {
             pri = GetBlockPrice(1);
@@ -776,7 +776,7 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
         if (pri < tx.minprice || pri > tx.maxprice) {
             return state.Invalid(false, REJECT_DUPLICATE, "price-out-of-range");
         }
-    }
+    }*/
 
     {
         //difference to Bitcoin: a transaction in the mempool can NOT be referred to as input to another transaction, because the nValue of a transaction 

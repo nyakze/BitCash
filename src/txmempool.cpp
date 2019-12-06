@@ -450,6 +450,14 @@ void CTxMemPool::removeUnchecked(txiter it, MemPoolRemovalReason reason)
     if (minerPolicyEstimator) {minerPolicyEstimator->removeTx(hash, false);}
 }
 
+void CTxMemPool::removeUnchecked(const CTransaction &origTx)
+{
+    txiter origit = mapTx.find(origTx.GetHash());
+    if (origit != mapTx.end()) {
+        removeUnchecked(origit, MemPoolRemovalReason::UNKNOWN);
+    }
+}
+
 // Calculates descendants of entry that are not already in setDescendants, and adds to
 // setDescendants. Assumes entryit is already a tx in the mempool and setMemPoolChildren
 // is correct for tx and all descendants.

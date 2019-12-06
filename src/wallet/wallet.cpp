@@ -2007,11 +2007,31 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransactionRef& ptx, const CBlockI
     return false;
 }
 
-bool CWallet::TransactionCanBeAbandoned(const uint256& hashTx) const
+bool CWallet::TransactionCanBeAbandoned(const uint256& hashTx)
 {
     LOCK2(cs_main, cs_wallet);
-    const CWalletTx* wtx = GetWalletTx(hashTx);
-    return wtx && !wtx->isAbandoned() && wtx->GetDepthInMainChain() == 0 && !wtx->InMempool();
+
+    auto it = mapWallet.find(hashTx);
+    if (it != mapWallet.end()) {
+        CWalletTx& wtx = it->second;
+
+        if (!wtx.isAbandoned() && wtx.GetDepthInMainChain() == 0 && wtx.InMempool()) {
+            if (wtx.tx->haspricerange) {
+                double pri;
+                if (wtx.tx->haspricerange == 1) {
+                    pri = GetBlockPrice(1);
+                } else {
+                    pri = GetBlockPrice(0);
+                }
+                if (pri < wtx.tx->minprice || pri > wtx.tx->maxprice) {
+                    wtx.RemoveFromMempool();
+                    TransactionRemovedFromMempool(wtx.tx);
+                }
+            }
+        }
+        return !wtx.isAbandoned() && wtx.GetDepthInMainChain() == 0 && !wtx.InMempool();
+
+    } else return false;
 }
 
 bool CWallet::AbandonTransaction(const uint256& hashTx)
@@ -6948,6 +6968,12 @@ bool CWalletTx::AcceptToMemoryPool(const CAmount& nAbsurdFee, CValidationState& 
                                 nullptr /* plTxnReplaced */, false /* bypass_limits */, nAbsurdFee);
     fInMempool |= ret;
     return ret;
+}
+
+void CWalletTx::RemoveFromMempool()
+{
+    const CTransaction& ttx = *tx;
+    mempool.removeUnchecked(ttx);
 }
 
 static const std::string OUTPUT_TYPE_STRING_LEGACY = "legacy";
