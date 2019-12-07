@@ -241,7 +241,15 @@ Item {
             iconname: "../res/assets/Miscellaneous/button-send.png"
             font.capitalization: Font.MixedCase
             font.family: "Montserrat SemiBold"
-            onClicked: instaSwapCheckAmountSignalIntern(radioButton1.checked, amountEdit.text)
+            onClicked: {
+                instaSwapCheckAmountSignalIntern(radioButton1.checked, amountEdit.text)
+                sendBtn.enabled = false
+                checkBtn.enabled = false
+                timer.setTimeout(function(){
+                    sendBtn.enabled = true
+                    checkBtn.enabled = true
+                }, 5000);
+            }
         }
 
         Mybutton {
@@ -258,7 +266,15 @@ Item {
             iconname: "../res/assets/Miscellaneous/button-send.png"
             font.capitalization: Font.MixedCase
             font.family: "Montserrat SemiBold"
-            onClicked: instaSwapSendBtnSignalIntern(radioButton1.checked, amountEdit.text, bitcoinEdit.text)
+            onClicked: {
+                instaSwapSendBtnSignalIntern(radioButton1.checked, amountEdit.text, bitcoinEdit.text)
+                sendBtn.enabled = false
+                checkBtn.enabled = false
+                timer.setTimeout(function(){
+                    sendBtn.enabled = true
+                    checkBtn.enabled = true
+                }, 5000);
+            }
         }
 
         Label {

@@ -950,8 +950,32 @@ void BitcashGUI::InstaSwapSendBtnClicked(bool buybitcash, double amount, QString
 
     if (buybitcash) {
         sendmode = 11;
+        lastamountforinstaswap = QString::number(amount, 'f', 4);
+
+        if (amount * 10000 != (int)(amount * 10000)) {
+            QVariant returnedValue;
+            QVariant msg = tr("You can only use 4 decimal places when you select the amount.");
+            QMetaObject::invokeMethod(qmlrootitem, "displayerrormessage", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, msg));
+            return;
+        }
+
     }else {
         sendmode = 10;
+
+        if (amount != (int)amount) {
+            QVariant returnedValue;
+            QVariant msg = tr("You can not use any decimal places when you select the amount.");
+            QMetaObject::invokeMethod(qmlrootitem, "displayerrormessage", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, msg));
+            return;
+        }
+
+        if (amount * COIN > walletModel->wallet().getBalance(0))
+        {
+            QVariant returnedValue;
+            QVariant msg = tr("This amount exceeds your current BitCash balance.");
+            QMetaObject::invokeMethod(qmlrootitem, "displayerrormessage", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, msg));
+            return;
+        }
 
         if (bitcoinaddress == "")
         {
@@ -960,9 +984,9 @@ void BitcashGUI::InstaSwapSendBtnClicked(bool buybitcash, double amount, QString
             QMetaObject::invokeMethod(qmlrootitem, "displayerrormessage", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, msg));
             return;
         }
+        lastamountforinstaswap = QString::number(amount, 'f', 0);
     }
-    QUrlQuery postData;
-    lastamountforinstaswap = QString::number(amount, 'f', 9);
+    QUrlQuery postData;    
     postData.addQueryItem("amount", lastamountforinstaswap);
     postData.addQueryItem("btcaddress", bitcoinaddress);
     postData.addQueryItem("bitcaddress", bitcashaddress);
