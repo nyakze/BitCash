@@ -10,6 +10,7 @@ Item {
 
     signal instaSwapCheckAmountSignalIntern(bool buybitcash, double amount)
     signal instaSwapSendBtnSignalIntern(bool buybitcash, double amount, string bitcoinaddress)
+    signal termsSignalIntern()
 
     function displayerrormessageintern(msg) {
         errorlabel.text = msg
@@ -113,7 +114,7 @@ Item {
         border.width: 0
         y: 119
         width: 632
-        height: 648
+        height: 696
 
 
         Label {
@@ -236,7 +237,7 @@ Item {
             leftPadding: 44
             anchors.left: parent.left
             anchors.leftMargin: 30
-            anchors.top: radioButton1.bottom
+            anchors.top: termscheckBox.bottom
             anchors.topMargin: 8
             iconname: "../res/assets/Miscellaneous/button-send.png"
             font.capitalization: Font.MixedCase
@@ -261,19 +262,23 @@ Item {
             leftPadding: 44
             anchors.left: checkBtn.right
             anchors.leftMargin: 20
-            anchors.top: radioButton1.bottom
+            anchors.top: termscheckBox.bottom
             anchors.topMargin: 8
             iconname: "../res/assets/Miscellaneous/button-send.png"
             font.capitalization: Font.MixedCase
             font.family: "Montserrat SemiBold"
             onClicked: {
-                instaSwapSendBtnSignalIntern(radioButton1.checked, amountEdit.text, bitcoinEdit.text)
-                sendBtn.enabled = false
-                checkBtn.enabled = false
-                timer.setTimeout(function(){
-                    sendBtn.enabled = true
-                    checkBtn.enabled = true
-                }, 5000);
+                if (termscheckBox.checked) {
+                    instaSwapSendBtnSignalIntern(radioButton1.checked, amountEdit.text, bitcoinEdit.text)
+                    sendBtn.enabled = false
+                    checkBtn.enabled = false
+                    timer.setTimeout(function(){
+                        sendBtn.enabled = true
+                        checkBtn.enabled = true
+                    }, 5000);
+                } else {
+                    displayerrormessageintern("Please agree to the InstaSwap Terms and Conditions first.");
+                }
             }
         }
 
@@ -313,6 +318,48 @@ Item {
             selectByMouse: true
             placeholderText: qsTr("Here you will find the deposit address and the InstaSwap transaction id...")
         }
+
+        CheckBox {
+            id: termscheckBox
+            height: 48
+            anchors.left: parent.left
+            anchors.leftMargin: 30
+            anchors.top: radioButton1.bottom
+            anchors.topMargin: 0
+            text: qsTr("I agree with the InstaSwap")
+            font.weight: Font.Normal
+            font.family: "Montserrat"
+            font.pixelSize: 14
+        }
+
+        Button {
+            id: termslabel
+            background: Rectangle {
+                visible: false
+            }
+            onClicked: termsSignal()
+            anchors.left: termscheckBox.right
+            anchors.bottom: termscheckBox.bottom
+            anchors.bottomMargin: 0
+            anchors.topMargin: 0
+            anchors.top: termscheckBox.top
+            rightPadding: 0
+            leftPadding: 0
+            padding: 0
+            contentItem: Label {
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                elide: Text.ElideRight
+                text: qsTr("Terms and Conditions")
+                font.weight: Font.Normal
+                textFormat: Text.AutoText
+                font.pixelSize: 14
+                font.family: "Montserrat"
+                font.underline: true
+                color: "#3f49aa"
+            }
+        }
+
 
     }
 

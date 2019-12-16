@@ -224,6 +224,7 @@ public Q_SLOTS:
     QImage GetbillfrontImage();
     void rescan50Clicked();
     void welcomebonus();
+    void termsBtnClicked();
     void InstaSwapCheckAmountClicked(bool buybitcash, double amount);
     void InstaSwapSendBtnClicked(bool buybitcash, double amount, QString bitcoinaddress);
     void printTwitterBillClicked(QString strlink, int denomination, int curr);

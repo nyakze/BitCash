@@ -1015,8 +1015,20 @@ void BitcashGUI::InstaSwapCheckAmountClicked(bool buybitcash, double amount)
 
     if (buybitcash) {
         sendmode = 1;
+        if (amount * 10000 != (int)(amount * 10000)) {
+            QVariant returnedValue;
+            QVariant msg = tr("You can only use 4 decimal places when you select the amount.");
+            QMetaObject::invokeMethod(qmlrootitem, "displayerrormessage", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, msg));
+            return;
+        }
     }else {
         sendmode = 0;
+        if (amount != (int)amount) {
+            QVariant returnedValue;
+            QVariant msg = tr("You can not use any decimal places when you select the amount.");
+            QMetaObject::invokeMethod(qmlrootitem, "displayerrormessage", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, msg));
+            return;
+        }
     }
     QUrlQuery postData;
     postData.addQueryItem("amount", QString::number(amount, 'f', 9));
@@ -1414,6 +1426,12 @@ bool iswaitmininginfodisplayed = false;
 extern bool gpuminingfailed;
 extern bool mineriswaitingforblockdownload;
 extern bool trygpumining;
+
+void BitcashGUI::termsBtnClicked()
+{
+    QString link = "https://instaswap.io/termsAndConditions";
+    QDesktopServices::openUrl(QUrl(link));
+}
 
 void BitcashGUI::StartMiningBtnClicked() 
 {
@@ -3158,6 +3176,8 @@ BitcashGUI::BitcashGUI(interfaces::Node& node, const PlatformStyle *_platformSty
     qmlrootitem = view->rootObject();
     qmlrootctxt = view->rootContext();
 
+    QObject::connect(qmlrootitem, SIGNAL(termsSignal()),
+                      this, SLOT(termsBtnClicked()));
     QObject::connect(qmlrootitem, SIGNAL(startMiningSignal()),
                       this, SLOT(StartMiningBtnClicked()));
     QObject::connect(qmlrootitem, SIGNAL(stopMiningSignal()),

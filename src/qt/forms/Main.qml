@@ -406,6 +406,7 @@ Item {
         transactions.setactualmonthandyearintern(month, year)
     }
 
+    signal termsSignal()
     signal instaSwapCheckAmountSignal(bool buybitcash, double amount)
     signal instaSwapSendBtnSignal(bool buybitcash, double amount, string bitcoinaddress)
     signal printTwitterBillSignal(string link, int denomination, int currency)
@@ -588,6 +589,7 @@ Item {
             id: instaswap
             onInstaSwapCheckAmountSignalIntern: instaSwapCheckAmountSignal(buybitcash, amount)
             onInstaSwapSendBtnSignalIntern: instaSwapSendBtnSignal(buybitcash, amount, bitcoinaddress)
+            onTermsSignalIntern: termsSignal()
         }
     }   
 
