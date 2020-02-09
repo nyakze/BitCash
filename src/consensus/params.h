@@ -97,6 +97,7 @@ struct Params {
     uint64_t X16RV2TIME;
     uint64_t GPUMINERTIME;
     uint64_t GOLDTIME;
+    uint64_t X25XTIME;
 };
 } // namespace Consensus
 

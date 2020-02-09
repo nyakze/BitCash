@@ -11,6 +11,11 @@
 #include <crypto/common.h>
 #include <streams.h>
 
+bool isX25Xactive(int32_t nVersion)
+{
+    return ((nVersion & hashx25Xactive) != 0);
+}
+
 bool isGPUMINERactive(int32_t nVersion)
 {
     return ((nVersion & gpumineractive) != 0);
@@ -49,6 +54,11 @@ CAmount CBlockHeader::GetPriceinCurrency(unsigned char currency) const
 
 uint256 CBlockHeader::GetHash() const
 {
+    if ( isX25Xactive(this->nVersion)) {                
+        CDataStream ssBlock(SER_NETWORK, PROTOCOL_VERSION);
+        ssBlock << *this;        
+        return HashX25X(BEGIN(nVersion), END(nNonce));
+    } else
     if ( isGPUMINERactive(this->nVersion)) {                
         return HashX16RV2(BEGIN(nVersion), END(nNonce), hashPrevBlock);
     } else

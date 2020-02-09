@@ -131,6 +131,7 @@ int64_t UpdateTime(CBlockHeader* pblock, const Consensus::Params& consensusParam
         AddPriceInformation(pblock);
         addednewpriceinfo = true;
     }
+
     if (pblock->nTime > consensusParams.X16RTIME)
        pblock->nVersion |= hashx16Ractive;
 
@@ -140,6 +141,9 @@ int64_t UpdateTime(CBlockHeader* pblock, const Consensus::Params& consensusParam
 
     if (pblock->nTime > consensusParams.GPUMINERTIME)
        pblock->nVersion |= gpumineractive;
+
+    if (pblock->nTime > consensusParams.X25XTIME)
+       pblock->nVersion |= hashx25Xactive;
 
     return nNewTime - nOldTime;
 }
@@ -341,6 +345,9 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlockWithScriptPubKey(c
        pblock->nVersion |= hashx16rv2active;
     if (pblock->nTime > chainparams.GetConsensus().GPUMINERTIME)
        pblock->nVersion |= gpumineractive;
+    if (pblock->nTime > chainparams.GetConsensus().X25XTIME)
+       pblock->nVersion |= hashx25Xactive;
+
 
     // -regtest only: allow overriding block.nVersion with
     // -blockversion=N to test forking scenarios
@@ -461,6 +468,9 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(interfaces::Walle
        pblock->nVersion |= hashx16rv2active;
     if (pblock->nTime > chainparams.GetConsensus().GPUMINERTIME)
        pblock->nVersion |= gpumineractive;
+    if (pblock->nTime > chainparams.GetConsensus().X25XTIME)
+       pblock->nVersion |= hashx25Xactive;
+
 
     // -regtest only: allow overriding block.nVersion with
     // -blockversion=N to test forking scenarios

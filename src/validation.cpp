@@ -1926,6 +1926,9 @@ int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Para
     if (pindexPrev != nullptr && pindexPrev->nTime > params.GPUMINERTIME)
        nVersion |= gpumineractive;
 
+    if (pindexPrev != nullptr && pindexPrev->nTime > params.X25XTIME)
+       nVersion |= hashx25Xactive;
+
     return nVersion;
 }
 
@@ -3525,6 +3528,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     const bool x16ractive = (isX16Ractive(block.nVersion));
     const bool x16rv2active = (isX16RV2active(block.nVersion));
     const bool isgpumineractive = (isGPUMINERactive(block.nVersion));
+    const bool x25xactive = (isX25Xactive(block.nVersion));
 
     //Check that the correct block version with the hashing algo is used     
     if (x16ractive != block.nTime > consensusParams.X16RTIME) {
@@ -3534,6 +3538,9 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         return state.DoS(100, false, REJECT_INVALID, "bad-hash-algo", false, "The wrong hashing algo is used for the block.");
     }
     if (isgpumineractive != block.nTime > consensusParams.GPUMINERTIME) {
+        return state.DoS(100, false, REJECT_INVALID, "bad-hash-algo", false, "The wrong hashing algo is used for the block.");
+    }
+    if (x25xactive != block.nTime > consensusParams.X25XTIME) {
         return state.DoS(100, false, REJECT_INVALID, "bad-hash-algo", false, "The wrong hashing algo is used for the block.");
     }
 

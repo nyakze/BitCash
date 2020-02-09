@@ -39,6 +39,7 @@ PoW GetNextWorkRequiredBug(const CBlockIndex* pindexLast, const CBlockHeader* pb
 
     pindex = pindexLast;
     bool foundx16rv2 = false;
+    bool foundx25x = false;
 
     for (unsigned int nCountBlocks = 0; nCountBlocks <= nPastBlocks-1; nCountBlocks++) {
             
@@ -55,9 +56,16 @@ PoW GetNextWorkRequiredBug(const CBlockIndex* pindexLast, const CBlockHeader* pb
        if (pindex->nTime > params.X16RV2TIME) {
           foundx16rv2 = true;
        }
+       if (pindex->nTime > params.X25XTIME) {
+          foundx25x = true;
+       }
     }
 
     if (pblock != nullptr && pblock->nTime > params.X16RV2TIME && pblock->nTime <= params.X16RV2TIME + 60 * 60 && !foundx16rv2) {
+        return PoW{bnPowLimit.GetCompact(),pindexLast->nEdgeBits};
+    }
+
+    if (pblock != nullptr && pblock->nTime > params.X25XTIME && pblock->nTime <= params.X25XTIME + 5 * 60 && !foundx25x) {
         return PoW{bnPowLimit.GetCompact(),pindexLast->nEdgeBits};
     }
 
@@ -167,6 +175,7 @@ PoW GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pbloc
 
     pindex = pindexLast;
     bool foundx16rv2 = false;
+    bool foundx25x = false;
 
     for (unsigned int nCountBlocks = 0; nCountBlocks <= nPastBlocks-1; nCountBlocks++) {
             
@@ -183,8 +192,14 @@ PoW GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pbloc
        if (pindex->nTime > params.X16RV2TIME) {
           foundx16rv2 = true;
        }
+       if (pindex->nTime > params.X25XTIME) {
+          foundx25x = true;
+       }
     }
     if (pblock != nullptr && pblock->nTime > params.X16RV2TIME && pblock->nTime <= params.X16RV2TIME + 60 * 60 && !foundx16rv2) {
+        return PoW{bnPowLimit.GetCompact(),pindexLast->nEdgeBits};
+    }
+    if (pblock != nullptr && pblock->nTime > params.X25XTIME && pblock->nTime <= params.X25XTIME + 5 * 60 && !foundx25x) {
         return PoW{bnPowLimit.GetCompact(),pindexLast->nEdgeBits};
     }
 
