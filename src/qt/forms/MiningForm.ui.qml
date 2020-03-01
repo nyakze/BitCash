@@ -486,9 +486,9 @@ Item {
                 "stratum+tcp://eu.gos.cx:3639",
                 "stratum+tcp://ru.gos.cx:3639",
                 "stratum+tcp://asia.gos.cx:3639",
-                "stratum+tcp://x16rv2.mine.zergpool.com:3225",//x25x
+                "stratum+tcp://x16rv2.mine.zergpool.com:3225",
                 "stratum+tcp://x16rv2.mine.ahashpool.com:3637",
-                "stratum+tcp://x16rv2.mine.zpool.ca:3637"]
+                "stratum+tcp://x16rv2.mine.zpool.ca:3423"]
     }
 
     property alias infowhitebox: infowhitebox
