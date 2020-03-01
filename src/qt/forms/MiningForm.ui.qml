@@ -478,7 +478,7 @@ Item {
         anchors.topMargin: 1
         currentIndex: 0
         visible: false
-        model: ["stratum+tcp://mine.icemining.ca:3649",
+        model: [
                 "stratum+tcp://eu.bsod.pw:2564",
                 "stratum+tcp://us.bsod.pw:2564",
                 "stratum+tcp://asia.bsod.pw:2564",
@@ -486,7 +486,7 @@ Item {
                 "stratum+tcp://eu.gos.cx:3639",
                 "stratum+tcp://ru.gos.cx:3639",
                 "stratum+tcp://asia.gos.cx:3639",
-                "stratum+tcp://x16rv2.mine.zergpool.com:3637",
+                "stratum+tcp://x16rv2.mine.zergpool.com:3225",//x25x
                 "stratum+tcp://x16rv2.mine.ahashpool.com:3637",
                 "stratum+tcp://x16rv2.mine.zpool.ca:3637"]
     }
