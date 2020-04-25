@@ -153,6 +153,9 @@ private:
     QAction *openRPCConsoleAction;
     QAction *openAction;
     QAction *showHelpMessageAction;
+    QAction *websiteAction;
+    QAction *explorerAction;
+    QAction *supplyAction;
 
     QLabel *m_wallet_selector_label;
     QComboBox *m_wallet_selector;
@@ -267,6 +270,9 @@ public Q_SLOTS:
     void PrintPaperWalletClicked();
     void printStatementsBtnClicked(int month, int year, int currency);
     void HelpBtnClicked();
+    void websiteClicked();
+    void explorerClicked();
+    void supplyClicked();
     void SendLinksToModel();
     void SendPaymentsToModel();
     void SendOrdersToModel();

@@ -1093,6 +1093,27 @@ void BitcashGUI::HelpBtnClicked()
     QDesktopServices::openUrl(QUrl(link));
 }
 
+void BitcashGUI::websiteClicked() 
+{
+    QString link = "https://www.choosebitcash.com/";
+    QDesktopServices::openUrl(QUrl(link));
+}
+
+
+void BitcashGUI::explorerClicked() 
+{
+    QString link = "http://explorer.choosebitcash.com/";
+    QDesktopServices::openUrl(QUrl(link));
+}
+
+
+void BitcashGUI::supplyClicked() 
+{
+    QString link = "https://price.choosebitcash.com/priceinfo/supply.php";
+    QDesktopServices::openUrl(QUrl(link));
+}
+
+
 std::string paperwalletaddress,paperwalletkey;
 
 void BitcashGUI::createnewpaperwallet()
@@ -3588,6 +3609,14 @@ void BitcashGUI::createActions()
     verifyMessageAction = new QAction(platformStyle->TextColorIcon(":/icons/verify"), tr("&Verify message..."), this);
     verifyMessageAction->setStatusTip(tr("Verify messages to ensure they were signed with specified Bitcash addresses"));
 
+
+    websiteAction = new QAction(platformStyle->TextColorIcon(":/icons/bitcash"), tr("&BitCash website"), this);
+    websiteAction->setStatusTip(tr("Open BitCash website. "));
+    explorerAction = new QAction(platformStyle->TextColorIcon(":/icons/bitcash"), tr("&BitCash block explorer"), this);
+    explorerAction->setStatusTip(tr("Open BitCash block explorer. "));
+    supplyAction = new QAction(platformStyle->TextColorIcon(":/icons/bitcash"), tr("&BitCash supply"), this);
+    supplyAction->setStatusTip(tr("Open BitCash supply information. "));
+
     openRPCConsoleAction = new QAction(platformStyle->TextColorIcon(":/icons/debugwindow"), tr("&Debug window"), this);
     openRPCConsoleAction->setStatusTip(tr("Open debugging and diagnostic console"));
     // initially disable the debug window menu item
@@ -3621,6 +3650,11 @@ void BitcashGUI::createActions()
     connect(resendWalletTxesAction, SIGNAL(triggered()), this, SLOT(resendWalletTxesClicked()));
     connect(rescanAction, SIGNAL(triggered()), this, SLOT(rescanClicked()));
     connect(rescanAction50, SIGNAL(triggered()), this, SLOT(rescan50Clicked()));
+
+    connect(websiteAction, SIGNAL(triggered()), this, SLOT(websiteClicked()));
+    connect(explorerAction, SIGNAL(triggered()), this, SLOT(explorerClicked()));
+    connect(supplyAction, SIGNAL(triggered()), this, SLOT(supplyClicked()));
+
 
 #ifdef ENABLE_WALLET
     if(walletFrame)
@@ -3708,6 +3742,14 @@ void BitcashGUI::createMenuBar()
         settings->addSeparator();
     }
     settings->addAction(optionsAction);
+
+    QMenu *links = appMenuBar->addMenu(tr("&Links"));
+    if(walletFrame)
+    {
+        links->addAction(websiteAction);
+        links->addAction(explorerAction);
+        links->addAction(supplyAction);
+    }
 
     QMenu *help = appMenuBar->addMenu(tr("&Help"));
     if(walletFrame)
