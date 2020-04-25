@@ -236,12 +236,12 @@ public Q_SLOTS:
     void SendBtnDoClicked(const QString &destination, const QString &label, const QString &description, double amount, bool substractfee);
     void SendBtnGoClicked(const QString &destination, const QString &label, const QString &description, double amount, bool substractfee);
     bool SendBtnClickedIntern(const QString &destination, const QString &label, const QString &description, double amount, bool substractfee, bool dialog, unsigned char currency, bool nomessages);
-    void SendToTwitterBtnClicked(const QString &destination, const QString &description, double amount, bool senddollar);
-    void SendToInstaBtnClicked(const QString &destination, const QString &description, double amount, bool senddollar);
-    void SendToTwitchBtnClicked(const QString &destination, const QString &description, double amount, bool senddollar);
-    void SendConfirmedToTwitterBtnClicked(const QString &destination, const QString &description, double amount, bool senddollar);
-    void SendConfirmedToInstaBtnClicked(const QString &destination, const QString &description, double amount, bool senddollar);
-    void SendConfirmedToTwitchBtnClicked(const QString &destination, const QString &description, double amount, bool senddollar);
+    void SendToTwitterBtnClicked(const QString &destination, const QString &description, double amount, int currency);
+    void SendToInstaBtnClicked(const QString &destination, const QString &description, double amount, int currency);
+    void SendToTwitchBtnClicked(const QString &destination, const QString &description, double amount, int currency);
+    void SendConfirmedToTwitterBtnClicked(const QString &destination, const QString &description, double amount, int currency);
+    void SendConfirmedToInstaBtnClicked(const QString &destination, const QString &description, double amount, int currency);
+    void SendConfirmedToTwitchBtnClicked(const QString &destination, const QString &description, double amount, int currency);
     void sendtoTwitterClicked(QString twitteruser, QString coinlink);
     void sendtoInstaClicked(QString instauser, QString coinlink);
     void generateBillClicked(int denomination);

@@ -55,7 +55,9 @@ Item {
     property alias descriptionEdittw: descriptionEdittw
     property alias amountEdittw: amountEdittw
     property alias sendBtntw: sendBtntw
-    property alias senddollarChecktw: senddollarChecktw
+    property alias radioButton1tw: radioButton1tw
+    property alias radioButton2tw: radioButton2tw
+    property alias radioButton3tw: radioButton3tw
     property alias bitcashicontw: bitcashicontw
     property alias availableBalanceBtntw: availableBalanceBtntw
     property alias maxbalancetw: maxbalancetw
@@ -67,7 +69,9 @@ Item {
     property alias descriptionEditin: descriptionEditin
     property alias amountEditin: amountEditin
     property alias sendBtnin: sendBtnin
-    property alias senddollarCheckin: senddollarCheckin
+    property alias radioButton1in: radioButton1in
+    property alias radioButton2in: radioButton2in
+    property alias radioButton3in: radioButton3in
     property alias bitcashiconin: bitcashiconin
     property alias availableBalanceBtnin: availableBalanceBtnin
     property alias maxbalancein: maxbalancein
@@ -79,7 +83,9 @@ Item {
     property alias descriptionEditre: descriptionEditre
     property alias amountEditre: amountEditre
     property alias sendBtnre: sendBtnre
-    property alias senddollarCheckre: senddollarCheckre
+    property alias radioButton1re: radioButton1re
+    property alias radioButton2re: radioButton2re
+    property alias radioButton3re: radioButton3re
     property alias bitcashiconre: bitcashiconre
     property alias availableBalanceBtnre: availableBalanceBtnre
     property alias maxbalancere: maxbalancere
@@ -1364,7 +1370,7 @@ Item {
                     leftPadding: 44
                     anchors.left: parent.left
                     anchors.leftMargin: 30
-                    anchors.top: senddollarChecktw.bottom
+                    anchors.top: radioButton1tw.bottom
                     anchors.topMargin: 15
                     iconname: "../res/assets/Miscellaneous/button-send.png"
                     font.capitalization: Font.MixedCase
@@ -1469,19 +1475,39 @@ Item {
                     anchors.top: infolabeltw.top
                 }
 
-                CheckBox {
-                    id: senddollarChecktw
-                    text: qsTr("Send Dollar instead of BitCash")
-                    visible: true
-                    font.weight: Font.DemiBold
-                    font.pixelSize: 14
-                    font.family: "Montserrat SemiBold"
-                    topPadding: 30
-                    anchors.top: infolabeltw.bottom
-                    anchors.topMargin: 0
-                    leftPadding: 0
+                RadioButton {
+                    id: radioButton1tw
+                    text: qsTr("Send BitCash")
+                    font.pixelSize: 13
+                    font.weight: Font.Normal
+                    font.family: "Montserrat"
+                    checked: true
                     anchors.left: parent.left
                     anchors.leftMargin: 30
+                    anchors.top: infolabeltw.bottom
+                    anchors.topMargin: 0
+                }
+                RadioButton {
+                    id: radioButton2tw
+                    text: qsTr("Send Dollar")
+                    font.pixelSize: 13
+                    font.weight: Font.Normal
+                    font.family: "Montserrat"
+                    anchors.left: radioButton1tw.right
+                    anchors.leftMargin: 8
+                    anchors.top: infolabeltw.bottom
+                    anchors.topMargin: 0
+                }
+                RadioButton {
+                    id: radioButton3tw
+                    text: qsTr("Send Gold")
+                    font.pixelSize: 13
+                    font.weight: Font.Normal
+                    font.family: "Montserrat"
+                    anchors.left: radioButton2tw.right
+                    anchors.leftMargin: 8
+                    anchors.top: infolabeltw.bottom
+                    anchors.topMargin: 2
                 }
             }
             ////////////////////// INSTAGRAM /////////////////////////////////////////
@@ -1668,7 +1694,7 @@ Item {
                     leftPadding: 44
                     anchors.left: parent.left
                     anchors.leftMargin: 30
-                    anchors.top: senddollarCheckin.bottom
+                    anchors.top: radioButton1in.bottom
                     anchors.topMargin: 15
                     iconname: "../res/assets/Miscellaneous/button-send.png"
                     font.capitalization: Font.MixedCase
@@ -1772,19 +1798,40 @@ Item {
                     anchors.left: leftamountlabelin.right
                     anchors.top: infolabelin.top
                 }
-                CheckBox {
-                    id: senddollarCheckin
-                    text: qsTr("Send Dollar instead of BitCash")
-                    visible: true
-                    font.weight: Font.DemiBold
-                    font.pixelSize: 14
-                    font.family: "Montserrat SemiBold"
-                    topPadding: 30
-                    anchors.top: infolabelin.bottom
-                    anchors.topMargin: 0
-                    leftPadding: 0
+
+                RadioButton {
+                    id: radioButton1in
+                    text: qsTr("Send BitCash")
+                    font.pixelSize: 13
+                    font.weight: Font.Normal
+                    font.family: "Montserrat"
+                    checked: true
                     anchors.left: parent.left
                     anchors.leftMargin: 30
+                    anchors.top: infolabelin.bottom
+                    anchors.topMargin: 0
+                }
+                RadioButton {
+                    id: radioButton2in
+                    text: qsTr("Send Dollar")
+                    font.pixelSize: 13
+                    font.weight: Font.Normal
+                    font.family: "Montserrat"
+                    anchors.left: radioButton1in.right
+                    anchors.leftMargin: 8
+                    anchors.top: infolabelin.bottom
+                    anchors.topMargin: 0
+                }
+                RadioButton {
+                    id: radioButton3in
+                    text: qsTr("Send Gold")
+                    font.pixelSize: 13
+                    font.weight: Font.Normal
+                    font.family: "Montserrat"
+                    anchors.left: radioButton2in.right
+                    anchors.leftMargin: 8
+                    anchors.top: infolabelin.bottom
+                    anchors.topMargin: 2
                 }
             }
             ////////////////////////////////////////// TWITCH /////////////////////////////////////////////
@@ -1971,7 +2018,7 @@ Item {
                     leftPadding: 44
                     anchors.left: parent.left
                     anchors.leftMargin: 30
-                    anchors.top: senddollarCheckre.bottom
+                    anchors.top: radioButton1re.bottom
                     anchors.topMargin: 15
                     iconname: "../res/assets/Miscellaneous/button-send.png"
                     font.capitalization: Font.MixedCase
@@ -2074,20 +2121,41 @@ Item {
                     leftPadding: 4
                     anchors.left: leftamountlabelre.right
                     anchors.top: infolabelre.top
-                }
-                CheckBox {
-                    id: senddollarCheckre
-                    text: qsTr("Send Dollar instead of BitCash")
-                    visible: true
-                    font.weight: Font.DemiBold
-                    font.pixelSize: 14
-                    font.family: "Montserrat SemiBold"
-                    topPadding: 30
-                    anchors.top: infolabelre.bottom
-                    anchors.topMargin: 0
-                    leftPadding: 0
+                }                
+
+                RadioButton {
+                    id: radioButton1re
+                    text: qsTr("Send BitCash")
+                    font.pixelSize: 13
+                    font.weight: Font.Normal
+                    font.family: "Montserrat"
+                    checked: true
                     anchors.left: parent.left
                     anchors.leftMargin: 30
+                    anchors.top: infolabelre.bottom
+                    anchors.topMargin: 0
+                }
+                RadioButton {
+                    id: radioButton2re
+                    text: qsTr("Send Dollar")
+                    font.pixelSize: 13
+                    font.weight: Font.Normal
+                    font.family: "Montserrat"
+                    anchors.left: radioButton1re.right
+                    anchors.leftMargin: 8
+                    anchors.top: infolabelre.bottom
+                    anchors.topMargin: 0
+                }
+                RadioButton {
+                    id: radioButton3re
+                    text: qsTr("Send Gold")
+                    font.pixelSize: 13
+                    font.weight: Font.Normal
+                    font.family: "Montserrat"
+                    anchors.left: radioButton2re.right
+                    anchors.leftMargin: 8
+                    anchors.top: infolabelre.bottom
+                    anchors.topMargin: 2
                 }
             }
             /*******************************************************/

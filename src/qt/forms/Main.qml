@@ -225,9 +225,13 @@ Item {
         coinsstr = send.amountEdittw.text
         currency = "BITC";
         currencyvalue = 0;
-        if (send.senddollarChecktw.checked) {
+        if (send.radioButton2tw.checked) {
             currency = "BITCD";
             currencyvalue = 1;
+        } else
+        if (send.radioButton3tw.checked) {
+            currency = "BITCG";
+            currencyvalue = 2;
         }
         coinsstrdouble = parseFloat(coinsstr)
         coinsstrint = coinsstrdouble
@@ -238,8 +242,11 @@ Item {
         twittersuccess.sendcap.text = qsTr("Successfully sent the coins to the Twitter user")
         twittersuccess.sendicon.source = "../res/assets/Miscellaneous/twittericon.png"
         twittersuccess.visible = true
-        if (send.senddollarChecktw.checked) {
+        if (send.radioButton2tw.checked) {
             twittersuccess.printBtn.visible = (coinsstrdouble === 1 || coinsstrdouble === 2 || coinsstrdouble === 5 || coinsstrdouble === 10 || coinsstrdouble === 20 || coinsstrdouble === 50 || coinsstrdouble === 100);
+        } else
+        if (send.radioButton3tw.checked) {
+            twittersuccess.printBtn.visible = false;
         } else
         {
             twittersuccess.printBtn.visible = (coinsstrdouble === 10 || coinsstrdouble === 20 || coinsstrdouble === 50 || coinsstrdouble === 100 || coinsstrdouble === 200 || coinsstrdouble === 500 || coinsstrdouble === 1000);
@@ -255,21 +262,28 @@ Item {
         coinsstr = send.amountEditin.text
         currency = "BITC";
         currencyvalue = 0;
-        if (send.senddollarCheckin.checked) {
+        if (send.radioButton2in.checked) {
             currency = "BITCD";
             currencyvalue = 1;
+        } else
+        if (send.radioButton3in.checked) {
+            currency = "BITCG";
+            currencyvalue = 2;
         }
         coinsstrdouble = parseFloat(coinsstr)
         coinsstrint = coinsstrdouble
 
         twittersuccess.twitteredit.text = "https://wallet.choosebitcash.com/instalogin.php?sender="+senderstr+"&receiver="+recieverstr+"&coins="+coinsstr
-        twittersuccess.text2.text = "Hey @"+recieverstr+", I just sent you "+coinsstr+" BITC to your Instagram account as a tip. Click here to claim it: "+twittersuccess.twitteredit.text
+        twittersuccess.text2.text = "Hey @"+recieverstr+", I just sent you "+coinsstr+" " + currency + " to your Instagram account as a tip. Click here to claim it: "+twittersuccess.twitteredit.text
         twittersuccess.text1.text = qsTr("Send the below link directly to the Instagram user so that he/she can claim the coins.\n\n You can even paste the link in public posts or comments. No need to worry, no other user can gain access to these coins except for the intended Instagram user.\n\nIf you submitted this transaction by accident, you can claim the coins back with your link.")
         twittersuccess.sendcap.text = qsTr("Successfully sent the coins to the Instagram user")
         twittersuccess.sendicon.source = "../res/assets/Miscellaneous/instaicon.png"
         twittersuccess.visible = true
-        if (send.senddollarCheckin.checked) {
+        if (send.radioButton2in.checked) {
             twittersuccess.printBtn.visible = (coinsstrdouble === 1 || coinsstrdouble === 2 || coinsstrdouble === 5 || coinsstrdouble === 10 || coinsstrdouble === 20 || coinsstrdouble === 50 || coinsstrdouble === 100);
+        } else
+        if (send.radioButton3in.checked) {
+            twittersuccess.printBtn.visible = false;
         } else
         {
             twittersuccess.printBtn.visible = (coinsstrdouble === 10 || coinsstrdouble === 20 || coinsstrdouble === 50 || coinsstrdouble === 100 || coinsstrdouble === 200 || coinsstrdouble === 500 || coinsstrdouble === 1000);
@@ -285,21 +299,28 @@ Item {
         coinsstr = send.amountEditre.text
         currency = "BITC";
         currencyvalue = 0;
-        if (send.senddollarCheckre.checked) {
+        if (send.radioButton2re.checked) {
             currency = "BITCD";
             currencyvalue = 1;
+        } else
+        if (send.radioButton3re.checked) {
+            currency = "BITCG";
+            currencyvalue = 2;
         }
         coinsstrdouble = parseFloat(coinsstr)
         coinsstrint = coinsstrdouble
 
         twittersuccess.twitteredit.text = "https://wallet.choosebitcash.com/twitchlogin.php?sender="+senderstr+"&receiver="+recieverstr+"&coins="+coinsstr
-        twittersuccess.text2.text = "Hey @"+recieverstr+", I just sent you "+coinsstr+" BITC to your Twitch account as a tip. Click here to claim it: "+twittersuccess.twitteredit.text
+        twittersuccess.text2.text = "Hey @"+recieverstr+", I just sent you "+coinsstr+" " + currency + " to your Twitch account as a tip. Click here to claim it: "+twittersuccess.twitteredit.text
         twittersuccess.text1.text = qsTr("Send the below link directly to the Twitch user so that he/she can claim the coins.\n\n You can even paste the link in public posts or comments. No need to worry, no other user can gain access to these coins except for the intended Twitch user.\n\nIf you submitted this transaction by accident, you can claim the coins back with your link.")
         twittersuccess.sendcap.text = qsTr("Successfully sent the coins to the Twitch user")
         twittersuccess.sendicon.source = "../res/assets/Miscellaneous/twitchicon.png"
         twittersuccess.visible = true
-        if (send.senddollarCheckre.checked) {
+        if (send.radioButton2re.checked) {
             twittersuccess.printBtn.visible = (coinsstrdouble === 1 || coinsstrdouble === 2 || coinsstrdouble === 5 || coinsstrdouble === 10 || coinsstrdouble === 20 || coinsstrdouble === 50 || coinsstrdouble === 100);
+        } else
+        if (send.radioButton3re.checked) {
+            twittersuccess.printBtn.visible = false;
         } else
         {
             twittersuccess.printBtn.visible = (coinsstrdouble === 10 || coinsstrdouble === 20 || coinsstrdouble === 50 || coinsstrdouble === 100 || coinsstrdouble === 200 || coinsstrdouble === 500 || coinsstrdouble === 1000);
@@ -415,12 +436,12 @@ Item {
     signal sendBtnSignal(string destination, string label, string description, double amount, bool substractfee)    
     signal sendBtnDoSignal(string destination, string label, string description, double amount, bool substractfee)
     signal sendBtnGoSignal(string destination, string label, string description, double amount, bool substractfee)
-    signal sendBtntwSignal(string destination, string description, double amount, bool senddollar)
-    signal sendBtninSignal(string destination, string description, double amount, bool senddollar)
-    signal sendBtnreSignal(string destination, string description, double amount, bool senddollar)
-    signal sendconfirmedBtntwSignal(string destination, string description, double amount, bool senddollar)
-    signal sendconfirmedBtninSignal(string destination, string description, double amount, bool senddollar)
-    signal sendconfirmedBtnreSignal(string destination, string description, double amount, bool senddollar)
+    signal sendBtntwSignal(string destination, string description, double amount, int currency)
+    signal sendBtninSignal(string destination, string description, double amount, int currency)
+    signal sendBtnreSignal(string destination, string description, double amount, int currency)
+    signal sendconfirmedBtntwSignal(string destination, string description, double amount, int currency)
+    signal sendconfirmedBtninSignal(string destination, string description, double amount, int currency)
+    signal sendconfirmedBtnreSignal(string destination, string description, double amount, int currency)
     signal generateBillSignal(int denomination)
     signal generateBillBitCashSignal(int denomination)
     signal sendlinkBtnSignal(string description, double amount, int currency)
@@ -509,12 +530,12 @@ Item {
                 onSendBtnDoSignalIntern: sendBtnDoSignal(destination,label,description,amount,substractfee)
                 onSendBtnGoSignalIntern: sendBtnGoSignal(destination,label,description,amount,substractfee)
                 onPrintBtnDoSignalIntern: openbillselectwindow()
-                onSendBtntwSignalIntern: sendBtntwSignal(destination,description,amount, senddollar)
-                onSendconfirmedBtntwSignalIntern: sendconfirmedBtntwSignal(destination,description,amount,senddollar)
-                onSendBtninSignalIntern: sendBtninSignal(destination, description, amount, senddollar)
-                onSendconfirmedBtninSignalIntern: sendconfirmedBtninSignal(destination, description, amount, senddollar)
-                onSendBtnreSignalIntern: sendBtnreSignal(destination,description,amount, senddollar)
-                onSendconfirmedBtnreSignalIntern: sendconfirmedBtnreSignal(destination,description,amount, senddollar)
+                onSendBtntwSignalIntern: sendBtntwSignal(destination,description,amount, currency)
+                onSendconfirmedBtntwSignalIntern: sendconfirmedBtntwSignal(destination,description,amount,currency)
+                onSendBtninSignalIntern: sendBtninSignal(destination, description, amount, currency)
+                onSendconfirmedBtninSignalIntern: sendconfirmedBtninSignal(destination, description, amount, currency)
+                onSendBtnreSignalIntern: sendBtnreSignal(destination,description,amount, currency)
+                onSendconfirmedBtnreSignalIntern: sendconfirmedBtnreSignal(destination,description,amount, currency)
                 onSendlinkBtnSignalIntern: sendlinkBtnSignal(description, amount, currency)
                 onSendtoanyoneSignalIntern: gotosendtoanyone()
                 onViewaccounthistorysignal:{

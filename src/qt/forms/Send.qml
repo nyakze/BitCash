@@ -10,12 +10,12 @@ SendForm {
     signal sendBtnGoSignalIntern(string destination, string label, string description, double amount, bool substractfee)
     signal printBtnDoSignalIntern()
     signal printBtnSignalIntern()
-    signal sendBtntwSignalIntern(string destination, string description, double amount, bool senddollar)
-    signal sendBtninSignalIntern(string destination, string description, double amount, bool senddollar)
-    signal sendBtnreSignalIntern(string destination, string description, double amount, bool senddollar)
-    signal sendconfirmedBtntwSignalIntern(string destination, string description, double amount, bool senddollar)
-    signal sendconfirmedBtninSignalIntern(string destination, string description, double amount, bool senddollar)
-    signal sendconfirmedBtnreSignalIntern(string destination, string description, double amount, bool senddollar)
+    signal sendBtntwSignalIntern(string destination, string description, double amount, int currency)
+    signal sendBtninSignalIntern(string destination, string description, double amount, int currency)
+    signal sendBtnreSignalIntern(string destination, string description, double amount, int currency)
+    signal sendconfirmedBtntwSignalIntern(string destination, string description, double amount, int currency)
+    signal sendconfirmedBtninSignalIntern(string destination, string description, double amount, int currency)
+    signal sendconfirmedBtnreSignalIntern(string destination, string description, double amount, int currency)
     signal sendlinkBtnSignalIntern(string description, double amount, int currency)
     signal sendtoanyoneSignalIntern()
     signal viewaccounthistorysignal()
@@ -50,7 +50,7 @@ SendForm {
     {
         tabBar.currentIndex=0
         paytoEdit.text = address
-        descriptionEdit.text = "Convert BitCash into BitCash Dollars"        
+        descriptionEdit.text = "Convert BitCash into BitCash Dollars; conversion price approx.: "+priceindollar2+" USD/BitCash"
         amountEdit.forceActiveFocus()
         radioButton1.checked=true
     }
@@ -59,7 +59,7 @@ SendForm {
     {
         tabBar.currentIndex=0
         paytoEdit.text = address
-        descriptionEdit.text = "Convert BitCash Dollars into BitCash"
+        descriptionEdit.text = "Convert BitCash Dollars into BitCash; conversion price approx.: "+priceindollar+" USD/BitCash"
         amountEdit.forceActiveFocus()
         radioButton2.checked=true
     }
@@ -68,7 +68,7 @@ SendForm {
     {
         tabBar.currentIndex=0
         paytoEdit.text = address
-        descriptionEdit.text = "Convert BitCash Dollars into Gold"
+        descriptionEdit.text = "Convert BitCash Dollars into Gold; conversion price approx.: "+priceingold+" USD/Gold ounce"
         amountEdit.forceActiveFocus()
         radioButton2.checked=true
     }
@@ -77,7 +77,7 @@ SendForm {
     {
         tabBar.currentIndex=0
         paytoEdit.text = address
-        descriptionEdit.text = "Convert Gold into BitCash Dollars"
+        descriptionEdit.text = "Convert Gold into BitCash Dollars; conversion price approx.: "+priceingold+" USD/Gold ounce"
         amountEdit.forceActiveFocus()
         radioButton3.checked=true
     }
@@ -110,9 +110,16 @@ SendForm {
     {
         confirmmode = 0
 
-        if (senddollarChecktw.checked)
-        currency = "USD"; else
-        currency = "BITC";
+        if (radioButton2tw.checked){
+            currency = "USD";
+        } else
+        if (radioButton1tw.checked){
+            currency = "BITC";
+        } else
+        if (radioButton3tw.checked){
+            currency = "GOLD ounces";
+        }
+
         if (descriptionEdittw.text !== ""){
             confirmtext.text = "You're about to send "+amountEdittw.text+" "+currency+" to @"+paytoEdittw.text+" with the following description: '"+descriptionEdittw.text+"'.\n\n Please confirm this transaction."
         }else
@@ -131,9 +138,15 @@ SendForm {
     function showconfirminstaintern(msg)
     {
         confirmmode = 1
-        if (senddollarCheckin.checked)
-        currency = "USD"; else
-        currency = "BITC";
+        if (radioButton2in.checked){
+            currency = "USD";
+        } else
+        if (radioButton1in.checked){
+            currency = "BITC";
+        } else
+        if (radioButton3in.checked){
+            currency = "GOLD ounces";
+        }
         if (descriptionEditin.text !== ""){
             confirmtext.text = "You're about to send "+amountEditin.text+" "+currency+" to @"+paytoEditin.text+" with the following description: '"+descriptionEditin.text+"'.\n\n Please confirm this transaction."
         }else
@@ -152,9 +165,15 @@ SendForm {
     function showconfirmtwitchintern(msg)
     {
         confirmmode = 2
-        if (senddollarCheckre.checked)
-        currency = "USD"; else
-        currency = "BITC";
+        if (radioButton2re.checked){
+            currency = "USD";
+        } else
+        if (radioButton1re.checked){
+            currency = "BITC";
+        } else
+        if (radioButton3re.checked){
+            currency = "GOLD ounces";
+        }
         if (descriptionEditre.text !== ""){
             confirmtext.text = "You're about to send "+amountEditre.text+" "+currency+" to @"+paytoEditre.text+" with the following description: '"+descriptionEditre.text+"'.\n\n Please confirm this transaction."
         }else
@@ -325,18 +344,26 @@ SendForm {
     function calcleftbalancetw()
     {
         /****************************/
-        if (senddollarChecktw.checked)
+        if (radioButton2tw.checked)
         {
             leftbalancetw = maxbalancenumDo-amountEdittw.text
             if (leftbalancetw < 0) leftbalancetw = 0
             leftamountlabeltw.text = leftbalancetw.toFixed(9)
             bitcashicontw.text = "$"
         } else
+        if (radioButton1tw.checked)
         {
             leftbalancetw = maxbalancenum - amountEdittw.text
             if (leftbalancetw < 0) leftbalancetw = 0
             leftamountlabeltw.text = leftbalancetw.toFixed(9)
             bitcashicontw.text = "₡"
+        } else
+        if (radioButton3tw.checked)
+        {
+            leftbalancetw = maxbalancenumGo - amountEdittw.text
+            if (leftbalancetw < 0) leftbalancetw = 0
+            leftamountlabeltw.text = leftbalancetw.toFixed(9)
+            bitcashicontw.text = "⅁"
         }
         /*****************************/
     }
@@ -344,18 +371,26 @@ SendForm {
     function calcleftbalancein()
     {
         /****************************/
-        if (senddollarCheckin.checked)
+        if (radioButton2in.checked)
         {
             leftbalancein = maxbalancenumDo-amountEditin.text
             if (leftbalancein<0) leftbalancein=0
             leftamountlabelin.text = leftbalancein.toFixed(9)
             bitcashiconin.text = "$"
         } else
+        if (radioButton1in.checked)
         {
             leftbalancein = maxbalancenum-amountEditin.text
             if (leftbalancein<0) leftbalancein = 0
             leftamountlabelin.text = leftbalancein.toFixed(9)
             bitcashiconin.text = "₡"
+        } else
+        if (radioButton3in.checked)
+        {
+            leftbalancein = maxbalancenumGo-amountEditin.text
+            if (leftbalancein<0) leftbalancein = 0
+            leftamountlabelin.text = leftbalancein.toFixed(9)
+            bitcashiconin.text = "⅁"
         }
         /*****************************/
     }
@@ -363,18 +398,26 @@ SendForm {
     function calcleftbalancere()
     {
         /****************************/
-        if (senddollarCheckre.checked)
+        if (radioButton2re.checked)
         {
             leftbalancere = maxbalancenumDo-amountEditre.text
             if (leftbalancere<0) leftbalancere=0
             leftamountlabelre.text = leftbalancere.toFixed(9)
             bitcashiconre.text = "$"
         } else
+        if (radioButton1re.checked)
         {
             leftbalancere = maxbalancenum-amountEditre.text
             if (leftbalancere < 0) leftbalancere = 0
             leftamountlabelre.text = leftbalancere.toFixed(9)
             bitcashiconre.text = "₡"
+        } else
+        if (radioButton3re.checked)
+        {
+            leftbalancere = maxbalancenumGo-amountEditre.text
+            if (leftbalancere < 0) leftbalancere = 0
+            leftamountlabelre.text = leftbalancere.toFixed(9)
+            bitcashiconre.text = "⅁"
         }
         /*****************************/
     }
@@ -451,9 +494,16 @@ SendForm {
     radioButton1an.onCheckedChanged: calcleftbalancean()
     radioButton2an.onCheckedChanged: calcleftbalancean()
     radioButton3an.onCheckedChanged: calcleftbalancean()
-    senddollarChecktw.onCheckStateChanged: calcleftbalancetw()
-    senddollarCheckin.onCheckStateChanged: calcleftbalancein()
-    senddollarCheckre.onCheckStateChanged: calcleftbalancere()
+    radioButton1tw.onCheckedChanged: calcleftbalancetw()
+    radioButton2tw.onCheckedChanged: calcleftbalancetw()
+    radioButton3tw.onCheckedChanged: calcleftbalancetw()
+    radioButton1in.onCheckedChanged: calcleftbalancein()
+    radioButton2in.onCheckedChanged: calcleftbalancein()
+    radioButton3in.onCheckedChanged: calcleftbalancein()
+    radioButton1re.onCheckedChanged: calcleftbalancere()
+    radioButton2re.onCheckedChanged: calcleftbalancere()
+    radioButton3re.onCheckedChanged: calcleftbalancere()
+
     amountEdit.validator: amountCheckVal       
     amountEdit.onTextChanged: calcleftbalance()
     /*amountEditDo.validator: amountCheckVal
@@ -488,7 +538,15 @@ SendForm {
     amountEdittw.onTextChanged: calcleftbalancetw()
     sendBtntw.onClicked: {
         sendBtntw.text = "Connecting..."
-        sendBtntwSignalIntern(paytoEdittw.text, descriptionEdittw.text, amountEdittw.text, senddollarChecktw.checked)
+        if (radioButton1tw.checked) {
+            sendBtntwSignalIntern(paytoEdittw.text, descriptionEdittw.text, amountEdittw.text, 0)
+        } else
+        if (radioButton2tw.checked) {
+            sendBtntwSignalIntern(paytoEdittw.text, descriptionEdittw.text, amountEdittw.text, 1)
+        } else
+        if (radioButton3tw.checked) {
+            sendBtntwSignalIntern(paytoEdittw.text, descriptionEdittw.text, amountEdittw.text, 2)
+        }
     }
 
     paytoEditin.validator: destCheckVal2
@@ -496,7 +554,15 @@ SendForm {
     amountEditin.onTextChanged: calcleftbalancein()
     sendBtnin.onClicked: {
         sendBtnin.text = "Connecting..."
-        sendBtninSignalIntern(paytoEditin.text, descriptionEditin.text, amountEditin.text, senddollarCheckin.checked)
+        if (radioButton1tw.checked) {
+            sendBtninSignalIntern(paytoEditin.text, descriptionEditin.text, amountEditin.text, 0)
+        } else
+        if (radioButton2tw.checked) {
+            sendBtninSignalIntern(paytoEditin.text, descriptionEditin.text, amountEditin.text, 1)
+        } else
+        if (radioButton3tw.checked) {
+            sendBtninSignalIntern(paytoEditin.text, descriptionEditin.text, amountEditin.text, 2)
+        }
     }
 
     paytoEditre.validator: destCheckVal2
@@ -504,7 +570,15 @@ SendForm {
     amountEditre.onTextChanged: calcleftbalancere()
     sendBtnre.onClicked: {
         sendBtnre.text = "Connecting..."
-        sendBtnreSignalIntern(paytoEditre.text, descriptionEditre.text, amountEditre.text, senddollarCheckre.checked)
+        if (radioButton1re.checked) {
+            sendBtnreSignalIntern(paytoEditre.text, descriptionEditre.text, amountEditre.text, 0)
+        } else
+        if (radioButton2re.checked) {
+            sendBtnreSignalIntern(paytoEditre.text, descriptionEditre.text, amountEditre.text, 1)
+        } else
+        if (radioButton3re.checked) {
+            sendBtnreSignalIntern(paytoEditre.text, descriptionEditre.text, amountEditre.text, 2)
+        }
     }
 /***********************************/
     /*sendBtnDo.onClicked: {
@@ -541,15 +615,39 @@ SendForm {
             sendlinkBtnSignalIntern(descriptionEditan.text, amountEditan.text, 2)
         }
     }
-    sendconfirmtwBtn.onClicked: {
+    sendconfirmtwBtn.onClicked: {               
         if (confirmmode==0){
-            sendconfirmedBtntwSignalIntern(paytoEdittw.text, descriptionEdittw.text, amountEdittw.text, senddollarChecktw.checked)
+            if (radioButton1tw.checked){
+                sendconfirmedBtntwSignalIntern(paytoEdittw.text, descriptionEdittw.text, amountEdittw.text, 0)
+            } else
+            if (radioButton2tw.checked){
+                sendconfirmedBtntwSignalIntern(paytoEdittw.text, descriptionEdittw.text, amountEdittw.text, 1)
+            } else
+            if (radioButton3tw.checked){
+                sendconfirmedBtntwSignalIntern(paytoEdittw.text, descriptionEdittw.text, amountEdittw.text, 2)
+            }
         }else
         if (confirmmode==1){
-            sendconfirmedBtninSignalIntern(paytoEditin.text, descriptionEditin.text, amountEditin.text, senddollarCheckin.checked)
+            if (radioButton1in.checked){
+                sendconfirmedBtninSignalIntern(paytoEditin.text, descriptionEditin.text, amountEditin.text, 0)
+            } else
+            if (radioButton2in.checked){
+                sendconfirmedBtninSignalIntern(paytoEditin.text, descriptionEditin.text, amountEditin.text, 1)
+            } else
+            if (radioButton3in.checked){
+                sendconfirmedBtninSignalIntern(paytoEditin.text, descriptionEditin.text, amountEditin.text, 2)
+            }
         }else
         if (confirmmode==2){
-            sendconfirmedBtnreSignalIntern(paytoEditre.text, descriptionEditre.text, amountEditre.text, senddollarCheckre.checked)
+            if (radioButton1re.checked){
+                sendconfirmedBtnreSignalIntern(paytoEditre.text, descriptionEditre.text, amountEditre.text, 0)
+            } else
+            if (radioButton2re.checked){
+                sendconfirmedBtnreSignalIntern(paytoEditre.text, descriptionEditre.text, amountEditre.text, 1)
+            } else
+            if (radioButton3re.checked){
+                sendconfirmedBtnreSignalIntern(paytoEditre.text, descriptionEditre.text, amountEditre.text, 2)
+            }
         }
     }
     changetwbtn.onClicked: {

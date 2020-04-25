@@ -2333,10 +2333,9 @@ void BitcashGUI::recurringpayments()
     }
 }
 
-void BitcashGUI::SendToTwitterBtnClicked(const QString &destination, const QString &description, double amount, bool senddollar) 
+void BitcashGUI::SendToTwitterBtnClicked(const QString &destination, const QString &description, double amount, int currency) 
 {
-    int curr = 0;
-    if (senddollar) curr = 1;
+    int curr = currency;
 
     if (!UserKnowsPassword()) return;
     WalletModel * const walletModel = getCurrentWalletModel();
@@ -2372,10 +2371,9 @@ void BitcashGUI::SendToTwitterBtnClicked(const QString &destination, const QStri
     this->manager->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
 }
 
-void BitcashGUI::SendToInstaBtnClicked(const QString &destination, const QString &description, double amount, bool senddollar) 
+void BitcashGUI::SendToInstaBtnClicked(const QString &destination, const QString &description, double amount, int currency) 
 {
-    int curr = 0;
-    if (senddollar) curr = 1;
+    int curr = currency;
 
     if (!UserKnowsPassword()) return;
     WalletModel * const walletModel = getCurrentWalletModel();
@@ -2411,10 +2409,9 @@ void BitcashGUI::SendToInstaBtnClicked(const QString &destination, const QString
     this->managerinsta->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
 }
 
-void BitcashGUI::SendToTwitchBtnClicked(const QString &destination, const QString &description, double amount, bool senddollar) 
+void BitcashGUI::SendToTwitchBtnClicked(const QString &destination, const QString &description, double amount, int currency) 
 {
-    int curr = 0;
-    if (senddollar) curr = 1;
+    int curr = currency;
 
     if (!UserKnowsPassword()) return;
     WalletModel * const walletModel = getCurrentWalletModel();
@@ -2450,13 +2447,12 @@ void BitcashGUI::SendToTwitchBtnClicked(const QString &destination, const QStrin
     this->managertwitch->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
 }
 
-void BitcashGUI::SendConfirmedToTwitterBtnClicked(const QString &destination, const QString &description, double amount, bool senddollar) 
+void BitcashGUI::SendConfirmedToTwitterBtnClicked(const QString &destination, const QString &description, double amount, int currency) 
 {
     WalletModel * const walletModel = getCurrentWalletModel();
     if (!walletModel) return;
 
-    int curr = 0;
-    if (senddollar) curr = 1;
+    int curr = currency;
 
     CAmount nAmount = amount * COIN;
     std::string referenceline = description.toStdString(); 
@@ -2483,7 +2479,8 @@ void BitcashGUI::SendConfirmedToTwitterBtnClicked(const QString &destination, co
         qtimestamp.setMSecsSinceEpoch(timestamp);
         QVariant datestr=GUIUtil::dateTimeStr(qtimestamp);
         QVariant currencystr = tr("BITC");
-        if (senddollar) currencystr = tr("USD");
+        if (currency==1) currencystr = tr("USD");else
+        if (currency==2) currencystr = tr("GOLD ounces");
 
         QMetaObject::invokeMethod(qmlrootitem, "addbitcashexpresslink", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, s), Q_ARG(QVariant, descriptionnew), Q_ARG(QVariant, amountstr), Q_ARG(QVariant, datestr), Q_ARG(QVariant, currencystr));
 
@@ -2506,13 +2503,12 @@ void BitcashGUI::SendConfirmedToTwitterBtnClicked(const QString &destination, co
     }
 }
 
-void BitcashGUI::SendConfirmedToInstaBtnClicked(const QString &destination, const QString &description, double amount, bool senddollar) 
+void BitcashGUI::SendConfirmedToInstaBtnClicked(const QString &destination, const QString &description, double amount, int currency) 
 {
     WalletModel * const walletModel = getCurrentWalletModel();
     if (!walletModel) return;
 
-    int curr = 0;
-    if (senddollar) curr = 1;
+    int curr = currency;
 
     CAmount nAmount = amount * COIN;
     std::string referenceline = description.toStdString(); 
@@ -2539,7 +2535,8 @@ void BitcashGUI::SendConfirmedToInstaBtnClicked(const QString &destination, cons
         qtimestamp.setMSecsSinceEpoch(timestamp);
         QVariant datestr = GUIUtil::dateTimeStr(qtimestamp);
         QVariant currencystr = tr("BITC");
-        if (senddollar) currencystr = tr("USD");
+        if (currency==1) currencystr = tr("USD");else
+        if (currency==2) currencystr = tr("GOLD ounces");
 
         QMetaObject::invokeMethod(qmlrootitem, "addbitcashexpresslink", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, s), Q_ARG(QVariant, descriptionnew), Q_ARG(QVariant, amountstr), Q_ARG(QVariant, datestr), Q_ARG(QVariant, currencystr));
 
@@ -2562,13 +2559,12 @@ void BitcashGUI::SendConfirmedToInstaBtnClicked(const QString &destination, cons
     }
 }
 
-void BitcashGUI::SendConfirmedToTwitchBtnClicked(const QString &destination, const QString &description, double amount, bool senddollar) 
+void BitcashGUI::SendConfirmedToTwitchBtnClicked(const QString &destination, const QString &description, double amount, int currency) 
 {
     WalletModel * const walletModel = getCurrentWalletModel();
     if (!walletModel) return;
 
-    int curr = 0;
-    if (senddollar) curr = 1;
+    int curr = currency;
 
     CAmount nAmount = amount * COIN;
     std::string referenceline = description.toStdString(); 
@@ -2595,7 +2591,8 @@ void BitcashGUI::SendConfirmedToTwitchBtnClicked(const QString &destination, con
         qtimestamp.setMSecsSinceEpoch(timestamp);
         QVariant datestr=GUIUtil::dateTimeStr(qtimestamp);
         QVariant currencystr = tr("BITC");
-        if (senddollar) currencystr = tr("USD");
+        if (currency==1) currencystr = tr("USD");else
+        if (currency==2) currencystr = tr("GOLD ounces");
 
         QMetaObject::invokeMethod(qmlrootitem, "addbitcashexpresslink", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, s), Q_ARG(QVariant, descriptionnew), Q_ARG(QVariant, amountstr), Q_ARG(QVariant, datestr), Q_ARG(QVariant, currencystr));
 
@@ -3234,24 +3231,24 @@ BitcashGUI::BitcashGUI(interfaces::Node& node, const PlatformStyle *_platformSty
     QObject::connect(qmlrootitem, SIGNAL(undopaymentremovalSignal()),
                       this, SLOT(undoPaymentsRemovalClicked()));
 
-    QObject::connect(qmlrootitem, SIGNAL(sendconfirmedBtntwSignal(QString, QString, double, bool)),
-                      this, SLOT(SendConfirmedToTwitterBtnClicked(QString, QString, double, bool)));
-    QObject::connect(qmlrootitem, SIGNAL(sendBtntwSignal(QString, QString, double, bool)),
-                      this, SLOT(SendToTwitterBtnClicked(QString, QString, double, bool)));
+    QObject::connect(qmlrootitem, SIGNAL(sendconfirmedBtntwSignal(QString, QString, double, int)),
+                      this, SLOT(SendConfirmedToTwitterBtnClicked(QString, QString, double, int)));
+    QObject::connect(qmlrootitem, SIGNAL(sendBtntwSignal(QString, QString, double, int)),
+                      this, SLOT(SendToTwitterBtnClicked(QString, QString, double, int)));
     QObject::connect(qmlrootitem, SIGNAL(sendtoTwitterSignal(QString, QString)),
                       this, SLOT(sendtoTwitterClicked(QString, QString)));
 
-    QObject::connect(qmlrootitem, SIGNAL(sendconfirmedBtninSignal(QString, QString, double, bool)),
-                      this, SLOT(SendConfirmedToInstaBtnClicked(QString, QString, double, bool)));
-    QObject::connect(qmlrootitem, SIGNAL(sendBtninSignal(QString, QString, double, bool)),
-                      this, SLOT(SendToInstaBtnClicked(QString, QString, double, bool)));
+    QObject::connect(qmlrootitem, SIGNAL(sendconfirmedBtninSignal(QString, QString, double, int)),
+                      this, SLOT(SendConfirmedToInstaBtnClicked(QString, QString, double, int)));
+    QObject::connect(qmlrootitem, SIGNAL(sendBtninSignal(QString, QString, double, int)),
+                      this, SLOT(SendToInstaBtnClicked(QString, QString, double, int)));
     QObject::connect(qmlrootitem, SIGNAL(sendtoInstaSignal(QString, QString)),
                       this, SLOT(sendtoInstaClicked(QString, QString)));
 
-    QObject::connect(qmlrootitem, SIGNAL(sendconfirmedBtnreSignal(QString, QString, double, bool)),
-                      this, SLOT(SendConfirmedToTwitchBtnClicked(QString, QString, double, bool)));
-    QObject::connect(qmlrootitem, SIGNAL(sendBtnreSignal(QString, QString, double, bool)),
-                      this, SLOT(SendToTwitchBtnClicked(QString, QString, double, bool)));
+    QObject::connect(qmlrootitem, SIGNAL(sendconfirmedBtnreSignal(QString, QString, double, int)),
+                      this, SLOT(SendConfirmedToTwitchBtnClicked(QString, QString, double, int)));
+    QObject::connect(qmlrootitem, SIGNAL(sendBtnreSignal(QString, QString, double, int)),
+                      this, SLOT(SendToTwitchBtnClicked(QString, QString, double, int)));
     QObject::connect(qmlrootitem, SIGNAL(sendtoTwitchSignal(QString, QString)),
                       this, SLOT(sendtoTwitchClicked(QString, QString)));
     QObject::connect(qmlrootitem, SIGNAL(generateBillSignal(int)),
