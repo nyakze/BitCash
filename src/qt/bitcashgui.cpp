@@ -1113,6 +1113,10 @@ void BitcashGUI::supplyClicked()
     QDesktopServices::openUrl(QUrl(link));
 }
 
+void BitcashGUI::openLinkClicked(QString link) 
+{
+    QDesktopServices::openUrl(QUrl(link));
+}
 
 std::string paperwalletaddress,paperwalletkey;
 
@@ -3090,6 +3094,30 @@ void BitcashGUI::replyFinishedcheckversion(QNetworkReply *reply){
     }  
 }
 
+
+void BitcashGUI::replyFinishednews(QNetworkReply *reply){
+    QVariant title, desc, link, returnedValue;
+    int mode = 0;
+
+    while (!reply->atEnd()) {
+        QString replystr = reply->readLine();
+
+        if (mode == 0) {
+            title = replystr.trimmed();
+            mode = 1;
+        } else
+        if (mode == 1) {
+            desc = replystr.trimmed();
+            mode = 2;
+        } else
+        if (mode == 2) {
+            link = replystr.trimmed();
+            QMetaObject::invokeMethod(qmlrootitem, "sendnewsitem", Q_RETURN_ARG(QVariant, returnedValue), Q_ARG(QVariant, title), Q_ARG(QVariant, desc), Q_ARG(QVariant, link));
+            mode = 0;
+        }        
+    }
+}
+
 BitcashGUI::BitcashGUI(interfaces::Node& node, const PlatformStyle *_platformStyle, const NetworkStyle *networkStyle, QWidget *parent) :
     QMainWindow(parent),
     enableWallet(false),
@@ -3295,6 +3323,9 @@ BitcashGUI::BitcashGUI(interfaces::Node& node, const PlatformStyle *_platformSty
                       this, SLOT(InstaSwapCheckAmountClicked(bool, double)));
     QObject::connect(qmlrootitem, SIGNAL(instaSwapSendBtnSignal(bool, double, QString)),
                       this, SLOT(InstaSwapSendBtnClicked(bool, double, QString)));
+    QObject::connect(qmlrootitem, SIGNAL(openLink(QString)),
+                      this, SLOT(openLinkClicked(QString)));
+
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(recurringpayments()));
@@ -3320,6 +3351,10 @@ BitcashGUI::BitcashGUI(interfaces::Node& node, const PlatformStyle *_platformSty
     this->managercheckversion = new QNetworkAccessManager(this);
     connect(this->managercheckversion, SIGNAL(finished(QNetworkReply*)), 
             this, SLOT(replyFinishedcheckversion(QNetworkReply*)));
+
+    this->managernews = new QNetworkAccessManager(this);
+    connect(this->managernews, SIGNAL(finished(QNetworkReply*)), 
+            this, SLOT(replyFinishednews(QNetworkReply*)));
 
     this->managerinstaswap = new QNetworkAccessManager(this);
     connect(this->managerinstaswap, SIGNAL(finished(QNetworkReply*)), 
@@ -3444,6 +3479,7 @@ BitcashGUI::BitcashGUI(interfaces::Node& node, const PlatformStyle *_platformSty
     }
 
     this->managercheckversion->get(QNetworkRequest(QUrl("https://wallet.choosebitcash.com/versioninfostable.txt")));
+    this->managernews->get(QNetworkRequest(QUrl("https://wallet.choosebitcash.com/news.txt")));
 
 }
 

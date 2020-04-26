@@ -8,6 +8,30 @@ Item {
     width: 1280
     height: 800
 
+    property int newsindex: -1
+    property string newstitle: ""
+    property string newsdesc: ""
+    property string newslink: ""
+
+    Timer {
+        id: newstimer
+        interval: 5000
+        running: true
+        repeat: true
+        onTriggered: {
+
+            newsindex++;
+            if (newsindex > newsmodel.count-1 || newsindex > 5) newsindex = 0
+
+            if (newsindex >= 0)
+            {
+                newstitle = newsmodel.get(newsindex).title
+                newsdesc = newsmodel.get(newsindex).desc
+                newslink = newsmodel.get(newsindex).link
+            }
+        }
+    }
+
     Timer {
         id: currencytimer
         interval: 3000
@@ -31,6 +55,23 @@ Item {
                 running = false
             }
         }
+    }
+
+    ListModel {
+        id: newsmodel
+    }
+
+    function sendnewsitemintern(title, desc, link)
+    {
+        newstitle = title
+        newsdesc = desc
+        newslink = link
+
+        newsmodel.insert(0,{
+                               "title": title,
+                               "desc": desc,
+                               "link": link
+                           })
     }
 
     onWidthChanged: {
@@ -109,6 +150,7 @@ Item {
        }
     }
 
+    signal openLinkintern(string newslink)
     signal sendtobitcashsignalintern()
     signal sendtodollarsignalintern()
     signal sendtogoldsignalintern()
@@ -1382,6 +1424,69 @@ Item {
         }
     }
 
+    Label {
+        id: newheaderid
+        text: qsTr("News")
+        font.weight: Font.DemiBold
+        font.family: "Montserrat SemiBold"
+        font.pixelSize: 18
+        color:"#202124"
+        anchors.top: balancerect.bottom
+        anchors.topMargin: 10
+        anchors.left: parent.left
+        anchors.leftMargin: 30
+    }
+
+    Label {
+        id: newtitleid
+        text: newstitle
+        font.weight: Font.DemiBold
+        font.family: "Montserrat SemiBold"
+        font.pixelSize: 13
+        color:"#202124"
+        anchors.top: balancerect.bottom
+        anchors.topMargin: 10
+        anchors.left: newheaderid.right
+        anchors.leftMargin: 30
+        MouseArea {
+            anchors.fill: parent
+            onClicked: if (newslink != "") openLinkintern(newslink)
+        }
+    }
+    Label {
+        id: newdescid
+        text: newsdesc
+        font.weight: Font.Normal
+        font.family: "Montserrat"
+        font.pixelSize: 13
+        color:"#202124"
+        anchors.top: newtitleid.bottom
+        anchors.topMargin: 0
+        anchors.left: newheaderid.right
+        anchors.leftMargin: 30
+        MouseArea {
+            anchors.fill: parent
+            onClicked: if (newslink != "") openLinkintern(newslink)
+        }
+    }
+    Label {
+        id: newlinkid
+        text: newslink
+        font.weight: Font.Normal
+        font.family: "Montserrat"
+        font.pixelSize: 13
+        color:"#3e45ac"
+        anchors.top: newdescid.bottom
+        anchors.topMargin: 0
+        anchors.left: newheaderid.right
+        anchors.leftMargin: 30
+        MouseArea {
+            anchors.fill: parent
+            onClicked: if (newslink != "") openLinkintern(newslink)
+        }
+    }
+
+
     property int  datewidth : 150
     property int  addresswidth : 150
     property int  typewidth : 150
@@ -1390,8 +1495,8 @@ Item {
     property int  amountgoldwidth : 220
     Label{
         id: lasttranslabel
-        anchors.top: balancerect.bottom
-        anchors.topMargin: 40
+        anchors.top: newlinkid.bottom
+        anchors.topMargin: 20
         width: 223
         height: 19
         color: "#202124"
@@ -2025,6 +2130,51 @@ Item {
         border.width: 0
         anchors.right: parent.right
     }
+/*
+    Rectangle {
+        id: newswindow
+        color: "#ffffff"
+        radius: 5
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        border.color: "#ffffff"
+        border.width: 1
+        width: 690
+        height: 416
 
+
+        Component {
+            id: newsDelegate
+            Row {
+                spacing: 10
+                Text {
+                    color: "#202124"
+                    font.family: "Montserrat SemiBold"
+                    font.weight: Font.DemiBold
+                    font.pixelSize: 18
+                    text: title
+                }
+                Text {
+                    color: "#202124"
+                    font.pixelSize: 16
+                    font.family: "Montserrat"
+                    text: desc
+                }
+                Text {
+                    color: "#3e45ac"
+                    font.pixelSize: 13
+                    font.family: "Montserrat"
+                    text: link
+                }
+            }
+        }
+
+        ListView {
+            anchors.fill: parent
+            model: newsmodel
+            delegate: newsDelegate
+        }
+    }
+*/
 
 }

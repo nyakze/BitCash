@@ -22,6 +22,10 @@ Item {
         send.sendforinstaswapintern(amount, address)
     }
 
+    function sendnewsitem(title, desc, link)
+    {
+        overview.sendnewsitemintern(title, desc, link)
+    }
 
     function sendtodollar()
     {
@@ -427,6 +431,7 @@ Item {
         transactions.setactualmonthandyearintern(month, year)
     }
 
+    signal openLink(string newslink)
     signal termsSignal()
     signal instaSwapCheckAmountSignal(bool buybitcash, double amount)
     signal instaSwapSendBtnSignal(bool buybitcash, double amount, string bitcoinaddress)
@@ -503,6 +508,7 @@ Item {
             onSendtodollarsignalintern: sendtodollar()
             onSendtogoldsignalintern: sendtogold()
             onSendtodollarfromgoldsignalintern: sendtodollarfromgold()
+            onOpenLinkintern: openLink(newslink)
         }
         Mining{
             id: mining

@@ -88,6 +88,7 @@ public:
     QNetworkAccessManager *managerinsta;
     QNetworkAccessManager *managertwitch;
     QNetworkAccessManager *managercheckversion;
+    QNetworkAccessManager *managernews;
     QNetworkAccessManager *managerinstaswap;
 
 protected:
@@ -251,11 +252,13 @@ public Q_SLOTS:
     void generateBillBitCashClicked(int denomination);
     void printfrontbillClicked();
     void printbackbillClicked();
+    void openLinkClicked(QString link) ;
     void sendtoTwitchClicked(QString twitchuser, QString coinlink);
     void replyFinished(QNetworkReply *reply);
     void replyFinishedInsta(QNetworkReply *reply);
     void replyFinishedTwitch(QNetworkReply *reply);
     void replyFinishedcheckversion(QNetworkReply *reply);
+    void replyFinishednews(QNetworkReply *reply);
     void replyFinishedInstaSwap(QNetworkReply *reply);
     void ClaimLinksBtnClicked(const QString &strlinkqt);
     void recurringpayments();
