@@ -178,9 +178,9 @@ public:
     std::string DecryptRefLineTxOutWithOnePrivateKey(CTxOut out, CKey key, bool saltisactive) override { return m_wallet.DecryptRefLineTxOutWithOnePrivateKey(out, key, saltisactive); }
 
     bool FillTxOutForTransaction(CTxOut& out, CPubKey recipientpubkey, std::string referenceline, unsigned char currency, bool nonprivate, 
-                                    bool withviewkey, CPubKey viewpubkey, bool masterkeyisremoved, bool saltisactive) override 
+                                    bool withviewkey, CPubKey viewpubkey, bool masterkeyisremoved, bool saltisactive, bool checkagainstprivkey, CKey secret) override 
     { 
-        return m_wallet. FillTxOutForTransaction(out, recipientpubkey, referenceline, currency, nonprivate, withviewkey, viewpubkey, masterkeyisremoved, saltisactive); 
+        return m_wallet. FillTxOutForTransaction(out, recipientpubkey, referenceline, currency, nonprivate, withviewkey, viewpubkey, masterkeyisremoved, saltisactive, checkagainstprivkey, secret); 
     }
 
     bool DoesTxOutBelongtoPrivKeyCalcOneTimePrivate(const CTxOut& txout, CKey key, CKey& otpk, bool saltisactive) override { return m_wallet.DoesTxOutBelongtoPrivKeyCalcOneTimePrivate(txout, key, otpk, saltisactive); }

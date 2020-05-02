@@ -180,7 +180,7 @@ static UniValue createcoinbaseforaddress(const JSONRPCRequest& request)
     coinbaseTx.vin[0].prevout.SetNull();
     coinbaseTx.vout.resize(2);
     coinbaseTx.vout[0].nValue = GetBlockSubsidy(nHeight, Params().GetConsensus());
-    pwallet->FillTxOutForTransaction(coinbaseTx.vout[0], destination, "", 0, coinbaseTx.nVersion >= 6, coinbaseTx.nVersion >= 7);
+    pwallet->FillTxOutForTransaction(coinbaseTx.vout[0], destination, "", 0, coinbaseTx.nVersion >= 6, coinbaseTx.nVersion >= 7, false, CKey());
 
     //Pay to the development fund....
     coinbaseTx.vout[1].scriptPubKey = GetScriptForRawPubKey(CPubKey(ParseHex(Dev1scriptPubKey)));
@@ -290,10 +290,10 @@ static UniValue createcoinbaseforaddresswithpoolfee(const JSONRPCRequest& reques
     amount-=poolfee;
 
     coinbaseTx.vout[0].nValue = amount;
-    pwallet->FillTxOutForTransaction(coinbaseTx.vout[0], destination, "", 0, coinbaseTx.nVersion >= 6, coinbaseTx.nVersion >= 7);
+    pwallet->FillTxOutForTransaction(coinbaseTx.vout[0], destination, "", 0, coinbaseTx.nVersion >= 6, coinbaseTx.nVersion >= 7, false, CKey());
 
     coinbaseTx.vout[1].nValue = poolfee;
-    pwallet->FillTxOutForTransaction(coinbaseTx.vout[1], destination2, "Pool fee", 0, coinbaseTx.nVersion >= 6, coinbaseTx.nVersion >= 7);
+    pwallet->FillTxOutForTransaction(coinbaseTx.vout[1], destination2, "Pool fee", 0, coinbaseTx.nVersion >= 6, coinbaseTx.nVersion >= 7, false, CKey());
 
     //Pay to the development fund....
     coinbaseTx.vout[2].scriptPubKey = GetScriptForRawPubKey(CPubKey(ParseHex(Dev1scriptPubKey)));
@@ -1134,7 +1134,7 @@ static UniValue getaddressesbyaccount(const JSONRPCRequest& request)
     return ret;
 }
 
-static CTransactionRef SendMoney(CWallet * const pwallet, const CTxDestination &address, CAmount nValue, bool fSubtractFeeFromAmount, const CCoinControl& coin_control, mapValue_t mapValue, std::string fromAccount, std::string referenceline, bool onlyfromoneaddress, CTxDestination fromaddress, bool provideprivatekey, CKey privatekey, unsigned char fromcurrency, bool donotsignnow)
+static CTransactionRef SendMoney(CWallet * const pwallet, const CTxDestination &address, CAmount nValue, bool fSubtractFeeFromAmount, const CCoinControl& coin_control, mapValue_t mapValue, std::string fromAccount, std::string referenceline, bool onlyfromoneaddress, CTxDestination fromaddress, bool provideprivatekey, CKey privatekey, unsigned char fromcurrency, bool donotsignnow, bool checkagainstprivkey, CKey secret)
 {
     CAmount curBalance;
     if (provideprivatekey) {
@@ -1189,7 +1189,7 @@ static CTransactionRef SendMoney(CWallet * const pwallet, const CTxDestination &
         provideprivatekey = true;
     }
     if (!pwallet->CreateTransaction(vecSend, tx, reservekey, nFeeRequired, nChangePosRet, strError, coin_control, 
-                                    sign, onlyfromoneaddress, fromaddress, provideprivatekey, privatekey, fromcurrency)) {
+                                    sign, onlyfromoneaddress, fromaddress, provideprivatekey, privatekey, fromcurrency, checkagainstprivkey, secret)) {
         if (!fSubtractFeeFromAmount && nValue + nFeeRequired > curBalance)
             strError = strprintf("Error: This transaction requires a transaction fee of at least %s", FormatMoney(nFeeRequired));
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
@@ -1560,7 +1560,7 @@ static UniValue sendaslink(const JSONRPCRequest& request)
 
     EnsureWalletIsUnlocked(pwallet);
 
-    CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, coin_control, std::move(mapValue), {} /* fromAccount */, referenceline, false, CNoDestination(), false, CKey(), currency, false);
+    CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, coin_control, std::move(mapValue), {} /* fromAccount */, referenceline, false, CNoDestination(), false, CKey(), currency, false, true, secret);
 
     strlink+="&txid="+tx->GetHash().GetHex();
     return strlink;
@@ -1719,7 +1719,7 @@ static UniValue sendaslinkfromaddress(const JSONRPCRequest& request)
 
     EnsureWalletIsUnlocked(pwallet);
 
-    CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, coin_control, std::move(mapValue), {} /* fromAccount */, referenceline, true, destfrom, false, CKey(), currency, false);
+    CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, coin_control, std::move(mapValue), {} /* fromAccount */, referenceline, true, destfrom, false, CKey(), currency, false, true, secret);
 
     strlink+="&txid="+tx->GetHash().GetHex();
     return strlink;
@@ -1896,7 +1896,8 @@ static UniValue sendaslinkwithprivkey(const JSONRPCRequest& request)
 
     assert(key.VerifyPubKey(pubkeyfrom));
 
-    CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, coin_control, std::move(mapValue), {} /* fromAccount */, referenceline, true, destfrom, true, key, currency, false);
+    CTransactionRef tx = SendMoney( pwallet, dest, nAmount, fSubtractFeeFromAmount, coin_control, std::move(mapValue), {} /* fromAccount */, referenceline, 
+                                    true, destfrom, true, key, currency, false, true, secret);
 
     strlink+="&txid="+tx->GetHash().GetHex();
     return strlink;
@@ -2216,7 +2217,7 @@ static UniValue sendtoaddress(const JSONRPCRequest& request)
 
 
     EnsureWalletIsUnlocked(pwallet);
-    CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, coin_control, std::move(mapValue), {} /* fromAccount */, referenceline, false, CNoDestination(), false, CKey(), 0, false);
+    CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, coin_control, std::move(mapValue), {} /* fromAccount */, referenceline, false, CNoDestination(), false, CKey(), 0, false, false, CKey());
     return tx->GetHash().GetHex();
 }
 
@@ -2318,7 +2319,7 @@ static UniValue sendtoaddressfromcurrency(const JSONRPCRequest& request)
 
     EnsureWalletIsUnlocked(pwallet);
     CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, coin_control, std::move(mapValue), {} /* fromAccount */, 
-                                    referenceline, false, CNoDestination(), false, CKey(), currency, false);
+                                    referenceline, false, CNoDestination(), false, CKey(), currency, false, false, CKey());
     return tx->GetHash().GetHex();
 }
 
@@ -2426,7 +2427,7 @@ static UniValue sendtoaddressfromaddress(const JSONRPCRequest& request)
 
     EnsureWalletIsUnlocked(pwallet);
 
-    CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, coin_control, std::move(mapValue), {} , referenceline, true, destfrom, false, CKey(), currency, false);
+    CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, coin_control, std::move(mapValue), {} , referenceline, true, destfrom, false, CKey(), currency, false, false, CKey());
     return tx->GetHash().GetHex();
 //   return NullUniValue;
 }
@@ -2598,7 +2599,7 @@ static UniValue sendtoaddresswithprivkey(const JSONRPCRequest& request)
 //std::cout << str << std::endl;
 
 
-    CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, coin_control, std::move(mapValue), {} , referenceline, true, destfrom, true, key, currency, false);
+    CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, coin_control, std::move(mapValue), {} , referenceline, true, destfrom, true, key, currency, false, false, CKey());
     return tx->GetHash().GetHex();
 //   return NullUniValue;
 }
@@ -2714,7 +2715,7 @@ static UniValue sendtoaddressandsignlater(const JSONRPCRequest& request)
 
     EnsureWalletIsUnlocked(pwallet);
 
-    CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, coin_control, std::move(mapValue), {} , referenceline, true, destfrom, false, CKey(), currency, true);
+    CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, coin_control, std::move(mapValue), {} , referenceline, true, destfrom, false, CKey(), currency, true, false, CKey());
 
     UniValue result(UniValue::VOBJ);
     result.pushKV("tx", EncodeHexTx(*tx, RPCSerializationFlags()));
@@ -3587,7 +3588,7 @@ static UniValue sendfrom(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
 
     CCoinControl no_coin_control; // This is a deprecated API
-    CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, no_coin_control, std::move(mapValue), std::move(strAccount),referenceline, false, CNoDestination(), false, CKey(), currency, false);
+    CTransactionRef tx = SendMoney(pwallet, dest, nAmount, fSubtractFeeFromAmount, no_coin_control, std::move(mapValue), std::move(strAccount),referenceline, false, CNoDestination(), false, CKey(), currency, false, false, CKey());
     return tx->GetHash().GetHex();
 }
 

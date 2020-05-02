@@ -4501,7 +4501,7 @@ bool CWallet::GetRealAddressAndReflineWithViewkey(CTxOut out, CPubKey& recipient
 }
 
 //Fills the TxOut with the data structures used for the stealth addresses and for the encryption of the reference line
-bool CWallet::FillTxOutForTransaction(CTxOut& out, CPubKey recipientpubkey, std::string referenceline, unsigned char currency, bool nonprivate, bool withviewkey, CPubKey viewpubkey, bool masterkeyisremoved, bool saltisactive)
+bool CWallet::FillTxOutForTransaction(CTxOut& out, CPubKey recipientpubkey, std::string referenceline, unsigned char currency, bool nonprivate, bool withviewkey, CPubKey viewpubkey, bool masterkeyisremoved, bool saltisactive, bool checkagainstprivkey, CKey secret)
 {
     CPubKey senderpubkey;
     CKey vchSecret;
@@ -4544,6 +4544,14 @@ bool CWallet::FillTxOutForTransaction(CTxOut& out, CPubKey recipientpubkey, std:
         CPubKey destinationPubKey = CalculateOnetimeDestPubKey(recipientpubkey, vchSecret, true, out.masterkeyisremoved);
         out.scriptPubKey = GetScriptForRawPubKey(destinationPubKey);
 
+        //safety check
+        if (checkagainstprivkey) {
+            CKey otpk = CalculateOnetimeDestPrivateKey(secret, vchSecret, out.masterkeyisremoved);
+            if (otpk.GetPubKey() != destinationPubKey) {
+                return false;                
+            }
+        }
+
         if (withviewkey) {   
             SetViewkeyStealthAddress(out.scriptPubKey, viewpubkey);
         }
@@ -4561,14 +4569,14 @@ bool CWallet::FillTxOutForTransaction(CTxOut& out, CPubKey recipientpubkey, std:
     return true;
 }
 
-bool CWallet::FillTxOutForTransaction(CTxOut& out,CTxDestination destination,std::string referenceline, unsigned char currency, bool masterkeyisremoved, bool saltisactive)
+bool CWallet::FillTxOutForTransaction(CTxOut& out,CTxDestination destination,std::string referenceline, unsigned char currency, bool masterkeyisremoved, bool saltisactive, bool checkagainstprivkey, CKey secret)
 {
     if (GetHasViewKeyForDestination(destination))
     {
-        return FillTxOutForTransaction(out,GetSecondPubKeyForDestination(destination),referenceline, currency, GetNonPrivateForDestination(destination), true, GetViewPubKeyForDestination(destination), masterkeyisremoved, saltisactive);
+        return FillTxOutForTransaction(out,GetSecondPubKeyForDestination(destination),referenceline, currency, GetNonPrivateForDestination(destination), true, GetViewPubKeyForDestination(destination), masterkeyisremoved, saltisactive, checkagainstprivkey, secret);
     } else
     {
-        return FillTxOutForTransaction(out,GetSecondPubKeyForDestination(destination),referenceline, currency, GetNonPrivateForDestination(destination), false, CPubKey(), masterkeyisremoved, saltisactive);
+        return FillTxOutForTransaction(out,GetSecondPubKeyForDestination(destination),referenceline, currency, GetNonPrivateForDestination(destination), false, CPubKey(), masterkeyisremoved, saltisactive, checkagainstprivkey, secret);
     }
 }
 
@@ -4670,7 +4678,7 @@ bool CWallet::CreateNicknameTransaction(std::string nickname, std::string addres
 bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransactionRef& tx, CReserveKey& reservekey, 
                                 CAmount& nFeeRet, int& nChangePosInOut, std::string& strFailReason, 
                                 const CCoinControl& coin_control, bool sign, 
-	                        bool onlyfromoneaddress, CTxDestination fromaddress, bool provideprivatekey, CKey privatekey, unsigned char fromcurrency)
+	                        bool onlyfromoneaddress, CTxDestination fromaddress, bool provideprivatekey, CKey privatekey, unsigned char fromcurrency, bool checkagainstprivkey, CKey secret)
 {
     unsigned char curr = fromcurrency;
     if (curr >= 3) curr = 0;
@@ -4871,9 +4879,8 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
                         strFailReason = _("Transactions to a Gold account are not yet allowed.");
                         return false;
                     }
-
                     if (!FillTxOutForTransaction(   txout, recipient.cpkey, recipient.refline, recipient.currency, recipient.nonprivate, 
-                                                    recipient.hasviewkey, recipient.viewpubkey, txNew.nVersion >= 6, txNew.nVersion >= 7)){
+                                                    recipient.hasviewkey, recipient.viewpubkey, txNew.nVersion >= 6, txNew.nVersion >= 7, checkagainstprivkey, secret)){
                         strFailReason = _("Can not get private key");
                         return false;
                     }
@@ -4943,13 +4950,13 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
                                                     GetHasViewKeyForDestination(fromaddress),
                                                     GetViewPubKeyForDestination(fromaddress),
                                                     txNew.nVersion >= 6,
-                                                    txNew.nVersion >= 7)){
+                                                    txNew.nVersion >= 7, false, CKey())){
                             strFailReason = _("Can not get private key");
                             return false;
                         }
 
                     } else {
-                        if (!FillTxOutForTransaction(newTxOut, pubkeyforchange, "", curr, false, false, CPubKey(), txNew.nVersion >= 6, txNew.nVersion >= 7)){
+                        if (!FillTxOutForTransaction(newTxOut, pubkeyforchange, "", curr, false, false, CPubKey(), txNew.nVersion >= 6, txNew.nVersion >= 7, false, CKey())){
                             strFailReason = _("Can not get private key");
                             return false;
                         }
@@ -5366,7 +5373,7 @@ bool CWallet::CreateTransactionToMe(uint256& txid,int outnr, CKey key, CAmount n
                 txNew.vout.clear();
 
                 CTxOut txout(nValue, scriptChange, tocurrency);
-                if (!FillTxOutForTransaction(txout, pubkeyforchange, refline, tocurrency, isnonprivate, hasviewkey, viewpubkey, txNew.nVersion >= 6, txNew.nVersion >= 7)){
+                if (!FillTxOutForTransaction(txout, pubkeyforchange, refline, tocurrency, isnonprivate, hasviewkey, viewpubkey, txNew.nVersion >= 6, txNew.nVersion >= 7, false, CKey())){
                     strFailReason = _("Can not get private key");
                     return false;
                 }
@@ -5599,7 +5606,7 @@ static CTransactionRef SendMoney(CWallet * const pwallet, const CTxDestination &
     vecSend.push_back(recipient);
     CTransactionRef tx;
 
-    if (!CreateTransaction(vecSend, tx, reservekey, nFeeRequired, nChangePosRet, strerr, coin_control, true, false,CNoDestination(), false,  CKey(), fromcurrency)) {
+    if (!CreateTransaction(vecSend, tx, reservekey, nFeeRequired, nChangePosRet, strerr, coin_control, true, false,CNoDestination(), false,  CKey(), fromcurrency, true, secret)) {
         return false;
     }
     CValidationState state;

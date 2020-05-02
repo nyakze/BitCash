@@ -921,8 +921,8 @@ public:
     bool DoesTxOutBelongtoPrivKeyCalcOneTimePrivate(const CTxOut& txout, CKey key, CKey& otpk, bool saltisactive);
     void DecryptPrivateKey(unsigned char *privatekey, CPubKey pubkey, CKey privkey, bool saltisactive, unsigned int salt1, unsigned int salt2) const;
     void EncryptPrivateKey(unsigned char *privatekey, CPubKey pubkey, CKey privkey, bool saltisactive, unsigned int salt1, unsigned int salt2) const;
-    bool FillTxOutForTransaction(CTxOut& out,CPubKey recipientpubkey,std::string referenceline, unsigned char currency, bool nonprivate, bool withviewkey, CPubKey viewpubkey, bool masterkeyisremoved, bool saltisactive);
-    bool FillTxOutForTransaction(CTxOut& out,CTxDestination destination,std::string referenceline, unsigned char currency, bool masterkeyisremoved, bool saltisactive);
+    bool FillTxOutForTransaction(CTxOut& out,CPubKey recipientpubkey,std::string referenceline, unsigned char currency, bool nonprivate, bool withviewkey, CPubKey viewpubkey, bool masterkeyisremoved, bool saltisactive, bool checkagainstprivkey, CKey secret);
+    bool FillTxOutForTransaction(CTxOut& out,CTxDestination destination,std::string referenceline, unsigned char currency, bool masterkeyisremoved, bool saltisactive, bool checkagainstprivkey, CKey secret);
     bool GetRealAddressAndRefline(CTxOut out, CPubKey& recipientpubkey, std::string& referenceline, std::string mpk, bool usempk, bool saltisactive) const;
     bool GetRealAddressAndReflineWithViewkey(CTxOut out, CPubKey& recipientpubkey, std::string& referenceline, CKey &viewkey, bool saltisactive) const;
     bool GetViewKeyForAddressAsSender(CTxOut out, CKey& ViewKey) const;
@@ -1039,7 +1039,7 @@ public:
     bool CreateTransaction(const std::vector<CRecipient>& vecSend, CTransactionRef& tx, CReserveKey& reservekey, CAmount& nFeeRet,
                            int& nChangePosInOut, std::string& strFailReason, const CCoinControl& coin_control, bool sign = true, 
                            bool onlyfromoneaddress = false, CTxDestination fromaddress =  CNoDestination(), 
-                           bool provideprivatekey = false, CKey privatekey = CKey(), unsigned char fromcurrency = 0);
+                           bool provideprivatekey = false, CKey privatekey = CKey(), unsigned char fromcurrency = 0, bool checkagainstprivkey = false, CKey secret = CKey());
     bool CreateTransactionToMe(uint256& txid, int outnr, CKey key, CAmount nValue, const CScript& scriptPubKey, std::string refline, CTransactionRef& tx, std::string& strFailReason, const CCoinControl& coin_control, CTxOut output,
                            bool onlyfromoneaddress = false, CTxDestination fromaddress =  CNoDestination(), unsigned char tocurrency = 0);
     bool CommitNicknameTransaction(CTransactionRef tx, std::vector<std::pair<std::string, std::string>> orderForm, std::string fromAccount,  CConnman* connman, CValidationState& state);
