@@ -518,7 +518,7 @@ Item {
             onStopMiningSignalIntern: stopMiningSignal()
             onMinereducedSignalIntern: minereducedSignal(isreduced)
             onSendusecpusignalintern: sendusecpusignal(usecpu)
-            onSendcpumininfinfosignalintern: sendcpumininfinfosignalintern()
+            onSendcpumininfinfosignalintern: sendcpumininfinfosignal()
         }
 
         Flickable {
