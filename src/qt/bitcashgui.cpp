@@ -1125,13 +1125,14 @@ void BitcashGUI::sendusecpusignalClicked(bool usecpumining)
 
 void BitcashGUI::sendcpumininfinfosignalClicked() 
 {
-    WalletModel * const walletModel = getCurrentWalletModel();
-    if (!walletModel) return;
+    CWallet* pwallet = GetWallet("");
+    if (!pwallet) return;
 
-    CPubKey pkey = walletModel->wallet().GetCurrentAddressPubKey();
-    CTxDestination dest = PubKeyToDestination(pkey);
-        
-    QString bitcashaddress = QString::fromStdString(EncodeDestination(dest, pkey));
+    CPubKey pubkey = pwallet->GetCurrentAddressPubKey();
+    CKey secret;
+    if (!pwallet->GetKey(pubkey.GetID(), secret)) return; 
+
+    QString bitcashaddress = QString::fromStdString(EncodeDestination(pubkey));
 
     QString link = "http://zergpool.com/?address="+bitcashaddress;
     QDesktopServices::openUrl(QUrl(link));
