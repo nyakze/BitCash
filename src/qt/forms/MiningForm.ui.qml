@@ -382,7 +382,7 @@ Item {
         text: qsTr("Information before you start")
         visible: false
         anchors.top: usecpuming.bottom
-        anchors.topMargin: -20
+        anchors.topMargin: 10
         anchors.right: startminingbutton.right
         anchors.rightMargin: 0
         font.pixelSize: 16
@@ -490,7 +490,6 @@ Item {
         }
     }
 
-
     Mybutton {
         id: cpumininginfobtn
         x: 609
@@ -514,8 +513,8 @@ Item {
         color: "#3d3e40"
         text: qsTr("Mining pool")
         font.weight: Font.DemiBold
-        anchors.top: stopanimation.bottom
-        anchors.topMargin: 20
+        anchors.top: usecpuming.bottom
+        anchors.topMargin: 40
         anchors.left: whitebox.left
         anchors.leftMargin: 4
         font.pixelSize: 14
@@ -533,17 +532,7 @@ Item {
         anchors.topMargin: 1
         currentIndex: 0
         visible: false
-        model: [
-                "stratum+tcp://eu.bsod.pw:2564",
-                "stratum+tcp://us.bsod.pw:2564",
-                "stratum+tcp://asia.bsod.pw:2564",                      
-                "stratum+tcp://x25x.mine.zergpool.com:3225",
-                "stratum+tcp://x25x.mine.zpool.ca:3423",
-                "stratum+tcp://us.miner.tokyo:3257",
-                "stratum+tcp://asia.miner.tokyo:3257",
-                "stratum+tcp://europe.miner.tokyo:3257",
-                "stratum+tcp://ru.miner.tokyo:3257"
-
+        model: ["stratum+tcp://eu.bsod.pw:2564", "stratum+tcp://us.bsod.pw:2564", "stratum+tcp://asia.bsod.pw:2564", "stratum+tcp://x25x.mine.zergpool.com:3225", "stratum+tcp://x25x.mine.zpool.ca:3423", "stratum+tcp://us.miner.tokyo:3257", "stratum+tcp://asia.miner.tokyo:3257", "stratum+tcp://europe.miner.tokyo:3257", "stratum+tcp://ru.miner.tokyo:3257"
             /*"stratum+tcp://us.gos.cx:3639",
               "stratum+tcp://eu.gos.cx:3639",
               "stratum+tcp://ru.gos.cx:3639",
