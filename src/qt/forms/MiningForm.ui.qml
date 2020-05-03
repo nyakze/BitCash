@@ -381,7 +381,7 @@ Item {
         height: 44
         text: qsTr("Information before you start")
         visible: false
-        anchors.top: stopanimation.bottom
+        anchors.top: usecpuming.bottom
         anchors.topMargin: -20
         anchors.right: startminingbutton.right
         anchors.rightMargin: 0
@@ -410,6 +410,8 @@ Item {
 
     property alias graphsstat: graphsstat
     property alias stopanimation: stopanimation
+    property alias usecpuming: usecpuming
+    property alias cpumininginfobtn: cpumininginfobtn
 
     Label {
         id: graphsstat
@@ -454,6 +456,59 @@ Item {
             source: "../res/assets/Miscellaneous/info.png"
         }
     }
+
+    CheckBox {
+        id: usecpuming
+        text: qsTr("CPU mining of MCB coin and autoexchange to BitCash (zergpool.com)")
+        font.weight: Font.DemiBold
+        font.pixelSize: 14
+        font.family: "Montserrat SemiBold"
+        bottomPadding: 5
+        topPadding: 5
+        rightPadding: 22
+        anchors.top: stopanimation.bottom
+        anchors.topMargin: 2
+        checkState: Qt.Unchecked
+        leftPadding: 0
+        anchors.left: layoutrect.left
+        anchors.leftMargin: 0
+        hoverEnabled: true
+        ToolTip.visible: hovered
+        ToolTip.text: qsTr("Please check this option, if you do not have a GPU installed and still want to mine BitCash with your CPU.")
+        ToolTip.delay: 100
+        ToolTip.timeout: 5000
+        visible: false
+        Image {
+            id: imageinfo3
+            width: 16
+            height: 16
+            antialiasing: true
+            anchors.verticalCenter: usecpuming.verticalCenter
+            fillMode: Image.PreserveAspectFit
+            anchors.right: usecpuming.right
+            source: "../res/assets/Miscellaneous/info.png"
+        }
+    }
+
+
+    Mybutton {
+        id: cpumininginfobtn
+        x: 609
+        anchors.left: usecpuming.right
+        y: 66
+        //width: 250
+        height: 44
+        text: qsTr("Show stats")
+        anchors.leftMargin: 20
+        font.pixelSize: 16
+        anchors.verticalCenter: usecpuming.verticalCenter
+        leftPadding: 20
+        rightPadding: 20
+        font.capitalization: Font.MixedCase
+        font.family: "Courier"
+        visible: false
+    }
+
     Label {
         id: miningpoollabel
         color: "#3d3e40"

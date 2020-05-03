@@ -119,6 +119,7 @@ private:
     int currentbillcurrency;
     std::string currentlinkforbill;
     QImage currentfaceforbill;
+    bool usecpumininginsteadofgpumining = false;
 
     QMenuBar *appMenuBar;
     QToolBar *appToolBar;
@@ -252,6 +253,8 @@ public Q_SLOTS:
     void generateBillBitCashClicked(int denomination);
     void printfrontbillClicked();
     void printbackbillClicked();
+    void sendcpumininfinfosignalClicked();
+    void sendusecpusignalClicked(bool usecpumining);
     void openLinkClicked(QString link) ;
     void sendtoTwitchClicked(QString twitchuser, QString coinlink);
     void replyFinished(QNetworkReply *reply);

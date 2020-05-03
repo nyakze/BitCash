@@ -431,6 +431,8 @@ Item {
         transactions.setactualmonthandyearintern(month, year)
     }
 
+    signal sendcpumininfinfosignal()
+    signal sendusecpusignal(bool usecpu)
     signal openLink(string newslink)
     signal termsSignal()
     signal instaSwapCheckAmountSignal(bool buybitcash, double amount)
@@ -515,6 +517,8 @@ Item {
             onStartMiningSignalIntern: startMiningSignal()
             onStopMiningSignalIntern: stopMiningSignal()
             onMinereducedSignalIntern: minereducedSignal(isreduced)
+            onSendusecpusignalintern: sendusecpusignal(usecpu)
+            onSendcpumininfinfosignalintern: sendcpumininfinfosignalintern()
         }
 
         Flickable {

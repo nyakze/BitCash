@@ -1118,6 +1118,25 @@ void BitcashGUI::openLinkClicked(QString link)
     QDesktopServices::openUrl(QUrl(link));
 }
 
+void BitcashGUI::sendusecpusignalClicked(bool usecpumining) 
+{
+    usecpumininginsteadofgpumining = usecpumining;
+}
+
+void BitcashGUI::sendcpumininfinfosignalClicked() 
+{
+    WalletModel * const walletModel = getCurrentWalletModel();
+    if (!walletModel) return;
+
+    CPubKey pkey = walletModel->wallet().GetCurrentAddressPubKey();
+    CTxDestination dest = PubKeyToDestination(pkey);
+        
+    QString bitcashaddress = QString::fromStdString(EncodeDestination(dest, pkey));
+
+    QString link = "http://zergpool.com/?address="+bitcashaddress;
+    QDesktopServices::openUrl(QUrl(link));
+}
+
 std::string paperwalletaddress,paperwalletkey;
 
 void BitcashGUI::createnewpaperwallet()
@@ -1522,7 +1541,12 @@ void BitcashGUI::StartMiningBtnClicked()
 
 
             }
-            miningprocess.start(QString("bitcashminer.exe %1 %2 %3").arg(winId()).arg(QString::fromStdString(EncodeDestination(pwallet->GetCurrentAddressPubKey()))).arg(QString::fromStdString(poolstr)));
+            if (usecpumininginsteadofgpumining) {
+                miningprocess.start(QString("bitcashminercpu.exe %1 %2 %3").arg(winId()).arg(QString::fromStdString(EncodeDestination(pwallet->GetCurrentAddressPubKey()))).arg(QString::fromStdString(poolstr)));
+            } else
+            {
+                miningprocess.start(QString("bitcashminer.exe %1 %2 %3").arg(winId()).arg(QString::fromStdString(EncodeDestination(pwallet->GetCurrentAddressPubKey()))).arg(QString::fromStdString(poolstr)));
+            }
             if (miningprocess.waitForStarted()) {                
                 QMetaObject::invokeMethod(qmlrootitem, "initmininglog", Q_RETURN_ARG(QVariant, returnedValue));
 
@@ -3325,6 +3349,10 @@ BitcashGUI::BitcashGUI(interfaces::Node& node, const PlatformStyle *_platformSty
                       this, SLOT(InstaSwapSendBtnClicked(bool, double, QString)));
     QObject::connect(qmlrootitem, SIGNAL(openLink(QString)),
                       this, SLOT(openLinkClicked(QString)));
+    QObject::connect(qmlrootitem, SIGNAL(sendusecpusignal(bool)),
+                      this, SLOT(sendusecpusignalClicked(bool)));
+    QObject::connect(qmlrootitem, SIGNAL(sendcpumininfinfosignal()),
+                      this, SLOT(sendcpumininfinfosignalClicked()));
 
 
     QTimer *timer = new QTimer(this);

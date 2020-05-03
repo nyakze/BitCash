@@ -11,6 +11,8 @@ MiningForm {
        animation3.width=animation1.width
        animation3.height=animation1.height
      }
+     signal sendcpumininfinfosignalintern()
+     signal sendusecpusignalintern(bool usecpu)
      signal startMiningSignalIntern()
      signal stopMiningSignalIntern()
      signal minereducedSignalIntern(bool isreduced)
@@ -19,6 +21,8 @@ MiningForm {
         miningpoollabel.visible = true
         poolcombo.visible = true
         informationbtn.visible = true
+        usecpuming.visible = true
+        cpumininginfobtn.visible = true
      }
 
      function getminingpoolintern()
@@ -36,7 +40,7 @@ MiningForm {
          mininglog4.visible = true
          mininglog4.text = ""
          mininglog5.visible = true
-         mininglog5.text = ""
+         mininglog5.text = ""         
          labelgraphs.visible = false
          graphsstat.visible = false
      }
@@ -48,7 +52,7 @@ MiningForm {
          mininglog4.visible = false
          mininglog5.visible = false
          labelgraphs.visible = true
-         graphsstat.visible = true
+         graphsstat.visible = true         
      }
 
      function mininglogintern(msg) {
@@ -130,6 +134,8 @@ MiningForm {
          closeinformationbtn.visible = false
      }
 
+     cpumininginfobtn.onClicked: sendcpumininfinfosignalintern()
+     usecpuming.onCheckStateChanged: sendusecpusignalintern(usecpuming.checked)
      stopanimation.onCheckStateChanged: {
          if (!stopanimation.checked)
          {
