@@ -459,7 +459,7 @@ Item {
 
     CheckBox {
         id: usecpuming
-        text: qsTr("CPU mining of MCB coin and autoexchange to BitCash (zergpool.com)")
+        text: qsTr("CPU mining of MBC coin and autoexchange to BitCash (zergpool.com)")
         font.weight: Font.DemiBold
         font.pixelSize: 14
         font.family: "Montserrat SemiBold"
