@@ -21,8 +21,8 @@ MiningForm {
         miningpoollabel.visible = true
         poolcombo.visible = true
         informationbtn.visible = true
-        usecpuming.visible = true
-        cpumininginfobtn.visible = true
+        //usecpuming.visible = true
+        //cpumininginfobtn.visible = true
      }
 
      function getminingpoolintern()
