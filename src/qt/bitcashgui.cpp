@@ -1496,30 +1496,36 @@ void BitcashGUI::StartMiningBtnClicked()
             std::string poolstr = "";
             switch (pool){
                 case 0:
+                    poolstr = "stratum+tcp://pool.bsod.pw:2564";
+                break;			    
+                case 1:
                     poolstr = "stratum+tcp://eu.bsod.pw:2564";
                 break;
-                case 1:
+                case 2:
                     poolstr = "stratum+tcp://us.bsod.pw:2564";
                 break;
-                case 2:
+                case 3:
                     poolstr = "stratum+tcp://asia.bsod.pw:2564";
                 break;
-                case 3:
+                case 4:
+                    poolstr = "stratum+tcp://ru.bsod.pw:2564";
+                break;			    
+                case 5:
                     poolstr = "stratum+tcp://x25x.mine.zergpool.com:3225";
                 break;
-                case 4:
+                case 6:
                     poolstr = "stratum+tcp://x25x.mine.zpool.ca:3423";
                 break;
-                case 5:
+                case 7:
                     poolstr = "stratum+tcp://us.miner.tokyo:3257";
                 break;
-                case 6:
+                case 8:
                     poolstr = "stratum+tcp://asia.miner.tokyo:3257";
                 break;
-                case 7:
+                case 9:
                     poolstr = "stratum+tcp://europe.miner.tokyo:3257";
                 break;
-                case 8:
+                case 10:
                     poolstr = "stratum+tcp://ru.miner.tokyo:3257";
                 break;
 
